@@ -20,8 +20,10 @@ public class Client {
         BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+        System.out.println("Client says: Connected to server!");
+
         while (true) {
-            System.out.println("> ");
+            System.out.print("> ");
             String command = keyboard.readLine();
 
             if (command.equals("exit")) {
