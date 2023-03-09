@@ -37,8 +37,15 @@ public class ClientHandler implements Runnable {
             while (true) {
                 String request = in.readLine();
                 if (request.equals("exit")) {
-                    this.server.removeClient(this);
+                    this.server.shutdown();
                     break;
+                }
+                else if (request.startsWith("say")) {
+                    int firstSpace = request.indexOf(" ");
+                    if (firstSpace != -1) {
+                        String message = request.substring(firstSpace + 1);
+                        this.broadcast(message);
+                    }
                 }
                 else if (request.contains("name")) out.println(this.server.getRandomName());
                 else out.println("Type 'tell me a name' to get a random name.");
@@ -53,6 +60,12 @@ public class ClientHandler implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void broadcast(String message) {
+        for (ClientHandler client : this.server.getClients()) {
+            client.out.println(message);
         }
     }
 }

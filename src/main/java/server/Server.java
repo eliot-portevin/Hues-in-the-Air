@@ -59,10 +59,13 @@ public class Server implements Runnable {
         System.out.println("[SERVER] Client disconnected!");
     }
 
-    private void shutdown() throws IOException {
+    void shutdown() throws IOException {
         this.shuttingDown = true;
         this.listener.close();
 
+        for (Thread clientThread : this.clientThreads) {
+            clientThread.interrupt();
+        }
         for (ClientHandler client : this.clients) {
             removeClient(client);
         }
@@ -76,5 +79,9 @@ public class Server implements Runnable {
         String adjective = this.adjectives[(int) (Math.random() * this.adjectives.length)];
 
         return name + " " + adjective;
+    }
+
+    public ArrayList<ClientHandler> getClients() {
+        return this.clients;
     }
 }
