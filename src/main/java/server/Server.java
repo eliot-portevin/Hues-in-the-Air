@@ -1,39 +1,32 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.IOException;
-import java.util.Date;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
 
     private static final int PORT = 9090;
-    private static String[] names = {"John", "Paul", "George", "Ringo"};
-    private static String[] adjectives = {"the smart", "the funny", "the handsome", "the ugly"};
+    private static final String[] names = {"John", "Paul", "George", "Ringo"};
+    private static final String[] adjectives = {"the smart", "the funny", "the handsome", "the ugly"};
+
+    private static final ArrayList<ClientHandler> clients = new ArrayList<>();
+    private static final ExecutorService pool = Executors.newFixedThreadPool(5);
 
     public static void main(String[] args) throws IOException {
         ServerSocket listener = new ServerSocket(PORT);
 
-        System.out.println("[SERVER] Waiting for client connection...");
-        Socket client = listener.accept();
-        System.out.println("[SERVER] Connected to Client!");
+        while (true) {
+            System.out.println("[SERVER] Waiting for client connection...");
+            Socket client = listener.accept();
+            System.out.println("[SERVER] Connected to Client!");
+            ClientHandler clientThread = new ClientHandler(client);
+            clients.add(clientThread);
 
-        PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-        try {
-            while (true) {
-                String request = in.readLine();
-                if (request == "exit") break;
-                else if (request.contains("name")) out.println(getRandomName());
-                else out.println("Type 'tell me a name' to get a random name.");
-            }
-        } finally {
-            client.close();
-            listener.close();
+            pool.execute(clientThread);
         }
     }
 

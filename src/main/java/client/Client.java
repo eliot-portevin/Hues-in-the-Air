@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import javax.swing.JOptionPane;
 
 
 public class Client {
