@@ -12,11 +12,13 @@ public class ClientHandler implements Runnable {
     private final Socket client;
     private final BufferedReader in;
     private final PrintWriter out;
+    private final Server server;
 
-    public ClientHandler(Socket clientSocket) throws IOException {
+    public ClientHandler(Socket clientSocket, Server server) throws IOException {
         this.client = clientSocket;
         this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         this.out = new PrintWriter(client.getOutputStream(), true);
+        this.server = server;
     }
     /**
      * When an object implementing interface {@code Runnable} is used
@@ -34,8 +36,11 @@ public class ClientHandler implements Runnable {
         try {
             while (true) {
                 String request = in.readLine();
-                if (request.equals("exit")) break;
-                else if (request.contains("name")) out.println(Server.getRandomName());
+                if (request.equals("exit")) {
+                    this.server.removeClient(this);
+                    break;
+                }
+                else if (request.contains("name")) out.println(this.server.getRandomName());
                 else out.println("Type 'tell me a name' to get a random name.");
             }
         } catch(IOException e) {
