@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
 
@@ -16,14 +14,24 @@ public class Server implements Runnable {
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
     private final ArrayList<Thread> clientThreads = new ArrayList<>();
 
+    private ServerSocket listener;
+
+    private boolean shuttingDown = false;
+
+
     public void run() {
         try {
-            ServerSocket listener = new ServerSocket(PORT);
+            this.listener = new ServerSocket(PORT);
 
             while (true) {
-                System.out.println("[SERVER] Waiting for client connection...");
-                Socket client = listener.accept();
-                this.addClient(client);
+                if (!shuttingDown) {
+                    System.out.println("[SERVER] Waiting for client connection...");
+                    Socket client = listener.accept();
+                    this.addClient(client);
+                }
+                else {
+                    break;
+                }
             }
         } catch (IOException e) {
             System.err.println("Server exception: " + e.getMessage());
@@ -49,6 +57,18 @@ public class Server implements Runnable {
         this.clients.remove(client);
 
         System.out.println("[SERVER] Client disconnected!");
+    }
+
+    private void shutdown() throws IOException {
+        this.shuttingDown = true;
+        this.listener.close();
+
+        for (ClientHandler client : this.clients) {
+            removeClient(client);
+        }
+
+        System.out.println("[SERVER] Server shutdown!");
+        System.exit(0);
     }
 
     public String getRandomName() {
