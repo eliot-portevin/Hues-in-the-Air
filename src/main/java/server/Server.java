@@ -8,10 +8,8 @@ import java.util.ArrayList;
 public class Server implements Runnable {
 
     private final int PORT;
-    private final String[] names = {"John", "Paul", "George", "Ringo"};
-    private final String[] adjectives = {"the smart", "the funny", "the handsome", "the ugly"};
 
-    private final ArrayList<ClientHandler> clients = new ArrayList<>();
+    private final ArrayList<ClientHandler> clientsHandlers = new ArrayList<>();
     private final ArrayList<Thread> clientThreads = new ArrayList<>();
 
     private ServerSocket listener;
@@ -23,6 +21,9 @@ public class Server implements Runnable {
         this.PORT = Integer.parseInt(PORT);
     }
 
+    /**
+     * Waits for client connections. When a client wants to connect to the server,
+     * the addClient method is called.*/
     public void run() {
         try {
             this.listener = new ServerSocket(PORT);
@@ -46,7 +47,7 @@ public class Server implements Runnable {
 
     public void addClient(Socket clientSocket) throws IOException {
         ClientHandler clientHandler = new ClientHandler(clientSocket, this);
-        this.clients.add(clientHandler);
+        this.clientsHandlers.add(clientHandler);
 
         Thread clientThread = new Thread(clientHandler);
         this.clientThreads.add(clientThread);
@@ -56,9 +57,9 @@ public class Server implements Runnable {
     }
 
     public void removeClient(ClientHandler client) {
-        this.clientThreads.get(this.clients.indexOf(client)).interrupt();
-        this.clientThreads.remove(this.clients.indexOf(client));
-        this.clients.remove(client);
+        this.clientThreads.get(this.clientsHandlers.indexOf(client)).interrupt();
+        this.clientThreads.remove(this.clientsHandlers.indexOf(client));
+        this.clientsHandlers.remove(client);
 
         System.out.println("[SERVER] Client disconnected!");
     }
@@ -70,7 +71,7 @@ public class Server implements Runnable {
         for (Thread clientThread : this.clientThreads) {
             clientThread.interrupt();
         }
-        for (ClientHandler client : this.clients) {
+        for (ClientHandler client : this.clientsHandlers) {
             removeClient(client);
         }
 
@@ -78,7 +79,7 @@ public class Server implements Runnable {
         System.exit(0);
     }
 
-    public ArrayList<ClientHandler> getClients() {
-        return this.clients;
+    public ArrayList<ClientHandler> getClientHandlers() {
+        return this.clientsHandlers;
     }
 }

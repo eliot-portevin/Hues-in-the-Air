@@ -14,6 +14,9 @@ public class ClientHandler implements Runnable {
     private final PrintWriter out;
     private final Server server;
 
+    /**
+     * Is in charge of a single client.
+     * */
     public ClientHandler(Socket clientSocket, Server server) throws IOException {
         this.client = clientSocket;
         this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -21,15 +24,10 @@ public class ClientHandler implements Runnable {
         this.server = server;
     }
     /**
-     * When an object implementing interface {@code Runnable} is used
-     * to create a thread, starting the thread causes the object's
-     * {@code run} method to be called in that separately executing
-     * thread.
-     * <p>
-     * The general contract of the method {@code run} is that it may
-     * take any action whatsoever.
+     * Handles the client's input.
+     * If the client sends "exit", the server shuts down.
+     * If the client sends "say", the server broadcasts the message to all clients.
      *
-     * @see Thread#run()
      */
     @Override
     public void run() {
@@ -62,8 +60,10 @@ public class ClientHandler implements Runnable {
     }
 
     private void broadcast(String message) {
-        for (ClientHandler client : this.server.getClients()) {
-            client.out.println(message);
+        for (ClientHandler client : this.server.getClientHandlers()) {
+            if (client != this) {
+                client.out.println(message);
+            }
         }
     }
 }
