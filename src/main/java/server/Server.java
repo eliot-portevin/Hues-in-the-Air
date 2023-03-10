@@ -26,7 +26,7 @@ public class Server implements Runnable {
      * the addClient method is called.*/
     public void run() {
         try {
-            this.listener = new ServerSocket(PORT);
+            this.listener = new ServerSocket(this.PORT);
 
             while (true) {
                 if (!shuttingDown) {
