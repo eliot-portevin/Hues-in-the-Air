@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Server implements Runnable {
 
-    private final int PORT = 9090;
+    private final int PORT;
     private final String[] names = {"John", "Paul", "George", "Ringo"};
     private final String[] adjectives = {"the smart", "the funny", "the handsome", "the ugly"};
 
@@ -18,6 +18,10 @@ public class Server implements Runnable {
 
     private boolean shuttingDown = false;
 
+
+    public Server(String PORT) {
+        this.PORT = Integer.parseInt(PORT);
+    }
 
     public void run() {
         try {
@@ -72,13 +76,6 @@ public class Server implements Runnable {
 
         System.out.println("[SERVER] Server shutdown!");
         System.exit(0);
-    }
-
-    public String getRandomName() {
-        String name = this.names[(int) (Math.random() * this.names.length)];
-        String adjective = this.adjectives[(int) (Math.random() * this.adjectives.length)];
-
-        return name + " " + adjective;
     }
 
     public ArrayList<ClientHandler> getClients() {

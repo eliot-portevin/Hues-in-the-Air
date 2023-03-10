@@ -16,27 +16,15 @@ public class Client {
     public static void main(String[] args) throws IOException {
         Socket socket = new Socket(SERVER_IP, SERVER_PORT);
 
-        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        ServerIn input = new ServerIn(socket);
+        ServerOut output = new ServerOut(socket);
 
-        System.out.println("Client says: Connected to server!");
+        Thread inputThread = new Thread(input);
+        Thread outputThread = new Thread(output);
 
-        while (true) {
-            System.out.print("> ");
-            String command = keyboard.readLine();
+        inputThread.start();
+        outputThread.start();
 
-            if (command.equals("exit")) {
-                out.println("exit");
-                break;
-            }
-            out.println(command);
-
-            String serverResponse = input.readLine();
-            System.out.println(serverResponse);
-        }
-
-        socket.close();
-        System.exit(0);
+        System.out.println("[CLIENT] Connection to server established");
     }
 }

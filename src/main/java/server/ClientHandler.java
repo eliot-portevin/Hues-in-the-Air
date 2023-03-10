@@ -47,8 +47,6 @@ public class ClientHandler implements Runnable {
                         this.broadcast(message);
                     }
                 }
-                else if (request.contains("name")) out.println(this.server.getRandomName());
-                else out.println("Type 'tell me a name' to get a random name.");
             }
         } catch(IOException e) {
             System.err.println("IO exception in client handler");
