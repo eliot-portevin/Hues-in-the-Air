@@ -21,9 +21,9 @@ public class ClientHandler implements Runnable {
     // The server: used to access the list of clients
     private final Server server;
 
-    // Is the client still connected?
     private boolean running = true;
 
+    // The client's username
     private String username;
 
     /**
@@ -59,6 +59,12 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * The client linked to this ClientHandler wants to send a message to all clients on the server.
+     * <p>
+     *     See {@link ServerProtocol#SEND_MESSAGE_SERVER}
+     * </p>
+     * */
     private void sendMessageServer(String username, String messageContent) {
         String message = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + username + ServerProtocol.SEPARATOR + messageContent;
         for (ClientHandler client : this.server.getClientHandlers()) {
@@ -66,6 +72,9 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Receives commands from the client.
+     * */
     private String[] receiveFromClient() {
         try {
             return this.in.readLine().split(ServerProtocol.SEPARATOR.toString());
@@ -76,6 +85,12 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Called from {@link #receiveFromClient()}.
+     * <p>
+     *     Goes over the different commands of {@link ClientProtocol} and calls the appropriate method.
+     * </p>
+     * */
     private void protocolSwitch(String[] command) {
         ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
@@ -89,7 +104,11 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Requests the client's username upon connection.
+     * */
     private void getClientUsername() {
+        System.out.println("Requesting username from client");
         this.out.println(ServerProtocol.REQUEST_USERNAME);
     }
 }

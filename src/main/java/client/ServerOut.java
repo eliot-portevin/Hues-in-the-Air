@@ -42,7 +42,7 @@ public class ServerOut implements Runnable{
                 if (command.equals("quit")) {
                     this.running = false;
                 }
-                if (firstSpace != -1) {
+                else if (firstSpace != -1) {
                     if (command.startsWith("say")) {
                         System.out.println("Sending message to server: " + command.substring(firstSpace));
                         this.client.sendServerMessage(command.substring(firstSpace));
