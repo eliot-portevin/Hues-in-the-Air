@@ -89,6 +89,7 @@ public class Client {
 
     protected void logout() {
         // Communicate with server that client is logging out
+        // TODO: solve SocketException when logging out
         String command = ClientProtocol.LOGOUT.toString();
         this.outputSocket.sendToServer(command);
 

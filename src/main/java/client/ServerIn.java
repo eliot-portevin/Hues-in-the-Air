@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import static shared.Encryption.decrypt;
+
 /**
  * Handles the input from the server
  */
@@ -52,7 +54,7 @@ public class ServerIn implements Runnable {
 
     private String[] receiveFromServer() {
         try {
-            return this.in.readLine().split(ServerProtocol.SEPARATOR.toString());
+            return decrypt(this.in.readLine()).split(ServerProtocol.SEPARATOR.toString());
         } catch (IOException e) {
             System.err.println("[CLIENT] failed to receive message from server: " + e.getMessage());
             e.printStackTrace();

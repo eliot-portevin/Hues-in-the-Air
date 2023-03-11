@@ -1,6 +1,6 @@
 package client;
 
-import server.ServerProtocol;
+import static shared.Encryption.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class ServerOut implements Runnable{
         try {
             while(this.running) {
                 System.out.print("> ");
-                String command = this.keyboard.readLine();
+                String command = decrypt(this.keyboard.readLine());
 
                 int firstSpace = command.indexOf(" ");
 
@@ -46,7 +46,7 @@ public class ServerOut implements Runnable{
                     if (command.startsWith("say")) {
                         this.client.sendServerMessage(command.substring(firstSpace));
                     }
-                    else if (command.startsWith("setusername")) {
+                    else if (command.startsWith("set-username")) {
                         this.client.setUsername(command.substring(firstSpace));
                     }
                 }
@@ -70,6 +70,6 @@ public class ServerOut implements Runnable{
     }
 
     protected void sendToServer(String message) {
-        this.out.println(message);
+        this.out.println(encrypt(message));
     }
 }

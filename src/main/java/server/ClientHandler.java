@@ -1,6 +1,7 @@
 package server;
 
 import client.ClientProtocol;
+import static shared.Encryption.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,10 +47,9 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         while (this.running) {
-            String[] command = this.receiveFromClient();
-            if (command != null) {
-                this.protocolSwitch(command);
-            }
+            // Receive message, decrypt it and split it into an array
+            String[] command = decrypt(this.receiveFromClient()).split(ServerProtocol.SEPARATOR.toString());
+            this.protocolSwitch(command);
         }
         try {
             client.close();
@@ -67,6 +67,7 @@ public class ClientHandler implements Runnable {
      * */
     private void sendMessageServer(String messageContent) {
         String message = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + messageContent;
+        message = encrypt(message);
         for (ClientHandler client : this.server.getClientHandlers()) {
             client.out.println(message);
         }
@@ -75,11 +76,10 @@ public class ClientHandler implements Runnable {
     /**
      * Receives commands from the client.
      * */
-    private String[] receiveFromClient() {
+    private String receiveFromClient() {
         try {
-            String command = this.in.readLine();
-            System.out.println("[CLIENT_HANDLER] :" + command);
-            return command.split(ServerProtocol.SEPARATOR.toString());
+            //TODO Add Logger
+            return this.in.readLine();
         } catch (IOException e) {
             System.err.println("[CLIENT_HANDLER] " + this.username + " failed to receive message from client");
             System.out.println(Arrays.toString(e.getStackTrace()));
@@ -112,7 +112,8 @@ public class ClientHandler implements Runnable {
      * Requests the client's username upon connection.
      * */
     private void getClientUsername() {
-        System.out.println("Requesting username from client");
-        this.out.println(ServerProtocol.NO_USERNAME_SET);
+        // TODO Add Logger
+        String message = encrypt(ServerProtocol.NO_USERNAME_SET.toString());
+        this.out.println(message);
     }
 }
