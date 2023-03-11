@@ -34,7 +34,12 @@ public class ServerIn implements Runnable {
     public void run() {
         while(running) {
             String[] command = this.receiveFromServer();
-            protocolSwitch(command);
+            if (command != null) {
+                this.protocolSwitch(command);
+            }
+            else {
+                System.out.println("[CLIENT] ServerIn: command is null");
+            }
         }
         try {
             this.serverSocket.close();
@@ -61,9 +66,10 @@ public class ServerIn implements Runnable {
         switch (protocol) {
             case SEND_MESSAGE_SERVER:
                 System.out.println("[" + command[1] + "] " + command[2]);
+                System.out.print("> ");
 
             case REQUEST_USERNAME:
-                this.client.sendUsername();
+                this.client.setUsername(command[0]);
         }
     }
 }

@@ -5,6 +5,7 @@ import server.ServerProtocol;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 
 public class Client {
@@ -24,7 +25,7 @@ public class Client {
 
     public void run(String[] args) throws IOException {
         start(args);
-        this.socket = new Socket(SERVER_IP, SERVER_PORT);
+        this.connectToServer();
 
         this.inputSocket = new ServerIn(socket, this);
         this.outputSocket = new ServerOut(socket, this);
@@ -58,8 +59,31 @@ public class Client {
         }
 
     }
+    private void connectToServer() {
+        this.socket = new Socket();
+        // Try to connect to the server, if connection is refused, retry every 2 seconds
+        while (!this.socket.isConnected()) {
+            try {
+                this.socket = new Socket(SERVER_IP, SERVER_PORT);
+            } catch (IOException e) {
+                System.err.println("[CLIENT] Connection timed out. Retrying...");
+            }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-    protected String getUsername() {
-        return username;
+    protected void setUsername(String username) {
+        String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
+        this.outputSocket.sendToServer(command);
+        this.username = username;
+    }
+
+    protected void sendServerMessage(String message) {
+        String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + message;
+        this.outputSocket.sendToServer(command);
     }
 }

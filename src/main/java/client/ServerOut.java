@@ -33,17 +33,24 @@ public class ServerOut implements Runnable{
     @Override
     public void run() {
         try {
-            while(running) {
+            while(this.running) {
                 System.out.print("> ");
                 String command = this.keyboard.readLine();
 
+                int firstSpace = command.indexOf(" ");
+
                 if (command.equals("quit")) {
-                    this.out.println(command);
-                    this.serverSocket.close();
-                    break;
+                    this.running = false;
                 }
-                else if (command.startsWith("say")) {
-                    sendServerMessage(command.substring(4));
+                if (firstSpace != -1) {
+                    if (command.startsWith("say")) {
+                        System.out.println("Sending message to server: " + command.substring(firstSpace));
+                        this.client.sendServerMessage(command.substring(firstSpace));
+                    }
+                    else if (command.startsWith("setusername")) {
+                        System.out.println("Setting username to: " + command.substring(firstSpace));
+                        this.client.setUsername(command.substring(firstSpace));
+                    }
                 }
                 else {
                     this.out.println(command);
@@ -53,18 +60,18 @@ public class ServerOut implements Runnable{
             System.err.println("[CLIENT] ServerOut: " + e.getMessage());
             e.printStackTrace();
         }
+        // Close the socket and the input stream
+        try {
+            this.serverSocket.close();
+            this.keyboard.close();
+        } catch (IOException e) {
+            System.err.println("[CLIENT] Failed to close serverSocket and input stream: " + e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 
     protected void sendToServer(String message) {
         this.out.println(message);
-    }
-
-    private void sendServerMessage(String message) {
-        String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.client.getUsername() + ServerProtocol.SEPARATOR + message;
-        this.sendToServer(command);
-    }
-
-    private void setUsername() {
-        String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + this.client.getUsername();
     }
 }

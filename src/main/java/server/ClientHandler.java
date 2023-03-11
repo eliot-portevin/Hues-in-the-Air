@@ -80,7 +80,10 @@ public class ClientHandler implements Runnable {
         ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
         switch (protocol) {
-            case SET_USERNAME -> this.username = command[1];
+            case SET_USERNAME -> {
+                System.out.println(String.join(" ", command));
+                this.username = command[1];
+            }
 
             case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[1], command[2]);
         }
