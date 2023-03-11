@@ -21,32 +21,35 @@ public enum ServerProtocol {
     /**
      * Request client username
      * */
-    REQUEST_USERNAME(0) { public String toString() { return "REQUEST_USERNAME"; } },
+    NO_USERNAME_SET(0),
 
     /**
      * Inform client that the username is already taken
      * */
-    USERNAME_TAKEN(0) { public String toString() {return "USERNAME_TAKEN"; } },
+    USERNAME_TAKEN(0),
 
     /**
      * Inform client that the username is valid
      * */
-    USERNAME_VALID(0) { public String toString() {return "USERNAME_VALID"; } },
+    USERNAME_VALID(0),
 
     /**
-     * Send a chat message to a specific client
+     * A message is being sent to another client.
      * */
-    SEND_MESSAGE_CLIENT(2) { public String toString() {return "SEND_MESSAGE_CLIENT"; } },
+    SEND_MESSAGE_CLIENT(2),
 
     /**
-     * Send a chat message to the whole server
+     * A message is being sent to the whole server.
+     * <p>
+     *     Format: SEND_MESSAGE_SERVER¶username¶message
+     * </p>
      * */
-    SEND_MESSAGE_SERVER(2) { public String toString() {return "SEND_MESSAGE_SERVER"; } },
+    SEND_MESSAGE_SERVER(2),
 
     /**
-     * Send a chat message to a specific lobby
+     * A message is being sent to the lobby.
      * */
-    SEND_MESSAGE_LOBBY(2) { public String toString() {return "SEND_MESSAGE_LOBBY"; } };
+    SEND_MESSAGE_LOBBY(2);
 
     private final int numArgs;
 
