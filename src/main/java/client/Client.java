@@ -59,20 +59,6 @@ public class Client {
 
     }
 
-    private void sendToServer(String[] message) {
-        this.outputSocket.sendToServer(String.join(ServerProtocol.SEPARATOR.toString(), message));
-    }
-
-    protected void sendUsername() {
-        String[] message = {ClientProtocol.SET_USERNAME.toString(), username};
-        this.sendToServer(message);
-    }
-
-    protected void sendServerMessage(String message) {
-        String[] messageArray = {ServerProtocol.SEND_MESSAGE_SERVER.toString(), message};
-        this.sendToServer(messageArray);
-    }
-
     protected String getUsername() {
         return username;
     }

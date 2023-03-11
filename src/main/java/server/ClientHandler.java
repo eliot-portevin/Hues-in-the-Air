@@ -47,7 +47,9 @@ public class ClientHandler implements Runnable {
     public void run() {
         while (this.running) {
             String[] command = this.receiveFromClient();
-            this.protocolSwitch(command);
+            if (command != null) {
+                this.protocolSwitch(command);
+            }
         }
         try {
             client.close();
@@ -85,6 +87,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void getClientUsername() {
-        this.out.println(ServerProtocol.REQUEST_USERNAME.toString());
+        this.out.println(ServerProtocol.REQUEST_USERNAME);
     }
 }

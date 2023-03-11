@@ -55,12 +55,16 @@ public class ServerOut implements Runnable{
         }
     }
 
+    protected void sendToServer(String message) {
+        this.out.println(message);
+    }
+
     private void sendServerMessage(String message) {
         String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.client.getUsername() + ServerProtocol.SEPARATOR + message;
         this.sendToServer(command);
     }
 
-    protected void sendToServer(String message) {
-        this.out.println(message);
+    private void setUsername() {
+        String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + this.client.getUsername();
     }
 }
