@@ -21,7 +21,7 @@ public class Client {
     private Thread outputThread;
 
     // Username
-    private static String username = System.getProperty("user.name");
+    protected String username = System.getProperty("user.name");
 
     public void run(String[] args) throws IOException {
         start(args);
@@ -85,5 +85,23 @@ public class Client {
     protected void sendServerMessage(String message) {
         String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + message;
         this.outputSocket.sendToServer(command);
+    }
+
+    protected void logout() {
+        // Communicate with server that client is logging out
+        String command = ClientProtocol.LOGOUT.toString();
+        this.outputSocket.sendToServer(command);
+
+        // Close the socket and stop the threads
+        this.inputSocket.running = false;
+        this.outputSocket.running = false;
+        this.inputThread.interrupt();
+        this.outputThread.interrupt();
+        try {
+            this.socket.close();
+        } catch (IOException e) {
+            System.err.println("[CLIENT] Failed to close socket: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

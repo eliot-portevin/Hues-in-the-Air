@@ -16,7 +16,7 @@ public class ServerIn implements Runnable {
     private final BufferedReader in;
     private final Client client;
 
-    private Boolean running = true;
+    protected Boolean running = true;
 
     /**
      * Creates an instance of ServerConnection*/
@@ -60,16 +60,24 @@ public class ServerIn implements Runnable {
         }
     }
 
+    /**
+     * Client receives a command from the server and runs the appropriate method.
+     * <p>
+     *     The command is split into an array of strings. The first string is the protocol
+     *     and the rest of the strings are the arguments. See {@link ServerProtocol} for
+     *     possible protocols.
+     * </p>
+     * */
     private void protocolSwitch(String[] command) {
         ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
 
         switch (protocol) {
             case SEND_MESSAGE_SERVER:
-                System.out.println("[" + command[1] + "] " + command[2]);
+                System.out.println(command[1] + ": " + command[2]);
                 System.out.print("> ");
 
-            case REQUEST_USERNAME:
-                this.client.setUsername(command[0]);
+            case NO_USERNAME_SET:
+                this.client.setUsername(this.client.username);
         }
     }
 }

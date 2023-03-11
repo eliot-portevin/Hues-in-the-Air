@@ -21,7 +21,7 @@ public class ClientHandler implements Runnable {
     // The server: used to access the list of clients
     private final Server server;
 
-    private boolean running = true;
+    protected boolean running = true;
 
     // The client's username
     private String username;
@@ -65,8 +65,8 @@ public class ClientHandler implements Runnable {
      *     See {@link ServerProtocol#SEND_MESSAGE_SERVER}
      * </p>
      * */
-    private void sendMessageServer(String username, String messageContent) {
-        String message = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + username + ServerProtocol.SEPARATOR + messageContent;
+    private void sendMessageServer(String messageContent) {
+        String message = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + messageContent;
         for (ClientHandler client : this.server.getClientHandlers()) {
             client.out.println(message);
         }
@@ -77,7 +77,9 @@ public class ClientHandler implements Runnable {
      * */
     private String[] receiveFromClient() {
         try {
-            return this.in.readLine().split(ServerProtocol.SEPARATOR.toString());
+            String command = this.in.readLine();
+            System.out.println("[CLIENT_HANDLER] :" + command);
+            return command.split(ServerProtocol.SEPARATOR.toString());
         } catch (IOException e) {
             System.err.println("[CLIENT_HANDLER] " + this.username + " failed to receive message from client");
             System.out.println(Arrays.toString(e.getStackTrace()));
@@ -95,12 +97,14 @@ public class ClientHandler implements Runnable {
         ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
         switch (protocol) {
+            case LOGOUT -> this.server.removeClient(this);
+
             case SET_USERNAME -> {
-                System.out.println(String.join(" ", command));
+                System.out.println("\n" + this.username + " has set their username to " + command[1]);
                 this.username = command[1];
             }
 
-            case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[1], command[2]);
+            case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[2]);
         }
     }
 
@@ -109,6 +113,6 @@ public class ClientHandler implements Runnable {
      * */
     private void getClientUsername() {
         System.out.println("Requesting username from client");
-        this.out.println(ServerProtocol.REQUEST_USERNAME);
+        this.out.println(ServerProtocol.NO_USERNAME_SET);
     }
 }

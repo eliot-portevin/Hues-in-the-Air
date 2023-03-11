@@ -17,7 +17,7 @@ public class ServerOut implements Runnable{
     private final BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
     private final Client client;
 
-    private Boolean running = true;
+    protected Boolean running = true;
 
     /**
      * Creates an instance of ServerOut*/
@@ -40,15 +40,13 @@ public class ServerOut implements Runnable{
                 int firstSpace = command.indexOf(" ");
 
                 if (command.equals("quit")) {
-                    this.running = false;
+                    this.client.logout();
                 }
                 else if (firstSpace != -1) {
                     if (command.startsWith("say")) {
-                        System.out.println("Sending message to server: " + command.substring(firstSpace));
                         this.client.sendServerMessage(command.substring(firstSpace));
                     }
                     else if (command.startsWith("setusername")) {
-                        System.out.println("Setting username to: " + command.substring(firstSpace));
                         this.client.setUsername(command.substring(firstSpace));
                     }
                 }

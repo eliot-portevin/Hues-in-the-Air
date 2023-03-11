@@ -41,7 +41,12 @@ public enum ClientProtocol {
      *     Format: SEND_MESSAGE_SERVER¶username¶message
      * </p>
      * */
-    SEND_MESSAGE_SERVER(1);
+    SEND_MESSAGE_SERVER(1),
+
+    /**
+     * Client logs out
+     * */
+    LOGOUT(0);
 
     private final int numArgs;
 
