@@ -13,12 +13,14 @@ public class ServerOut implements Runnable{
     private final Socket serverSocket;
     private final PrintWriter out;
     private final BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+    private final Client client;
 
     /**
      * Creates an instance of ServerOut*/
-    public ServerOut(Socket serverSocket) throws IOException {
+    public ServerOut(Socket serverSocket, Client client) throws IOException {
         this.serverSocket = serverSocket;
         this.out = new PrintWriter(this.serverSocket.getOutputStream(), true);
+        this.client = client;
     }
 
     /**
@@ -44,5 +46,9 @@ public class ServerOut implements Runnable{
             System.err.println("[CLIENT] ServerOut: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    protected void sendToServer(String message) {
+        this.out.println(message);
     }
 }

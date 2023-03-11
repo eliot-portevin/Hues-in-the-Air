@@ -1,27 +1,35 @@
 package client;
 
-import java.io.PrintWriter;
+import server.ServerProtocol;
+
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 
 public class Client {
-
+    // Server info
     private static int SERVER_PORT;
     private static String SERVER_IP;
+
+    // Input and output streams
+    private ServerIn inputSocket;
+    private ServerOut outputSocket;
+    private Thread inputThread;
+    private Thread outputThread;
+
+    // Username
     private static String username;
 
-    public static void run(String[] args) throws IOException {
+    public void run(String[] args) throws IOException {
         start(args);
         Socket socket = new Socket(SERVER_IP, SERVER_PORT);
 
-        ServerIn input = new ServerIn(socket);
-        ServerOut output = new ServerOut(socket);
+        this.inputSocket = new ServerIn(socket, this);
+        this.outputSocket = new ServerOut(socket, this);
 
-        Thread inputThread = new Thread(input);
-        Thread outputThread = new Thread(output);
+        this.inputThread = new Thread(this.inputSocket);
+        this.outputThread = new Thread(this.outputSocket);
 
         inputThread.start();
         outputThread.start();
@@ -48,5 +56,14 @@ public class Client {
             System.err.println("Start the client with the following format: java Client <serverIP>:<serverPort>");
         }
 
+    }
+
+    private void sendToServer(String[] message) {
+        this.outputSocket.sendToServer(String.join(ServerProtocol.SEPARATOR.toString(), message));
+    }
+
+    protected void sendUsername() {
+        String[] message = {ServerProtocol.CHANGE_USERNAME_REQUEST.toString(), username};
+        this.sendToServer(message);
     }
 }

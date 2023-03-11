@@ -1,5 +1,7 @@
 package server;
 
+import client.ClientProtocol;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +15,8 @@ public class ClientHandler implements Runnable {
     private final BufferedReader in;
     private final PrintWriter out;
     private final Server server;
+
+    private String username;
 
     /**
      * Is in charge of a single client.
