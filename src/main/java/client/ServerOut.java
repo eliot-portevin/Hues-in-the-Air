@@ -1,5 +1,7 @@
 package client;
 
+import server.ServerProtocol;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +17,8 @@ public class ServerOut implements Runnable{
     private final BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
     private final Client client;
 
+    private Boolean running = true;
+
     /**
      * Creates an instance of ServerOut*/
     public ServerOut(Socket serverSocket, Client client) throws IOException {
@@ -29,7 +33,7 @@ public class ServerOut implements Runnable{
     @Override
     public void run() {
         try {
-            while(true) {
+            while(running) {
                 System.out.print("> ");
                 String command = this.keyboard.readLine();
 
@@ -37,6 +41,9 @@ public class ServerOut implements Runnable{
                     this.out.println(command);
                     this.serverSocket.close();
                     break;
+                }
+                else if (command.startsWith("say")) {
+                    sendServerMessage(command.substring(4));
                 }
                 else {
                     this.out.println(command);
@@ -46,6 +53,11 @@ public class ServerOut implements Runnable{
             System.err.println("[CLIENT] ServerOut: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void sendServerMessage(String message) {
+        String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.client.getUsername() + ServerProtocol.SEPARATOR + message;
+        this.sendToServer(command);
     }
 
     protected void sendToServer(String message) {

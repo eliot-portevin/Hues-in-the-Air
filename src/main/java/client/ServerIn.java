@@ -16,6 +16,8 @@ public class ServerIn implements Runnable {
     private final BufferedReader in;
     private final Client client;
 
+    private Boolean running = true;
+
     /**
      * Creates an instance of ServerConnection*/
     public ServerIn(Socket serverSocket, Client client) throws IOException {
@@ -30,20 +32,36 @@ public class ServerIn implements Runnable {
      */
     @Override
     public void run() {
+        while(running) {
+            String[] command = this.receiveFromServer();
+            protocolSwitch(command);
+        }
         try {
-            while(true) {
-                String serverResponse = in.readLine();
-                System.out.println("\n[SERVER] " + serverResponse);
-            }
+            this.serverSocket.close();
+            this.in.close();
         } catch (IOException e) {
-            System.err.println("\n[CLIENT] ServerIn: " + e.getMessage());
+            System.err.println("[CLIENT] Failed to close serverSocket and input stream: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void protocolSwitch(String[] serverMessage) {
-        ServerProtocol protocol = ServerProtocol.valueOf(serverMessage[0]);
+    private String[] receiveFromServer() {
+        try {
+            return this.in.readLine().split(ServerProtocol.SEPARATOR.toString());
+        } catch (IOException e) {
+            System.err.println("[CLIENT] failed to receive message from server: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void protocolSwitch(String[] command) {
+        ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
+
         switch (protocol) {
+            case SEND_MESSAGE_SERVER:
+                System.out.println("[" + command[1] + "] " + command[2]);
+
             case REQUEST_USERNAME:
                 this.client.sendUsername();
         }

@@ -11,6 +11,7 @@ public class Client {
     // Server info
     private static int SERVER_PORT;
     private static String SERVER_IP;
+    private Socket socket;
 
     // Input and output streams
     private ServerIn inputSocket;
@@ -19,11 +20,11 @@ public class Client {
     private Thread outputThread;
 
     // Username
-    private static String username;
+    private static String username = System.getProperty("user.name");
 
     public void run(String[] args) throws IOException {
         start(args);
-        Socket socket = new Socket(SERVER_IP, SERVER_PORT);
+        this.socket = new Socket(SERVER_IP, SERVER_PORT);
 
         this.inputSocket = new ServerIn(socket, this);
         this.outputSocket = new ServerOut(socket, this);
@@ -63,7 +64,16 @@ public class Client {
     }
 
     protected void sendUsername() {
-        String[] message = {ServerProtocol.CHANGE_USERNAME_REQUEST.toString(), username};
+        String[] message = {ClientProtocol.SET_USERNAME.toString(), username};
         this.sendToServer(message);
+    }
+
+    protected void sendServerMessage(String message) {
+        String[] messageArray = {ServerProtocol.SEND_MESSAGE_SERVER.toString(), message};
+        this.sendToServer(messageArray);
+    }
+
+    protected String getUsername() {
+        return username;
     }
 }

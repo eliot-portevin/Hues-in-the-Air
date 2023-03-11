@@ -16,7 +16,8 @@ public enum ServerProtocol {
      *     This is used to separate arguments in the protocol.
      * </p>
      * */
-    SEPARATOR(0) { public String toString() { return "£"; } },
+    SEPARATOR(0) {
+        public String toString() { return "¶"; } },
     /**
      * Request client username
      * */
@@ -25,36 +26,35 @@ public enum ServerProtocol {
     /**
      * Inform client that the username is already taken
      * */
-    USERNAME_TAKEN(0),
+    USERNAME_TAKEN(0) { public String toString() {return "USERNAME_TAKEN"; } },
 
     /**
      * Inform client that the username is valid
      * */
-    USERNAME_VALID(0),
+    USERNAME_VALID(0) { public String toString() {return "USERNAME_VALID"; } },
 
     /**
      * Send a chat message to a specific client
      * */
-    SEND_MESSAGE_CLIENT(2),
+    SEND_MESSAGE_CLIENT(2) { public String toString() {return "SEND_MESSAGE_CLIENT"; } },
 
     /**
      * Send a chat message to the whole server
      * */
-    SEND_MESSAGE_SERVER(1),
+    SEND_MESSAGE_SERVER(2) { public String toString() {return "SEND_MESSAGE_SERVER"; } },
 
     /**
      * Send a chat message to a specific lobby
      * */
-    SEND_MESSAGE_LOBBY(2),
-
-    /**
-     * Client wants to change username
-     * */
-    CHANGE_USERNAME_REQUEST(1);
+    SEND_MESSAGE_LOBBY(2) { public String toString() {return "SEND_MESSAGE_LOBBY"; } };
 
     private final int numArgs;
 
     ServerProtocol(int numArgs) {
         this.numArgs = numArgs;
+    }
+
+    public int getNumArgs() {
+        return this.numArgs;
     }
 }
