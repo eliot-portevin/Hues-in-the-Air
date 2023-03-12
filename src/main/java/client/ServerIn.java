@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Arrays;
 
 import static shared.Encryption.decrypt;
 
@@ -72,14 +73,19 @@ public class ServerIn implements Runnable {
      * */
     private void protocolSwitch(String[] command) {
         ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
+        String[] args = Arrays.copyOfRange(command, 1, command.length);
 
         switch (protocol) {
             case SEND_MESSAGE_SERVER:
-                System.out.println(command[1] + ": " + command[2]);
-                System.out.print("> ");
+                System.out.println("[" + args[0] + "]: " + args[1]);
+                System.out.printf("> ");
 
             case NO_USERNAME_SET:
                 this.client.setUsername(this.client.username);
+
+            case SEND_MESSAGE_CLIENT:
+                System.out.println(String.join(" | ", command));
+                System.out.printf("> ");
         }
     }
 }

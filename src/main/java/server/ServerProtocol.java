@@ -1,6 +1,7 @@
 package server;
 
 import client.ClientProtocol;
+import com.sun.javafx.fxml.ParseTraceElement;
 
 /**
  * Server protocol for Hues in the Air
@@ -34,14 +35,22 @@ public enum ServerProtocol {
     USERNAME_VALID(0),
 
     /**
-     * A message is being sent to another client.
+     * No user with that username was found. Called from {@link ClientHandler}.
      * */
-    SEND_MESSAGE_CLIENT(2),
+    NO_USER_FOUND(0) { public String toString() { return "NO_USER_FOUND"; } },
+
+    /**
+     * A message is being sent to another client.
+     * <p>
+     *     Format: SEND_MESSAGE_CLIENT<Separator>sender.username<Separator>receiver.username<Separator>message
+     * </p>
+     * */
+    SEND_MESSAGE_CLIENT(3),
 
     /**
      * A message is being sent to the whole server.
      * <p>
-     *     Format: SEND_MESSAGE_SERVER¶username¶message
+     *     Format: SEND_MESSAGE_SERVER<Separator>username<Separator>message
      * </p>
      * */
     SEND_MESSAGE_SERVER(2),

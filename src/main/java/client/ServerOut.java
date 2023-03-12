@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Sends commands from client to server.*/
@@ -35,23 +36,13 @@ public class ServerOut implements Runnable{
         try {
             while(this.running) {
                 System.out.print("> ");
-                String command = decrypt(this.keyboard.readLine());
+                String command = this.keyboard.readLine();
 
-                int firstSpace = command.indexOf(" ");
-
-                if (command.equals("quit")) {
-                    this.client.logout();
-                }
-                else if (firstSpace != -1) {
-                    if (command.startsWith("say")) {
-                        this.client.sendServerMessage(command.substring(firstSpace));
-                    }
-                    else if (command.startsWith("set-username")) {
-                        this.client.setUsername(command.substring(firstSpace));
-                    }
+                if (command == null) {
+                    System.out.println("[CLIENT] Keyboard: command is null");
                 }
                 else {
-                    this.out.println(command);
+                    this.handleCommand(command);
                 }
             }
         } catch (IOException e) {
@@ -71,5 +62,38 @@ public class ServerOut implements Runnable{
 
     protected void sendToServer(String message) {
         this.out.println(encrypt(message));
+    }
+
+    private void handleCommand(String command) {
+        String commandSymbol = ChatCommands.COMMAND_SYMBOL.toString();
+
+        if (command.startsWith(commandSymbol)) {
+            int firstSpace = command.indexOf(" ");
+
+            try {
+                ChatCommands chatCommand = ChatCommands.valueOf(command.substring(1, firstSpace).replace(commandSymbol, ""));
+                String[] args = command.substring(firstSpace + 1).split(" ");
+
+                switch (chatCommand) {
+                    case exit : {
+                        this.client.logout();
+                    }
+                    case say: {
+                        this.client.sendMessageClient(args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                    }
+                    case set_username: {
+                        this.client.setUsername(args[0]);
+                    }
+                    case broadcast: {
+                        this.client.sendServerMessage(String.join(" ", args));
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println("[CLIENT] ServerOut: command " + command + " not recognized");
+            }
+        }
+        else {
+            System.out.println("[CLIENT] ServerOut: command does not start with command symbol");
+        }
     }
 }

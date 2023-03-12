@@ -83,4 +83,13 @@ public class Server implements Runnable {
     public ArrayList<ClientHandler> getClientHandlers() {
         return this.clientsHandlers;
     }
+
+    public ClientHandler getClientHandler(String username) {
+        for (ClientHandler client : this.clientsHandlers) {
+            if (client.getUsername().equals(username)) {
+                return client;
+            }
+        }
+        return null;
+    }
 }

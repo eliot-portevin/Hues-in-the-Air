@@ -2,10 +2,8 @@ package client;
 
 import server.ServerProtocol;
 
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
 
 public class Client {
@@ -104,5 +102,16 @@ public class Client {
             System.err.println("[CLIENT] Failed to close socket: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * This client wants to send a private message to another client.
+     * <p>
+     *     Protocol format: SEND_MESSAGE_CLIENT<SEPARATOR>sender.username<SEPARATOR>receiver.username<SEPARATOR>message
+     * </p>
+     * */
+    public void sendMessageClient(String receiverName, String message) {
+        String command = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + receiverName + ServerProtocol.SEPARATOR + message;
+        this.outputSocket.sendToServer(command);
     }
 }

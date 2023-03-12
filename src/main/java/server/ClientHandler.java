@@ -24,8 +24,9 @@ public class ClientHandler implements Runnable {
 
     protected boolean running = true;
 
-    // The client's username
+    // Client values
     private String username;
+    private int missedConnections = 0;
 
     /**
      * Is in charge of a single client.
@@ -48,8 +49,18 @@ public class ClientHandler implements Runnable {
     public void run() {
         while (this.running) {
             // Receive message, decrypt it and split it into an array
-            String[] command = decrypt(this.receiveFromClient()).split(ServerProtocol.SEPARATOR.toString());
-            this.protocolSwitch(command);
+            String message = this.receiveFromClient();
+            if (message == null) {
+                this.missedConnections++;
+                System.out.println("[CLIENT_HANDLER] " + this.username + " failed to receive message from client");
+            } else {
+                this.missedConnections = 0;
+                String[] command = decrypt(message).split(ServerProtocol.SEPARATOR.toString());
+                this.protocolSwitch(command);
+            }
+            if (this.missedConnections >= 3) {
+                this.running = false;
+            }
         }
         try {
             client.close();
@@ -70,6 +81,26 @@ public class ClientHandler implements Runnable {
         message = encrypt(message);
         for (ClientHandler client : this.server.getClientHandlers()) {
             client.out.println(message);
+        }
+    }
+
+    /**
+     * The client linked to this ClientHandler wants to send a message to another client on the server.
+     * <p>
+     *     See {@link ServerProtocol#SEND_MESSAGE_CLIENT}
+     * </p>
+     * */
+    private void sendMessageClient(String recipient, String messageContent) {
+        String message = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + this.username +
+                ServerProtocol.SEPARATOR + recipient + ServerProtocol.SEPARATOR + messageContent;
+
+        ClientHandler recipientHandler = this.server.getClientHandler(recipient);
+        if (recipientHandler != null) {
+            message = encrypt(message);
+            this.server.getClientHandler(recipient).out.println(message);
+        }
+        else {
+            this.out.println(encrypt(ServerProtocol.NO_USER_FOUND.toString()));
         }
     }
 
@@ -105,6 +136,8 @@ public class ClientHandler implements Runnable {
             }
 
             case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[2]);
+
+            case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], command[2]);
         }
     }
 
@@ -115,5 +148,9 @@ public class ClientHandler implements Runnable {
         // TODO Add Logger
         String message = encrypt(ServerProtocol.NO_USERNAME_SET.toString());
         this.out.println(message);
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 }
