@@ -78,14 +78,14 @@ public class ServerOut implements Runnable{
                     case exit : {
                         this.client.logout();
                     }
+                    case broadcast: {
+                        this.client.sendServerMessage(String.join(" ", args));
+                    }
                     case say: {
                         this.client.sendMessageClient(args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
                     }
                     case set_username: {
                         this.client.setUsername(args[0]);
-                    }
-                    case broadcast: {
-                        this.client.sendServerMessage(String.join(" ", args));
                     }
                 }
             } catch (IllegalArgumentException e) {

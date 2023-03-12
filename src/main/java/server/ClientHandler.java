@@ -137,7 +137,7 @@ public class ClientHandler implements Runnable {
 
             case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[2]);
 
-            case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], command[2]);
+            case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], String.join(" ", Arrays.copyOfRange(command, 2, command.length)));
         }
     }
 
