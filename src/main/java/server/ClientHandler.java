@@ -143,7 +143,6 @@ public class ClientHandler implements Runnable {
             }
 
             case SEND_MESSAGE_SERVER : {
-                System.out.println(String.join(", ", command));
                 this.sendMessageServer(command[1]);
                 break;
             }
