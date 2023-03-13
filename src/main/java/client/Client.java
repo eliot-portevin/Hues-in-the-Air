@@ -80,7 +80,7 @@ public class Client {
         this.username = username;
     }
 
-    protected void sendServerMessage(String message) {
+    protected void sendMessageServer(String message) {
         String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + message;
         this.outputSocket.sendToServer(command);
     }

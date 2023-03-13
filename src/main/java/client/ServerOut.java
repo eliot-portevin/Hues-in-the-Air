@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
 
 /**
  * Sends commands from client to server.*/
@@ -79,7 +78,7 @@ public class ServerOut implements Runnable{
                         this.client.logout();
                     }
                     case broadcast: {
-                        // do nothing
+                        this.client.sendMessageServer(String.join(" ", args));
                     }
                     case say: {
                         // do nothing

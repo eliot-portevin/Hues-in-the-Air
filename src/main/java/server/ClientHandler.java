@@ -76,9 +76,12 @@ public class ClientHandler implements Runnable {
      *     See {@link ServerProtocol#SEND_MESSAGE_SERVER}
      * </p>
      * */
-    private void sendMessageServer(String messageContent) {
-        String message = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + messageContent;
+    private void sendMessageServer(String message) {
+        String output = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username +
+                ServerProtocol.SEPARATOR + message;
+
         message = encrypt(message);
+
         for (ClientHandler client : this.server.getClientHandlers()) {
             client.out.println(message);
         }
@@ -138,7 +141,7 @@ public class ClientHandler implements Runnable {
             }
 
             case SEND_MESSAGE_SERVER : {
-                // Do nothing
+                this.sendMessageServer(command[2]);
             }
 
             case SEND_MESSAGE_CLIENT : {
