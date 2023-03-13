@@ -128,16 +128,23 @@ public class ClientHandler implements Runnable {
         ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
         switch (protocol) {
-            case LOGOUT -> this.server.removeClient(this);
+            case LOGOUT : {
+                this.server.removeClient(this);
+            }
 
-            case SET_USERNAME -> {
+            case SET_USERNAME : {
                 System.out.println("\n" + this.username + " has set their username to " + command[1]);
                 this.username = command[1];
             }
 
-            case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[2]);
+            case SEND_MESSAGE_SERVER : {
+                // Do nothing
+            }
 
-            case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], String.join(" ", Arrays.copyOfRange(command, 2, command.length)));
+            case SEND_MESSAGE_CLIENT : {
+                // Do nothing
+            }
+
         }
     }
 

@@ -77,15 +77,13 @@ public class ServerIn implements Runnable {
 
         switch (protocol) {
             case SEND_MESSAGE_SERVER:
-                System.out.println("[" + args[0] + "]: " + args[1]);
-                System.out.printf("> ");
+                // Do nothing
 
             case NO_USERNAME_SET:
                 this.client.setUsername(this.client.username);
 
             case SEND_MESSAGE_CLIENT:
-                System.out.println(String.join(" | ", command));
-                System.out.printf("> ");
+                // Do nothing
         }
     }
 }

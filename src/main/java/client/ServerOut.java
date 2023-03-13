@@ -79,10 +79,10 @@ public class ServerOut implements Runnable{
                         this.client.logout();
                     }
                     case broadcast: {
-                        this.client.sendServerMessage(String.join(" ", args));
+                        // do nothing
                     }
                     case say: {
-                        this.client.sendMessageClient(args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                        // do nothing
                     }
                     case set_username: {
                         this.client.setUsername(args[0]);
