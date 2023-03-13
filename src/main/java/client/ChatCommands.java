@@ -9,17 +9,17 @@ public enum ChatCommands {
     /**
      * Client wants to exit the program.
      * */
-    exit(0),
+    EXIT(0),
 
     /**
      * Client wants to set their username.
      * */
-    set_username(1),
+    SET_USERNAME(1),
 
     /**
      * Client wants to send private message to another client.
      * */
-    say(2),
+    WHISPER(2),
 
     /**
      * Client wants to send a message to whole server.
@@ -27,7 +27,7 @@ public enum ChatCommands {
      *     Protocol format: <COMMAND_SYMBOL>broadcast<SEPARATOR>message
      * </p>
      * */
-    broadcast(1);
+    BROADCAST(1);
 
     /**
      * Number of arguments that the command takes.

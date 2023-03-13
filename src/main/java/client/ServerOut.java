@@ -70,21 +70,25 @@ public class ServerOut implements Runnable{
             int firstSpace = command.indexOf(" ");
 
             try {
-                ChatCommands chatCommand = ChatCommands.valueOf(command.substring(1, firstSpace).replace(commandSymbol, ""));
+                ChatCommands chatCommand = ChatCommands.valueOf(command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
                 String[] args = command.substring(firstSpace + 1).split(" ");
 
                 switch (chatCommand) {
-                    case exit : {
+                    case EXIT: {
                         this.client.logout();
+                        break;
                     }
-                    case broadcast: {
+                    case BROADCAST: {
                         this.client.sendMessageServer(String.join(" ", args));
+                        break;
                     }
-                    case say: {
+                    case WHISPER: {
                         // do nothing
+                        break;
                     }
-                    case set_username: {
+                    case SET_USERNAME: {
                         this.client.setUsername(args[0]);
+                        break;
                     }
                 }
             } catch (IllegalArgumentException e) {

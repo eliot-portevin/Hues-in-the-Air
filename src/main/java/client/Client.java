@@ -76,12 +76,12 @@ public class Client {
 
     protected void setUsername(String username) {
         String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
-        this.outputSocket.sendToServer(command);
         this.username = username;
+        this.outputSocket.sendToServer(command);
     }
 
     protected void sendMessageServer(String message) {
-        String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + message;
+        String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + message;
         this.outputSocket.sendToServer(command);
     }
 

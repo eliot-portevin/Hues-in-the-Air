@@ -37,7 +37,7 @@ public class ClientHandler implements Runnable {
         this.out = new PrintWriter(client.getOutputStream(), true);
         this.server = server;
 
-        this.getClientUsername();
+        this.requestUsernameFromClient();
     }
     /**
      * Handles the client's input.
@@ -80,10 +80,10 @@ public class ClientHandler implements Runnable {
         String output = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username +
                 ServerProtocol.SEPARATOR + message;
 
-        message = encrypt(message);
+        output = encrypt(output);
 
         for (ClientHandler client : this.server.getClientHandlers()) {
-            client.out.println(message);
+            client.out.println(output);
         }
     }
 
@@ -133,19 +133,24 @@ public class ClientHandler implements Runnable {
         switch (protocol) {
             case LOGOUT : {
                 this.server.removeClient(this);
+                break;
             }
 
             case SET_USERNAME : {
-                System.out.println("\n" + this.username + " has set their username to " + command[1]);
+                System.out.println("[CLIENT_HANDLER] " + this.username + " has set their username to " + command[1]);
                 this.username = command[1];
+                break;
             }
 
             case SEND_MESSAGE_SERVER : {
-                this.sendMessageServer(command[2]);
+                System.out.println(String.join(", ", command));
+                this.sendMessageServer(command[1]);
+                break;
             }
 
             case SEND_MESSAGE_CLIENT : {
                 // Do nothing
+                break;
             }
 
         }
@@ -154,7 +159,7 @@ public class ClientHandler implements Runnable {
     /**
      * Requests the client's username upon connection.
      * */
-    private void getClientUsername() {
+    private void requestUsernameFromClient() {
         // TODO Add Logger
         String message = encrypt(ServerProtocol.NO_USERNAME_SET.toString());
         this.out.println(message);

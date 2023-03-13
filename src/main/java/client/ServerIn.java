@@ -73,17 +73,24 @@ public class ServerIn implements Runnable {
      * */
     private void protocolSwitch(String[] command) {
         ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
-        String[] args = Arrays.copyOfRange(command, 1, command.length);
 
         switch (protocol) {
-            case SEND_MESSAGE_SERVER:
-                System.out.println("[" + args[0] + "]: " + args[1]);
+            case SEND_MESSAGE_SERVER: {
+                System.out.println(command[1] + ": " + command[2]);
+                System.out.println("> ");
+                break;
+            }
 
-            case NO_USERNAME_SET:
+            case NO_USERNAME_SET: {
+                System.out.println(String.join(", ", command));
                 this.client.setUsername(this.client.username);
+                break;
+            }
 
-            case SEND_MESSAGE_CLIENT:
-                // Do nothing
+            case SEND_MESSAGE_CLIENT: {
+                System.out.println("Send message to: ");
+                break;
+            }
         }
     }
 }
