@@ -76,15 +76,9 @@ public class ServerIn implements Runnable {
 
         if (protocol.getNumArgs() == command.length - 1) {
             switch (protocol) {
-                case SEND_MESSAGE_SERVER -> {
-                    this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Public");
-                }
-                case NO_USERNAME_SET -> {
-                    this.client.setUsername(this.client.username);
-                }
-                case SEND_MESSAGE_CLIENT -> {
-                    this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Private");
-                }
+                case SEND_MESSAGE_SERVER -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Public");
+                case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
+                case SEND_MESSAGE_CLIENT -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Private");
             }
         }
     }

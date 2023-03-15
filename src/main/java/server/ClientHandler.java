@@ -133,18 +133,10 @@ public class ClientHandler implements Runnable {
 
         if (protocol.getNumArgs() == command.length - 1) {
             switch (protocol) {
-                case LOGOUT -> {
-                    this.server.removeClient(this);
-                }
-                case SET_USERNAME -> {
-                    this.setUsername(command[1]);
-                }
-                case SEND_MESSAGE_SERVER -> {
-                    this.sendMessageServer(command[1]);
-                }
-                case SEND_MESSAGE_CLIENT -> {
-                    this.sendMessageClient(command[1], command[2]);
-                }
+                case LOGOUT -> this.server.removeClient(this);
+                case SET_USERNAME -> this.setUsername(command[1]);
+                case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[1]);
+                case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], command[2]);
             }
         }
     }
