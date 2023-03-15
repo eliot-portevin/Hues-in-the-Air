@@ -8,9 +8,12 @@ public class Encryption {
      * Takes in a message and encrypts it.
      * */
     public static String encrypt(String message) {
-        int key = 100;
+        int key = 100; // key must be equal on server and client
         char[] chars = message.toCharArray();
         int[] arr = new int[chars.length];
+        /**
+         * Add key value to char value and make sure to properly loop
+         */
         for (int i=0;i<chars.length;i++) {
             arr[i] = chars[i];
             if (arr[i] + key > 127){
@@ -36,6 +39,9 @@ public class Encryption {
         int key = 100;
         char[] chars = message.toCharArray();
         int[] arr = new int[chars.length];
+        /**
+         * Subtracts key from char value and makes sure it's properly looped
+         */
         for (int i=0;i<chars.length;i++) {
             arr[i] = chars[i];
             if (arr[i] - key < 0){
