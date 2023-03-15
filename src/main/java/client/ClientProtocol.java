@@ -53,4 +53,8 @@ public enum ClientProtocol {
     ClientProtocol(int numArgs) {
         this.numArgs = numArgs;
     }
+
+    public int getNumArgs() {
+        return this.numArgs;
+    }
 }
