@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Arrays;
 
 import static shared.Encryption.decrypt;
 
@@ -75,15 +76,23 @@ public class ServerIn implements Runnable {
 
         switch (protocol) {
             case SEND_MESSAGE_SERVER -> {
-                System.out.println(command[1] + ": " + command[2]);
-                System.out.print("> ");
+                this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Public");
             }
             case NO_USERNAME_SET -> {
                 this.client.setUsername(this.client.username);
             }
             case SEND_MESSAGE_CLIENT -> {
-                System.out.print("Private_[" + command[1] + "]: " + command[2] + "\n> ");
+                this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Private");
             }
+        }
+    }
+
+    private void receiveMessage(String[] command, String privacy) {
+        if (command[0].equals(this.client.username)) {
+            System.out.printf("%s [%s]: %s\n> ", privacy, "You", command[1]);
+        }
+        else {
+            System.out.printf("%s [%s]: %s\n> ", privacy, command[0], command[1]);
         }
     }
 }
