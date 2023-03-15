@@ -11,15 +11,16 @@ public class Encryption {
         int key = 5;
         char[] chars = message.toCharArray();
         int[] arr = new int[chars.length];
-        for(int i=0;i<chars.length;i++) {
-            arr[i] = (int) chars[i];
+        for (int i=0;i<chars.length;i++) {
+            arr[i] = chars[i];
             arr[i] += key;
             chars[i] = (char) arr[i];
         }
-        message = "";
+        StringBuilder messageBuilder = new StringBuilder();
         for (char c : chars){
-            message += c;
+            messageBuilder.append(c);
         }
+        message = messageBuilder.toString();
         return message;
     }
     /**
@@ -29,15 +30,16 @@ public class Encryption {
         int key = 5;
         char[] chars = message.toCharArray();
         int[] arr = new int[chars.length];
-        for(int i=0;i<chars.length;i++) {
-            arr[i] = (int) chars[i];
+        for (int i=0;i<chars.length;i++) {
+            arr[i] = chars[i];
             arr[i] -= key;
             chars[i] = (char) arr[i];
         }
-        message = "";
+        StringBuilder messageBuilder = new StringBuilder();
         for (char c : chars){
-            message += c;
+            messageBuilder.append(c);
         }
+        message = messageBuilder.toString();
         return message;
     }
 }
