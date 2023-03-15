@@ -70,6 +70,11 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private void pong() {
+        String command = encrypt(ServerProtocol.PONG.toString());
+        this.out.println(command);
+    }
+
     /**
      * The client linked to this ClientHandler wants to send a message to all clients on the server.
      * <p>
@@ -137,6 +142,7 @@ public class ClientHandler implements Runnable {
                 case SET_USERNAME -> this.setUsername(command[1]);
                 case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[1]);
                 case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], command[2]);
+                case PING -> this.pong();
             }
         }
     }

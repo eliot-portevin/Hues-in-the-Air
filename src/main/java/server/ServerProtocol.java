@@ -58,7 +58,9 @@ public enum ServerProtocol {
     /**
      * A message is being sent to the lobby.
      * */
-    SEND_MESSAGE_LOBBY(2);
+    SEND_MESSAGE_LOBBY(2),
+
+    PONG(0);
 
     private final int numArgs;
 

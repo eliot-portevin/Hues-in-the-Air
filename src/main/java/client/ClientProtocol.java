@@ -46,7 +46,9 @@ public enum ClientProtocol {
     /**
      * Client logs out
      * */
-    LOGOUT(0);
+    LOGOUT(0),
+
+    PING(0);
 
     private final int numArgs;
 

@@ -37,6 +37,11 @@ public class Client {
         System.out.println("[CLIENT] Connection to server established");
     }
 
+    protected void ping() {
+        String command = ClientProtocol.PING.toString();
+        this.outputSocket.sendToServer(command);
+    }
+
     public static void start(String[] args) {
         System.out.println("Starting client...");
         String[] serverInfo = args[0].split(":");
