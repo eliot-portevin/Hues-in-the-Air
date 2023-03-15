@@ -101,6 +101,7 @@ public class ClientHandler implements Runnable {
         if (recipientHandler != null) {
             message = encrypt(message);
             this.server.getClientHandler(recipient).out.println(message);
+            this.out.println(message);
         }
         else {
             this.out.println(encrypt(ServerProtocol.NO_USER_FOUND.toString()));
@@ -131,27 +132,19 @@ public class ClientHandler implements Runnable {
         ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
         switch (protocol) {
-            case LOGOUT : {
+            case LOGOUT -> {
                 this.server.removeClient(this);
-                break;
             }
-
-            case SET_USERNAME : {
+            case SET_USERNAME -> {
                 System.out.println("[CLIENT_HANDLER] " + this.username + " has set their username to " + command[1]);
                 this.username = command[1];
-                break;
             }
-
-            case SEND_MESSAGE_SERVER : {
+            case SEND_MESSAGE_SERVER -> {
                 this.sendMessageServer(command[1]);
-                break;
             }
-
-            case SEND_MESSAGE_CLIENT : {
+            case SEND_MESSAGE_CLIENT -> {
                 this.sendMessageClient(command[1], command[2]);
-                break;
             }
-
         }
     }
 
