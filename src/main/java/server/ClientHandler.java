@@ -70,6 +70,11 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private void pong() {
+        String command = encrypt(ServerProtocol.PONG.toString());
+        this.out.println(command);
+    }
+
     /**
      * The client linked to this ClientHandler wants to send a message to all clients on the server.
      * <p>
@@ -95,12 +100,13 @@ public class ClientHandler implements Runnable {
      * */
     private void sendMessageClient(String recipient, String messageContent) {
         String message = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + this.username +
-                ServerProtocol.SEPARATOR + recipient + ServerProtocol.SEPARATOR + messageContent;
+                ServerProtocol.SEPARATOR + messageContent;
 
         ClientHandler recipientHandler = this.server.getClientHandler(recipient);
         if (recipientHandler != null) {
             message = encrypt(message);
             this.server.getClientHandler(recipient).out.println(message);
+            this.out.println(message);
         }
         else {
             this.out.println(encrypt(ServerProtocol.NO_USER_FOUND.toString()));
@@ -130,28 +136,14 @@ public class ClientHandler implements Runnable {
     private void protocolSwitch(String[] command) {
         ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
-        switch (protocol) {
-            case LOGOUT : {
-                this.server.removeClient(this);
-                break;
+        if (protocol.getNumArgs() == command.length - 1) {
+            switch (protocol) {
+                case LOGOUT -> this.server.removeClient(this);
+                case SET_USERNAME -> this.setUsername(command[1]);
+                case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[1]);
+                case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], command[2]);
+                case PING -> this.pong();
             }
-
-            case SET_USERNAME : {
-                System.out.println("[CLIENT_HANDLER] " + this.username + " has set their username to " + command[1]);
-                this.username = command[1];
-                break;
-            }
-
-            case SEND_MESSAGE_SERVER : {
-                this.sendMessageServer(command[1]);
-                break;
-            }
-
-            case SEND_MESSAGE_CLIENT : {
-                // Do nothing
-                break;
-            }
-
         }
     }
 
@@ -166,5 +158,25 @@ public class ClientHandler implements Runnable {
 
     public String getUsername() {
         return this.username;
+    }
+
+    public void setUsername(String username) {
+        if (this.username != null) {
+            if (this.username.equals(username)) {
+                return;
+            }
+        }
+
+        ClientHandler client = this.server.getClientHandler(username);
+
+        if (client == null) {
+            System.out.printf("%s changed their username to %s.\n", this.username, username);
+            this.username = username;
+        }
+        else {
+            String[] suffixes = {" the Great", " the Wise", " the Brave", " the Strong", " the Mighty", " the Magnificent"};
+            int random = (int) (Math.random() * suffixes.length);
+            setUsername(username + suffixes[random]);
+        }
     }
 }

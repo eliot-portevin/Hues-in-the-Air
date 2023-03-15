@@ -74,22 +74,22 @@ public class ServerIn implements Runnable {
     private void protocolSwitch(String[] command) {
         ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
 
-        switch (protocol) {
-            case SEND_MESSAGE_SERVER: {
-                System.out.println(command[1] + ": " + command[2]);
-                System.out.print("> ");
-                break;
+        if (protocol.getNumArgs() == command.length - 1) {
+            switch (protocol) {
+                case SEND_MESSAGE_SERVER -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Public");
+                case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
+                case SEND_MESSAGE_CLIENT -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Private");
+                case PONG -> this.client.ping();
             }
+        }
+    }
 
-            case NO_USERNAME_SET: {
-                this.client.setUsername(this.client.username);
-                break;
-            }
-
-            case SEND_MESSAGE_CLIENT: {
-                System.out.println("Send message to: ");
-                break;
-            }
+    private void receiveMessage(String[] command, String privacy) {
+        if (command[0].equals(this.client.username)) {
+            System.out.printf("%s [%s]: %s\n> ", privacy, "You", command[1]);
+        }
+        else {
+            System.out.printf("%s [%s]: %s\n> ", privacy, command[0], command[1]);
         }
     }
 }
