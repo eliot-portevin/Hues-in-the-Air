@@ -95,7 +95,7 @@ public class ClientHandler implements Runnable {
      * */
     private void sendMessageClient(String recipient, String messageContent) {
         String message = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + this.username +
-                ServerProtocol.SEPARATOR + recipient + ServerProtocol.SEPARATOR + messageContent;
+                ServerProtocol.SEPARATOR + messageContent;
 
         ClientHandler recipientHandler = this.server.getClientHandler(recipient);
         if (recipientHandler != null) {
@@ -148,7 +148,7 @@ public class ClientHandler implements Runnable {
             }
 
             case SEND_MESSAGE_CLIENT : {
-                // Do nothing
+                this.sendMessageClient(command[1], command[2]);
                 break;
             }
 

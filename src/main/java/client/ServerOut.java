@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Sends commands from client to server.*/
@@ -74,21 +75,17 @@ public class ServerOut implements Runnable{
                 String[] args = command.substring(firstSpace + 1).split(" ");
 
                 switch (chatCommand) {
-                    case EXIT: {
+                    case EXIT -> {
                         this.client.logout();
-                        break;
                     }
-                    case BROADCAST: {
+                    case BROADCAST -> {
                         this.client.sendMessageServer(String.join(" ", args));
-                        break;
                     }
-                    case WHISPER: {
-                        // do nothing
-                        break;
+                    case WHISPER -> {
+                        this.client.sendMessageClient(args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
                     }
-                    case SET_USERNAME: {
+                    case SET_USERNAME -> {
                         this.client.setUsername(args[0]);
-                        break;
                     }
                 }
             } catch (IllegalArgumentException e) {

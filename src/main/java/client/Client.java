@@ -85,6 +85,17 @@ public class Client {
         this.outputSocket.sendToServer(command);
     }
 
+    /**
+     * This client wants to send a private message to another client.
+     * <p>
+     *     Protocol format: SEND_MESSAGE_CLIENT<SEPARATOR>recipient.username<SEPARATOR>message
+     * </p>
+     * */
+    public void sendMessageClient(String recipient, String message) {
+        String command = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + recipient + ServerProtocol.SEPARATOR + message;
+        this.outputSocket.sendToServer(command);
+    }
+
     protected void logout() {
         // Communicate with server that client is logging out
         // TODO: solve SocketException when logging out
@@ -102,16 +113,5 @@ public class Client {
             System.err.println("[CLIENT] Failed to close socket: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    /**
-     * This client wants to send a private message to another client.
-     * <p>
-     *     Protocol format: SEND_MESSAGE_CLIENT<SEPARATOR>sender.username<SEPARATOR>receiver.username<SEPARATOR>message
-     * </p>
-     * */
-    public void sendMessageClient(String receiverName, String message) {
-        String command = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + this.username + ServerProtocol.SEPARATOR + receiverName + ServerProtocol.SEPARATOR + message;
-        this.outputSocket.sendToServer(command);
     }
 }
