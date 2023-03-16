@@ -71,8 +71,9 @@ public class ClientHandler implements Runnable {
     }
 
     private void pong() {
-        String command = encrypt(ServerProtocol.PONG.toString());
-        this.out.println(command);
+        System.out.println("pong");
+        String command = ServerProtocol.PONG.toString();
+        this.out.println(encrypt(command));
     }
 
     /**

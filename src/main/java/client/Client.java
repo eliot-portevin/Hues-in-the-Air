@@ -4,9 +4,18 @@ import server.ServerProtocol;
 
 import java.net.Socket;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class Client {
+
+    // Status of client
+    boolean clientConnected = true;
+    private ScheduledExecutorService executor;
+    int noAnswerCounter = 0;
+
     // Server info
     private static int SERVER_PORT;
     private static String SERVER_IP;
@@ -17,6 +26,7 @@ public class Client {
     private ServerOut outputSocket;
     private Thread inputThread;
     private Thread outputThread;
+    private Thread pingSender;
 
     // Username
     protected String username = System.getProperty("user.name");
@@ -25,19 +35,25 @@ public class Client {
         start(args);
         this.connectToServer();
 
+        String serverIp = args[0].split(":")[0];
+
         this.inputSocket = new ServerIn(socket, this);
         this.outputSocket = new ServerOut(socket, this);
 
         this.inputThread = new Thread(this.inputSocket);
         this.outputThread = new Thread(this.outputSocket);
+        this.pingSender = new Thread(new PingSender(this));
 
         inputThread.start();
         outputThread.start();
+        this.pingSender.run();
+
 
         System.out.println("[CLIENT] Connection to server established");
     }
 
     protected void ping() {
+        System.out.println("ping");
         String command = ClientProtocol.PING.toString();
         this.outputSocket.sendToServer(command);
     }
@@ -77,6 +93,14 @@ public class Client {
                 e.printStackTrace();
             }
         }
+
+        if(this.socket.isConnected()) {
+            this.clientConnected = true;
+        }
+    }
+
+    public void reconnect() {
+        this.connectToServer();
     }
 
     protected void setUsername(String username) {

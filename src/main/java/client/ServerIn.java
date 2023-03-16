@@ -79,9 +79,14 @@ public class ServerIn implements Runnable {
                 case SEND_MESSAGE_SERVER -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Public");
                 case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
                 case SEND_MESSAGE_CLIENT -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Private");
-                case PONG -> this.client.ping();
+                case PONG -> this.resetClientStatus();
             }
         }
+    }
+
+    private void resetClientStatus() {
+        this.client.clientConnected = true;
+        this.client.noAnswerCounter = 0;
     }
 
     private void receiveMessage(String[] command, String privacy) {
