@@ -1,11 +1,8 @@
 package client;
 
-import java.util.concurrent.ScheduledExecutorService;
 
 public class PingSender implements Runnable{
 
-    String ip;
-    static ScheduledExecutorService executor;
     Client client;
     Boolean running = true;
 

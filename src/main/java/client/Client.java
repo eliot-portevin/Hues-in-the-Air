@@ -4,16 +4,12 @@ import server.ServerProtocol;
 
 import java.net.Socket;
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 public class Client {
 
     // Status of client
     boolean clientConnected = true;
-    private ScheduledExecutorService executor;
     int noAnswerCounter = 0;
 
     // Server info
