@@ -70,22 +70,20 @@ public class ServerOut implements Runnable{
         if (command.startsWith(commandSymbol)) {
             int firstSpace = command.indexOf(" ");
 
-            try {
-                ClientProtocol protocol = ClientProtocol.valueOf(command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
-                String[] args = command.substring(firstSpace + 1).split(" ");
+            ClientProtocol protocol = ClientProtocol.valueOf(command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
+            String[] args = command.substring(firstSpace + 1).split(" ");
 
-                switch (protocol) {
-                    case LOGOUT -> this.client.logout();
-                    case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
-                    case WHISPER -> this.client.sendMessageClient(args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-                    case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby(String.join(" ", args));
-                    case SET_USERNAME -> this.client.setUsername(args[0]);
-                    case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
-                    case JOIN_LOBBY -> this.client.joinLobby(args[0], args[1]);
+            switch (protocol) {
+                case LOGOUT -> this.client.logout();
+                case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
+                case WHISPER -> this.client.sendMessageClient(args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby(String.join(" ", args));
+                case SET_USERNAME -> this.client.setUsername(args[0]);
+                case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
+                case JOIN_LOBBY -> this.client.joinLobby(args[0], args[1]);
+
+                default -> System.out.println("[CLIENT] ServerOut: command " + command + " not recognized");
                 }
-            } catch (IllegalArgumentException e) {
-                System.out.println("[CLIENT] ServerOut: command " + command + " not recognized");
-            }
         }
         else {
             System.out.println("[CLIENT] ServerOut: command does not start with command symbol");

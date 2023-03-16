@@ -156,6 +156,8 @@ public class ClientHandler implements Runnable {
                 case PING -> this.pong();
                 case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
                 case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
+
+                default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
             }
         }
     }
