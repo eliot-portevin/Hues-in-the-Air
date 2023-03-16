@@ -22,7 +22,7 @@ public enum ClientProtocol {
     /**
      * Send a chat message to lobby
      * <p>
-     *     Format: SEND_MESSAGE_LOBBY<Separator>username<Separator>message
+     *     Format: SEND_MESSAGE_LOBBY<Separator>message
      * </p>
      * */
     SEND_MESSAGE_LOBBY(1),
@@ -33,7 +33,7 @@ public enum ClientProtocol {
      *     Protocol format: SEND_MESSAGE_CLIENT<SEPARATOR>receiver.username<SEPARATOR>message
      * </p>
      * */
-    SEND_MESSAGE_CLIENT(2),
+    WHISPER(2),
 
     /**
      * Send a chat message to the whole server
@@ -41,12 +41,28 @@ public enum ClientProtocol {
      *     Format: SEND_MESSAGE_SERVER<Separator>username<Separator>message
      * </p>
      * */
-    SEND_MESSAGE_SERVER(1),
+    BROADCAST(1),
 
     /**
-     * Client logs out
+     * Client is exitting the program.
      * */
     LOGOUT(0),
+
+    /**
+     * Client wants to join a lobby
+     * <p>
+     *     Format: JOIN_LOBBY<Separator>lobbyName<Separator>password
+     * </p>
+     */
+    JOIN_LOBBY(2),
+
+    /**
+     * Client wants to create a lobby
+     * <p>
+     *     Format: CREATE_LOBBY<Separator>lobbyName<Separator>password
+     * </p>
+     */
+    CREATE_LOBBY(2),
 
     PING(0);
 

@@ -71,14 +71,16 @@ public class ServerOut implements Runnable{
             int firstSpace = command.indexOf(" ");
 
             try {
-                ChatCommands chatCommand = ChatCommands.valueOf(command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
+                ClientProtocol protocol = ClientProtocol.valueOf(command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
                 String[] args = command.substring(firstSpace + 1).split(" ");
 
-                switch (chatCommand) {
-                    case EXIT -> this.client.logout();
+                switch (protocol) {
+                    case LOGOUT -> this.client.logout();
                     case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
                     case WHISPER -> this.client.sendMessageClient(args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
                     case SET_USERNAME -> this.client.setUsername(args[0]);
+                    case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
+                    case JOIN_LOBBY -> this.client.joinLobby(args[0], args[1]);
                 }
             } catch (IllegalArgumentException e) {
                 System.out.println("[CLIENT] ServerOut: command " + command + " not recognized");

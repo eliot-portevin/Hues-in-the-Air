@@ -138,4 +138,14 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    protected void createLobby(String name, String password) {
+        String command = ClientProtocol.CREATE_LOBBY.toString() + ServerProtocol.SEPARATOR + name + ServerProtocol.SEPARATOR + password;
+        this.outputSocket.sendToServer(command);
+    }
+
+    public void joinLobby(String name, String password) {
+        String command = ClientProtocol.JOIN_LOBBY.toString() + ServerProtocol.SEPARATOR + name + ServerProtocol.SEPARATOR + password;
+        this.outputSocket.sendToServer(command);
+    }
 }

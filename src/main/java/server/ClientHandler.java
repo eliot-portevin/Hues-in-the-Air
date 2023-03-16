@@ -26,6 +26,7 @@ public class ClientHandler implements Runnable {
 
     // Client values
     private String username;
+    private String lobby_name;
     private int missedConnections = 0;
 
     /**
@@ -140,9 +141,11 @@ public class ClientHandler implements Runnable {
             switch (protocol) {
                 case LOGOUT -> this.server.removeClient(this);
                 case SET_USERNAME -> this.setUsername(command[1]);
-                case SEND_MESSAGE_SERVER -> this.sendMessageServer(command[1]);
-                case SEND_MESSAGE_CLIENT -> this.sendMessageClient(command[1], command[2]);
+                case BROADCAST -> this.sendMessageServer(command[1]);
+                case WHISPER -> this.sendMessageClient(command[1], command[2]);
                 case PING -> this.pong();
+                case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
+                case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
             }
         }
     }
@@ -178,5 +181,10 @@ public class ClientHandler implements Runnable {
             int random = (int) (Math.random() * suffixes.length);
             setUsername(username + suffixes[random]);
         }
+    }
+
+    public void enterLobby(String lobbyName) {
+        this.lobby_name = lobbyName;
+        System.out.println(this.username + " entered lobby " + lobbyName);
     }
 }

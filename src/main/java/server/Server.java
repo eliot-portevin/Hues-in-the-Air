@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Server implements Runnable {
 
@@ -11,6 +12,7 @@ public class Server implements Runnable {
 
     private final ArrayList<ClientHandler> clientsHandlers = new ArrayList<>();
     private final ArrayList<Thread> clientThreads = new ArrayList<>();
+    private final HashMap<String, Lobby> lobbies = new HashMap<>();
 
     private ServerSocket listener;
 
@@ -93,5 +95,27 @@ public class Server implements Runnable {
             }
         }
         return null;
+    }
+
+    public void createLobby(String lobbyName, String password, ClientHandler client) {
+        for (String lobby : this.lobbies.keySet()) {
+            if (lobby.equals(lobbyName)) {
+                // Lobby already exists
+                return;
+            }
+        }
+
+        this.lobbies.put(lobbyName, new Lobby(lobbyName, password));
+        this.lobbies.get(lobbyName).addClient(client, password);
+    }
+
+    public void joinLobby(String lobbyName, String password, ClientHandler client) {
+        for (String lobby : this.lobbies.keySet()) {
+            if (lobby.equals(lobbyName)) {
+                this.lobbies.get(lobbyName).addClient(client, password);
+                return;
+            }
+        }
+        // Lobby does not exist
     }
 }
