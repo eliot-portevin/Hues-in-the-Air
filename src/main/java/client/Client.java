@@ -49,7 +49,6 @@ public class Client {
     }
 
     protected void ping() {
-        System.out.println("ping");
         String command = ClientProtocol.PING.toString();
         this.outputSocket.sendToServer(command);
     }
