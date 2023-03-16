@@ -17,7 +17,7 @@ public class Lobby {
         if (clientPwd.equals(this.password)) {
             if (this.getNumPlayers() < 4) {
                 this.clients.add(client);
-                client.enterLobby(this.name);
+                client.enterLobby(this);
             }
         }
     }
@@ -37,5 +37,9 @@ public class Lobby {
 
     public int getNumPlayers() {
         return this.clients.size();
+    }
+
+    public ArrayList<ClientHandler> getClients() {
+        return this.clients;
     }
 }

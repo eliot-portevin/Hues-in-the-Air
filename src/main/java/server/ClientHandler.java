@@ -26,7 +26,7 @@ public class ClientHandler implements Runnable {
 
     // Client values
     private String username;
-    private String lobby_name;
+    private Lobby lobby;
     private int missedConnections = 0;
 
     /**
@@ -114,6 +114,15 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private void sendMessageLobby(String message) {
+        String command = ServerProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + this.username +
+                ServerProtocol.SEPARATOR + message;
+
+        for (ClientHandler client : this.lobby.getClients()) {
+            client.out.println(encrypt(command));
+        }
+    }
+
     /**
      * Receives commands from the client.
      * */
@@ -143,6 +152,7 @@ public class ClientHandler implements Runnable {
                 case SET_USERNAME -> this.setUsername(command[1]);
                 case BROADCAST -> this.sendMessageServer(command[1]);
                 case WHISPER -> this.sendMessageClient(command[1], command[2]);
+                case SEND_MESSAGE_LOBBY -> this.sendMessageLobby(command[1]);
                 case PING -> this.pong();
                 case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
                 case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
@@ -183,8 +193,8 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void enterLobby(String lobbyName) {
-        this.lobby_name = lobbyName;
-        System.out.println(this.username + " entered lobby " + lobbyName);
+    public void enterLobby(Lobby lobby) {
+        this.lobby = lobby;
+        System.out.println(this.username + " entered lobby " + lobby.getName());
     }
 }

@@ -120,6 +120,11 @@ public class Client {
         this.outputSocket.sendToServer(command);
     }
 
+    public void sendMessageLobby(String message) {
+        String command = ClientProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + message;
+        this.outputSocket.sendToServer(command);
+    }
+
     protected void logout() {
         // Communicate with server that client is logging out
         // TODO: solve SocketException when logging out
