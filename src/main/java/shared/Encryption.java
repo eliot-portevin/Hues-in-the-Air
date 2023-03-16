@@ -8,13 +8,13 @@ public class Encryption {
      * Takes in a message and encrypts it.
      * */
     public static String encrypt(String message) {
-        /*int key = 100; // key must be equal on server and client
+        /*int key = 5; // key must be equal on server and client
         char[] chars = message.toCharArray();
-        int[] arr = new int[chars.length];
-        *//**
+        int[] arr = new int[chars.length];*/
+        /**
          * Add key value to char value and make sure to properly loop
-         *//*
-        for (int i=0;i<chars.length;i++) {
+         */
+        /*for (int i=0; i<chars.length; i++) {
             arr[i] = chars[i];
             if (arr[i] + key > 127){
                 arr[i] = (arr[i] + key)%127;
@@ -36,7 +36,7 @@ public class Encryption {
      * Takes in a message and decrypts it.
      * */
     public static String decrypt(String message) {
-        /*int key = 100;
+        /*int key = 5;
         char[] chars = message.toCharArray();
         int[] arr = new int[chars.length];*/
         /**
