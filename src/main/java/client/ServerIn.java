@@ -81,6 +81,7 @@ public class ServerIn implements Runnable {
                 case WHISPER -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Private");
                 case SEND_MESSAGE_LOBBY -> this.receiveMessage(Arrays.copyOfRange(command, 1, command.length), "Lobby");
                 case PONG -> this.resetClientStatus();
+                case USERNAME_SET_TO -> this.client.username = command[1];
 
                 default -> System.out.println("[CLIENT] ServerIn: Unknown protocol: " + protocol);
             }

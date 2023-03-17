@@ -26,17 +26,12 @@ public enum ServerProtocol {
     /**
      * Inform client that the username is already taken
      * */
-    USERNAME_TAKEN(0),
-
-    /**
-     * Inform client that the username is valid
-     * */
-    USERNAME_VALID(0),
+    USERNAME_SET_TO(1),
 
     /**
      * No user with that username was found. Called from {@link ClientHandler}.
      * */
-    NO_USER_FOUND(0) { public String toString() { return "NO_USER_FOUND"; } },
+    NO_USER_FOUND(1) { public String toString() { return "NO_USER_FOUND"; } },
 
     /**
      * A message is being sent to another client.

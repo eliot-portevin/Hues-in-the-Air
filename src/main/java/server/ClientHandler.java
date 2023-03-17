@@ -99,18 +99,18 @@ public class ClientHandler implements Runnable {
      *     See {@link ServerProtocol#WHISPER}
      * </p>
      * */
-    private void sendMessageClient(String recipient, String messageContent) {
-        String message = ServerProtocol.WHISPER.toString() + ServerProtocol.SEPARATOR + this.username +
-                ServerProtocol.SEPARATOR + messageContent;
+    private void sendMessageClient(String recipient, String message) {
+        String output = ServerProtocol.WHISPER.toString() + ServerProtocol.SEPARATOR + this.username +
+                ServerProtocol.SEPARATOR + message;
 
         ClientHandler recipientHandler = this.server.getClientHandler(recipient);
         if (recipientHandler != null) {
-            message = encrypt(message);
-            this.server.getClientHandler(recipient).out.println(message);
-            this.out.println(message);
+            output = encrypt(output);
+            this.server.getClientHandler(recipient).out.println(output);
+            this.out.println(output);
         }
         else {
-            this.out.println(encrypt(ServerProtocol.NO_USER_FOUND.toString()));
+            this.out.println(encrypt(ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient));
         }
     }
 
@@ -187,11 +187,14 @@ public class ClientHandler implements Runnable {
         if (client == null) {
             System.out.printf("%s changed their username to %s.\n", this.username, username);
             this.username = username;
+            String message = ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
+            this.out.println(message);
         }
         else {
             String[] suffixes = {" the Great", " the Wise", " the Brave", " the Strong", " the Mighty", " the Magnificent"};
             int random = (int) (Math.random() * suffixes.length);
-            setUsername(username + suffixes[random]);
+            String output = username + suffixes[random];
+            setUsername(output.replaceAll(" ", "_"));
         }
     }
 
