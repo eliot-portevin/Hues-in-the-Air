@@ -1,63 +1,31 @@
 package shared;
 
-/**
- * Called by client and server to encrypt and decrypt messages.
- * */
+/** Called by client and server to encrypt and decrypt messages. */
 public class Encryption {
-    /**
-     * Takes in a message and encrypts it.
-     * */
-    public static String encrypt(String message) {
-        /*int key = 5; // key must be equal on server and client
-        char[] chars = message.toCharArray();
-        int[] arr = new int[chars.length];*/
-        /**
-         * Add key value to char value and make sure to properly loop
-         */
-        /*for (int i=0; i<chars.length; i++) {
-            arr[i] = chars[i];
-            if (arr[i] + key > 127){
-                arr[i] = (arr[i] + key)%127;
-                chars[i] = (char) arr[i];
-            }
-            else {
-                arr[i] += key;
-                chars[i] = (char) arr[i];
-            }
-        }
-        StringBuilder messageBuilder = new StringBuilder();
-        for (char c : chars){
-            messageBuilder.append(c);
-        }
-        message = messageBuilder.toString();*/
-        return message;
+
+  public static String encrypt(String message) {
+    return shifter(message, 5);
+  }
+
+  public static String decrypt(String message) {
+    return shifter(message, -5);
+  }
+
+  /**
+   * Iterates through the message and shifts each character by the shift value. This rudimentary
+   * encryption method is known as the Caesar cipher (see
+   * https://en.wikipedia.org/wiki/Caesar_cipher).
+   *
+   * @param message
+   * @param shift
+   * @return
+   */
+  public static String shifter(String message, int shift) {
+    char[] chars = message.toCharArray();
+
+    for (int i = 0; i < chars.length; i++) {
+      chars[i] = (char) ((chars[i] + shift + 127) % 127);
     }
-    /**
-     * Takes in a message and decrypts it.
-     * */
-    public static String decrypt(String message) {
-        /*int key = 5;
-        char[] chars = message.toCharArray();
-        int[] arr = new int[chars.length];*/
-        /**
-         * Subtracts key from char value and makes sure it's properly looped
-         */
-        /*for (int i=0;i<chars.length;i++) {
-            arr[i] = chars[i];
-            if (arr[i] - key < 0){
-                arr[i] = (1270000+((arr[i] - key)))%127;
-                chars[i] = (char) arr[i];
-            }
-            else {
-                arr[i] -= key;
-                chars[i] = (char) arr[i];
-            }
-        }
-        StringBuilder messageBuilder = new StringBuilder();
-        for (char c : chars){
-            messageBuilder.append(c);
-        }
-        message = messageBuilder.toString();*/
-        return message;
-    }
+    return new String(chars);
+  }
 }
