@@ -110,9 +110,10 @@ public class ClientHandler implements Runnable {
     ClientHandler recipientHandler = this.server.getClientHandler(recipient);
     if (recipientHandler != null) {
       output = encrypt(output);
-      this.server.getClientHandler(recipient).out.println(output);
+      recipientHandler.out.println(output);
       this.out.println(output);
     } else {
+      System.out.println("Didn't find the user");
       this.out.println(
           encrypt(ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient));
     }

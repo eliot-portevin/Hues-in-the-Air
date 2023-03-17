@@ -26,19 +26,15 @@ public enum ServerProtocol {
   USERNAME_SET_TO(1),
 
   /** No user with that username was found. Called from {@link ClientHandler}. */
-  NO_USER_FOUND(1) {
-    public String toString() {
-      return "NO_USER_FOUND";
-    }
-  },
+  NO_USER_FOUND(1),
 
   /**
    * A message is being sent to another client.
    *
    * <p>Format:
-   * SEND_MESSAGE_CLIENT<Separator>sender.username<Separator>receiver.username<Separator>message
+   * WHISPER<Separator>sender.username<Separator>message
    */
-  WHISPER(3),
+  WHISPER(2),
 
   /**
    * A message is being sent to the whole server.

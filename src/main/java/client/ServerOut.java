@@ -86,8 +86,10 @@ public class ServerOut implements Runnable {
 
         switch (protocol) {
           case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
-          case WHISPER -> this.client.sendMessageClient(
-              args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+          case WHISPER -> {
+            this.client.sendMessageClient(
+                args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+          }
           case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby(String.join(" ", args));
           case SET_USERNAME -> this.client.setUsername(args[0].replaceAll(" ", "_"));
           case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
