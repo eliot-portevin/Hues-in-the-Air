@@ -1,11 +1,8 @@
 package client;
 
-import server.ServerProtocol;
-
-import java.net.Socket;
 import java.io.IOException;
-import static shared.Encryption.decrypt;
-import static shared.Encryption.encrypt;
+import java.net.Socket;
+import server.ServerProtocol;
 
 public class Client {
 
@@ -31,8 +28,6 @@ public class Client {
   public void run(String[] args) throws IOException {
     start(args);
     this.connectToServer();
-
-    String serverIp = args[0].split(":")[0];
 
     this.inputSocket = new ServerIn(socket, this);
     this.outputSocket = new ServerOut(socket, this);
