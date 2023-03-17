@@ -16,7 +16,7 @@ public enum ServerProtocol {
    */
   SEPARATOR(0) {
     public String toString() {
-      return "&";
+      return "<&!>";
     }
   },
   /** Request client username */
