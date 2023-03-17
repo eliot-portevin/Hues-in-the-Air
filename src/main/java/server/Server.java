@@ -8,115 +8,113 @@ import java.util.HashMap;
 
 public class Server implements Runnable {
 
-    private final int PORT;
+  private final int PORT;
 
-    private final ArrayList<ClientHandler> clientsHandlers = new ArrayList<>();
-    private final ArrayList<Thread> clientThreads = new ArrayList<>();
-    private final HashMap<String, Lobby> lobbies = new HashMap<>();
+  private final ArrayList<ClientHandler> clientsHandlers = new ArrayList<>();
+  private final ArrayList<Thread> clientThreads = new ArrayList<>();
+  private final HashMap<String, Lobby> lobbies = new HashMap<>();
 
-    private ServerSocket listener;
+  private ServerSocket listener;
 
-    private boolean shuttingDown = false;
+  private boolean shuttingDown = false;
 
+  public Server(String PORT) {
+    this.PORT = Integer.parseInt(PORT);
+  }
 
-    public Server(String PORT) {
-        this.PORT = Integer.parseInt(PORT);
-    }
+  /**
+   * Waits for client connections. When a client wants to connect to the server, the addClient
+   * method is called.
+   */
+  public void run() {
+    try {
+      this.listener = new ServerSocket(this.PORT);
 
-    /**
-     * Waits for client connections. When a client wants to connect to the server,
-     * the addClient method is called.*/
-    public void run() {
-        try {
-            this.listener = new ServerSocket(this.PORT);
-
-            while (true) {
-                if (!shuttingDown) {
-                    System.out.println("[SERVER] Waiting for client connection...");
-                    Socket client = listener.accept();
-                    this.addClient(client);
-                }
-                else {
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Server exception: " + e.getMessage());
-            e.printStackTrace();
+      while (true) {
+        if (!shuttingDown) {
+          System.out.println("[SERVER] Waiting for client connection...");
+          Socket client = listener.accept();
+          this.addClient(client);
+        } else {
+          break;
         }
+      }
+    } catch (IOException e) {
+      System.err.println("Server exception: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
 
+  public void addClient(Socket clientSocket) throws IOException {
+    ClientHandler clientHandler = new ClientHandler(clientSocket, this);
+    this.clientsHandlers.add(clientHandler);
+
+    Thread clientThread = new Thread(clientHandler);
+    this.clientThreads.add(clientThread);
+    clientThread.start();
+
+    System.out.println("[SERVER] Connected to Client!");
+  }
+
+  public void removeClient(ClientHandler client) {
+    client.running = false;
+    this.clientThreads.get(this.clientsHandlers.indexOf(client)).interrupt();
+    this.clientThreads.remove(this.clientsHandlers.indexOf(client));
+    this.clientsHandlers.remove(client);
+
+    System.out.println("[SERVER] Client disconnected!");
+  }
+
+  void shutdown() throws IOException {
+    this.shuttingDown = true;
+    this.listener.close();
+
+    for (Thread clientThread : this.clientThreads) {
+      clientThread.interrupt();
+    }
+    for (ClientHandler client : this.clientsHandlers) {
+      removeClient(client);
     }
 
-    public void addClient(Socket clientSocket) throws IOException {
-        ClientHandler clientHandler = new ClientHandler(clientSocket, this);
-        this.clientsHandlers.add(clientHandler);
+    System.out.println("[SERVER] Server shutdown!");
+    System.exit(0);
+  }
 
-        Thread clientThread = new Thread(clientHandler);
-        this.clientThreads.add(clientThread);
-        clientThread.start();
+  public ArrayList<ClientHandler> getClientHandlers() {
+    return this.clientsHandlers;
+  }
 
-        System.out.println("[SERVER] Connected to Client!");
-    }
-
-    public void removeClient(ClientHandler client) {
-        client.running = false;
-        this.clientThreads.get(this.clientsHandlers.indexOf(client)).interrupt();
-        this.clientThreads.remove(this.clientsHandlers.indexOf(client));
-        this.clientsHandlers.remove(client);
-
-        System.out.println("[SERVER] Client disconnected!");
-    }
-
-    void shutdown() throws IOException {
-        this.shuttingDown = true;
-        this.listener.close();
-
-        for (Thread clientThread : this.clientThreads) {
-            clientThread.interrupt();
+  public ClientHandler getClientHandler(String username) {
+    for (ClientHandler client : this.clientsHandlers) {
+      if (client.getUsername() != null) {
+        if (client.getUsername().equals(username)) {
+          return client;
         }
-        for (ClientHandler client : this.clientsHandlers) {
-            removeClient(client);
-        }
+      }
+    }
+    return null;
+  }
 
-        System.out.println("[SERVER] Server shutdown!");
-        System.exit(0);
+  public void createLobby(String lobbyName, String password, ClientHandler client) {
+    for (String lobby : this.lobbies.keySet()) {
+      if (lobby.equals(lobbyName)) {
+        // Lobby already exists
+        return;
+      }
     }
 
-    public ArrayList<ClientHandler> getClientHandlers() {
-        return this.clientsHandlers;
-    }
+    this.lobbies.put(lobbyName, new Lobby(lobbyName, password));
+    System.out.printf("%s created lobby %s\n", client.getUsername(), lobbyName);
+    this.lobbies.get(lobbyName).addClient(client, password);
+  }
 
-    public ClientHandler getClientHandler(String username) {
-        for (ClientHandler client : this.clientsHandlers) {
-            if (client.getUsername() != null) {
-                if (client.getUsername().equals(username)) {
-                    return client;
-                }
-            }
-        }
-        return null;
-    }
-
-    public void createLobby(String lobbyName, String password, ClientHandler client) {
-        for (String lobby : this.lobbies.keySet()) {
-            if (lobby.equals(lobbyName)) {
-                // Lobby already exists
-                return;
-            }
-        }
-
-        this.lobbies.put(lobbyName, new Lobby(lobbyName, password));
-        System.out.printf("%s created lobby %s\n", client.getUsername(), lobbyName);
+  public void joinLobby(String lobbyName, String password, ClientHandler client) {
+    for (String lobby : this.lobbies.keySet()) {
+      if (lobby.equals(lobbyName)) {
         this.lobbies.get(lobbyName).addClient(client, password);
+        return;
+      }
     }
-
-    public void joinLobby(String lobbyName, String password, ClientHandler client) {
-        for (String lobby : this.lobbies.keySet()) {
-            if (lobby.equals(lobbyName)) {
-                this.lobbies.get(lobbyName).addClient(client, password);
-                return;
-            }
-        }
-        // Lobby does not exist
-    }
+    // Lobby does not exist
+  }
 }
