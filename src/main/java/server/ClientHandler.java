@@ -151,22 +151,27 @@ public class ClientHandler implements Runnable {
    * <p>Goes over the different commands of {@link ClientProtocol} and calls the appropriate method.
    */
   private void protocolSwitch(String[] command) {
-    ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
+    try {
+      ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
-    if (protocol.getNumArgs() == command.length - 1) {
-      switch (protocol) {
-        case LOGOUT -> this.server.removeClient(this);
-        case SET_USERNAME -> this.setUsername(command[1]);
-        case BROADCAST -> this.sendMessageServer(command[1]);
-        case WHISPER -> this.sendMessageClient(command[1], command[2]);
-        case SEND_MESSAGE_LOBBY -> this.sendMessageLobby(command[1]);
-        case PING -> this.pong();
-        case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
-        case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
+      if (protocol.getNumArgs() == command.length - 1) {
+        switch (protocol) {
+          case LOGOUT -> this.server.removeClient(this);
+          case SET_USERNAME -> this.setUsername(command[1]);
+          case BROADCAST -> this.sendMessageServer(command[1]);
+          case WHISPER -> this.sendMessageClient(command[1], command[2]);
+          case SEND_MESSAGE_LOBBY -> this.sendMessageLobby(command[1]);
+          case PING -> this.pong();
+          case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
+          case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
 
-        default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
+          default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
+        }
       }
+    } catch (IllegalArgumentException e) {
+      System.out.println("[CLIENT_HANDLER] Unknown command: " + command[0]);
     }
+
   }
 
   /** Requests the client's username upon connection. */
@@ -176,11 +181,16 @@ public class ClientHandler implements Runnable {
     this.out.println(message);
   }
 
-  public String getUsername() {
+  protected String getUsername() {
     return this.username;
   }
 
-  public void setUsername(String username) {
+  /**
+   * Called when the client has sent a new username in.
+   * If the username is already taken, a random suffix is added to the username and the method
+   * is called recursively.
+   */
+  private void setUsername(String username) {
     if (this.username != null) {
       if (this.username.equals(username)) {
         return;
@@ -205,7 +215,11 @@ public class ClientHandler implements Runnable {
     }
   }
 
-  public void enterLobby(Lobby lobby) {
+  /**
+   * Upon entry of a lobby (handled by {@link Server#joinLobby(String, String, ClientHandler)}), the client
+   * is informed of the success of the operation.
+   */
+  protected void enterLobby(Lobby lobby) {
     this.lobby = lobby;
     System.out.println(this.username + " entered lobby " + lobby.getName());
   }

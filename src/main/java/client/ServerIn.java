@@ -81,7 +81,7 @@ public class ServerIn implements Runnable {
         }
       }
     } catch (IllegalArgumentException e) {
-      System.out.println("ServerIn: Unknown protocol: " + String.join(" $ ", command));
+      System.out.println("ServerIn: Unknown protocol: " + command[0]);
     }
   }
 

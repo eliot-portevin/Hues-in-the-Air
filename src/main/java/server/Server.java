@@ -45,7 +45,7 @@ public class Server implements Runnable {
     }
   }
 
-  public void addClient(Socket clientSocket) throws IOException {
+  private void addClient(Socket clientSocket) throws IOException {
     ClientHandler clientHandler = new ClientHandler(clientSocket, this);
     this.clientsHandlers.add(clientHandler);
 
@@ -56,7 +56,7 @@ public class Server implements Runnable {
     System.out.println("[SERVER] Connected to Client!");
   }
 
-  public void removeClient(ClientHandler client) {
+  protected void removeClient(ClientHandler client) {
     client.running = false;
     this.clientThreads.get(this.clientsHandlers.indexOf(client)).interrupt();
     this.clientThreads.remove(this.clientsHandlers.indexOf(client));
@@ -65,7 +65,7 @@ public class Server implements Runnable {
     System.out.println("[SERVER] Client disconnected!");
   }
 
-  void shutdown() throws IOException {
+  protected void shutdown() throws IOException {
     this.shuttingDown = true;
     this.listener.close();
 
@@ -80,11 +80,11 @@ public class Server implements Runnable {
     System.exit(0);
   }
 
-  public ArrayList<ClientHandler> getClientHandlers() {
+  protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clientsHandlers;
   }
 
-  public ClientHandler getClientHandler(String username) {
+  protected ClientHandler getClientHandler(String username) {
     for (ClientHandler client : this.clientsHandlers) {
       if (client.getUsername() != null) {
         if (client.getUsername().equals(username)) {
@@ -95,7 +95,7 @@ public class Server implements Runnable {
     return null;
   }
 
-  public void createLobby(String lobbyName, String password, ClientHandler client) {
+  protected void createLobby(String lobbyName, String password, ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         // Lobby already exists
@@ -108,7 +108,7 @@ public class Server implements Runnable {
     this.lobbies.get(lobbyName).addClient(client, password);
   }
 
-  public void joinLobby(String lobbyName, String password, ClientHandler client) {
+  protected void joinLobby(String lobbyName, String password, ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         this.lobbies.get(lobbyName).addClient(client, password);
