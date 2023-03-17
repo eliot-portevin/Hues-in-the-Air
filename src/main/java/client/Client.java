@@ -140,14 +140,13 @@ public class Client {
     // Close the socket and stop the threads
     this.inputSocket.running = false;
     this.outputSocket.running = false;
-    this.inputThread.interrupt();
-    this.outputThread.interrupt();
     try {
       this.socket.close();
     } catch (IOException e) {
       System.err.println("[CLIENT] Failed to close socket: " + e.getMessage());
       e.printStackTrace();
     }
+    System.exit(0);
   }
 
   protected void createLobby(String name, String password) {

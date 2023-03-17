@@ -29,32 +29,25 @@ public class ServerIn implements Runnable {
   /** From the Runnable interface. Runs the ServerIn thread to receive commands from the server */
   @Override
   public void run() {
-    while (running) {
-      String[] command = this.receiveFromServer();
-      if (command != null) {
-        this.protocolSwitch(command);
-      } else {
-        System.out.println("[CLIENT] ServerIn: command is null");
-      }
-    }
     try {
+      while (this.running) {
+        String[] command = this.receiveFromServer();
+        if (command != null) {
+          this.protocolSwitch(command);
+        } else {
+          System.out.println("[CLIENT] ServerIn: command is null");
+        }
+      }
       this.serverSocket.close();
       this.in.close();
     } catch (IOException e) {
-      System.err.println(
-          "[CLIENT] Failed to close serverSocket and input stream: " + e.getMessage());
+      System.err.println("[ServerIn]: " + e.getMessage());
       e.printStackTrace();
     }
   }
 
-  private String[] receiveFromServer() {
-    try {
-      return decrypt(this.in.readLine()).split(ServerProtocol.SEPARATOR.toString());
-    } catch (IOException e) {
-      System.err.println("[CLIENT] failed to receive message from server: " + e.getMessage());
-      e.printStackTrace();
-      return null;
-    }
+  private String[] receiveFromServer() throws IOException {
+    return decrypt(this.in.readLine()).split(ServerProtocol.SEPARATOR.toString());
   }
 
   /**

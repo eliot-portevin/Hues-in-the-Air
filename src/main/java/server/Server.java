@@ -56,8 +56,14 @@ public class Server implements Runnable {
     System.out.println("[SERVER] Connected to Client!");
   }
 
+  /**
+   * Called from {@link ClientHandler} when a client disconnects ({@link
+   * client.ClientProtocol#LOGOUT}). Removes the client from the list of clients, from its lobby and
+   * interrupts the client's dedicated thread.
+   */
   protected void removeClient(ClientHandler client) {
     client.running = false;
+    client.getLobby().removeClient(client);
     this.clientThreads.get(this.clientsHandlers.indexOf(client)).interrupt();
     this.clientThreads.remove(this.clientsHandlers.indexOf(client));
     this.clientsHandlers.remove(client);

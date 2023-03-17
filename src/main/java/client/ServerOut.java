@@ -40,8 +40,14 @@ public class ServerOut implements Runnable {
           this.handleCommand(command);
         }
       }
+      try {
+        this.serverSocket.close();
+        this.out.close();
+      } catch (IOException e) {
+        System.err.println(e.getMessage());
+      }
     } catch (IOException e) {
-      System.err.println("[CLIENT] ServerOut: " + e.getMessage());
+      System.err.println("[ServerOut]: " + e.getMessage());
       e.printStackTrace();
     }
     // Close the socket and the input stream
@@ -70,8 +76,8 @@ public class ServerOut implements Runnable {
 
       try {
         ClientProtocol protocol =
-                ClientProtocol.valueOf(
-                        command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
+            ClientProtocol.valueOf(
+                command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
 
         // If the command has no arguments
         if (firstSpace == command.length()) {
@@ -79,14 +85,13 @@ public class ServerOut implements Runnable {
             case LOGOUT -> this.client.logout();
             case WHOAMI -> this.client.whoami();
           }
-        }
-        else {
+        } else {
           String[] args = command.substring(firstSpace + 1).split(" ");
 
           switch (protocol) {
             case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
             case WHISPER -> this.client.sendMessageClient(
-                    args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
             case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby(String.join(" ", args));
             case SET_USERNAME -> this.client.setUsername(args[0].replaceAll(" ", "_"));
             case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);

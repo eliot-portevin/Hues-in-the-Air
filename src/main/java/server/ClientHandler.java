@@ -223,4 +223,8 @@ public class ClientHandler implements Runnable {
     this.lobby = lobby;
     System.out.println(this.username + " entered lobby " + lobby.getName());
   }
+
+  protected Lobby getLobby() {
+    return this.lobby;
+  }
 }
