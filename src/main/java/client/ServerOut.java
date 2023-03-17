@@ -60,7 +60,7 @@ public class ServerOut implements Runnable {
   }
 
   private void handleCommand(String command) {
-    String commandSymbol = ChatCommands.COMMAND_SYMBOL.toString();
+    String commandSymbol = ClientProtocol.COMMAND_SYMBOL.toString();
 
     if (command.startsWith(commandSymbol)) {
       int firstSpace = command.indexOf(" ");

@@ -9,6 +9,11 @@ import server.ServerProtocol;
  * the commands that the server can send to the client.
  */
 public enum ClientProtocol {
+
+  /**
+   * Symbol inputted by the client in the console to indicate that the following input is a command.
+   */
+  COMMAND_SYMBOL(0) { public String toString() { return "!"; } },
   /**
    * Set client username
    *
