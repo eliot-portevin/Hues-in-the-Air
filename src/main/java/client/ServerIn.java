@@ -79,7 +79,7 @@ public class ServerIn implements Runnable {
   }
 
   private void resetClientStatus() {
-    this.client.clientConnected = true;
+    this.client.connectedToServer = true;
     this.client.noAnswerCounter = 0;
   }
 

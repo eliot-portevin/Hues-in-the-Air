@@ -7,7 +7,7 @@ import server.ServerProtocol;
 public class Client {
 
   // Status of client
-  boolean clientConnected = true;
+  boolean connectedToServer = true;
   int noAnswerCounter = 0;
 
   // Server info
@@ -86,7 +86,7 @@ public class Client {
     }
 
     if (this.socket.isConnected()) {
-      this.clientConnected = true;
+      this.connectedToServer = true;
     }
   }
 

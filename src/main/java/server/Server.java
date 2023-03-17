@@ -63,7 +63,9 @@ public class Server implements Runnable {
    */
   protected void removeClient(ClientHandler client) {
     client.running = false;
-    client.getLobby().removeClient(client);
+    if(client.getLobby() != null) {
+      client.getLobby().removeClient(client);
+    }
     this.clientThreads.get(this.clientsHandlers.indexOf(client)).interrupt();
     this.clientThreads.remove(this.clientsHandlers.indexOf(client));
     this.clientsHandlers.remove(client);

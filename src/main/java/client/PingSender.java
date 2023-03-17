@@ -14,8 +14,8 @@ public class PingSender implements Runnable{
         while (this.running) {
             try{
                 Thread.sleep(1000);
-                if(client.clientConnected) {
-                    client.clientConnected = false;
+                if(client.connectedToServer) {
+                    client.connectedToServer = false;
                     client.ping();
                 }
                 else {
@@ -24,7 +24,7 @@ public class PingSender implements Runnable{
                     }
                     else {
                         client.noAnswerCounter++;
-                        client.clientConnected = true;
+                        client.connectedToServer = true;
                     }
 
                 }
