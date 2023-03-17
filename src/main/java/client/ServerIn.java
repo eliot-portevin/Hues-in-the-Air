@@ -64,22 +64,24 @@ public class ServerIn implements Runnable {
    * of the strings are the arguments. See {@link ServerProtocol} for possible protocols.
    */
   private void protocolSwitch(String[] command) {
-    ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
+    try {
+      ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
 
-    if (protocol.getNumArgs() == command.length - 1) {
-      switch (protocol) {
-        case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
-        case BROADCAST -> this.receiveMessage(
-            Arrays.copyOfRange(command, 1, command.length), "Public");
-        case WHISPER -> this.receiveMessage(
-            Arrays.copyOfRange(command, 1, command.length), "Private");
-        case SEND_MESSAGE_LOBBY -> this.receiveMessage(
-            Arrays.copyOfRange(command, 1, command.length), "Lobby");
-        case PONG -> this.resetClientStatus();
-        case USERNAME_SET_TO -> this.client.username = command[1];
-
-        default -> System.out.println("[CLIENT] ServerIn: Unknown protocol: " + protocol);
+      if (protocol.getNumArgs() == command.length - 1) {
+        switch (protocol) {
+          case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
+          case BROADCAST -> this.receiveMessage(
+              Arrays.copyOfRange(command, 1, command.length), "Public");
+          case WHISPER -> this.receiveMessage(
+              Arrays.copyOfRange(command, 1, command.length), "Private");
+          case SEND_MESSAGE_LOBBY -> this.receiveMessage(
+              Arrays.copyOfRange(command, 1, command.length), "Lobby");
+          case PONG -> this.resetClientStatus();
+          case USERNAME_SET_TO -> this.client.username = command[1];
+        }
       }
+    } catch (IllegalArgumentException e) {
+      System.out.println("ServerIn: Unknown protocol: " + String.join(" $ ", command));
     }
   }
 
