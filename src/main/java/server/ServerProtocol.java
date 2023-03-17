@@ -1,7 +1,6 @@
 package server;
 
 import client.ClientProtocol;
-import com.sun.javafx.fxml.ParseTraceElement;
 
 /**
  * Server protocol for Hues in the Air
@@ -18,7 +17,7 @@ public enum ServerProtocol {
      * </p>
      * */
     SEPARATOR(0) {
-        public String toString() { return "¶"; } },
+        public String toString() { return "&"; } },
     /**
      * Request client username
      * */
@@ -45,7 +44,7 @@ public enum ServerProtocol {
      *     Format: SEND_MESSAGE_CLIENT<Separator>sender.username<Separator>receiver.username<Separator>message
      * </p>
      * */
-    SEND_MESSAGE_CLIENT(3),
+    WHISPER(3),
 
     /**
      * A message is being sent to the whole server.
@@ -53,7 +52,7 @@ public enum ServerProtocol {
      *     Format: SEND_MESSAGE_SERVER<Separator>username<Separator>message
      * </p>
      * */
-    SEND_MESSAGE_SERVER(2),
+    BROADCAST(2),
 
     /**
      * A message is being sent to the lobby.

@@ -79,11 +79,11 @@ public class ClientHandler implements Runnable {
     /**
      * The client linked to this ClientHandler wants to send a message to all clients on the server.
      * <p>
-     *     See {@link ServerProtocol#SEND_MESSAGE_SERVER}
+     *     See {@link ServerProtocol#BROADCAST}
      * </p>
      * */
     private void sendMessageServer(String message) {
-        String output = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + this.username +
+        String output = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + this.username +
                 ServerProtocol.SEPARATOR + message;
 
         output = encrypt(output);
@@ -96,11 +96,11 @@ public class ClientHandler implements Runnable {
     /**
      * The client linked to this ClientHandler wants to send a message to another client on the server.
      * <p>
-     *     See {@link ServerProtocol#SEND_MESSAGE_CLIENT}
+     *     See {@link ServerProtocol#WHISPER}
      * </p>
      * */
     private void sendMessageClient(String recipient, String messageContent) {
-        String message = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + this.username +
+        String message = ServerProtocol.WHISPER.toString() + ServerProtocol.SEPARATOR + this.username +
                 ServerProtocol.SEPARATOR + messageContent;
 
         ClientHandler recipientHandler = this.server.getClientHandler(recipient);

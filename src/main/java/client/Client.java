@@ -105,7 +105,7 @@ public class Client {
     }
 
     protected void sendMessageServer(String message) {
-        String command = ServerProtocol.SEND_MESSAGE_SERVER.toString() + ServerProtocol.SEPARATOR + message;
+        String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
         this.outputSocket.sendToServer(command);
     }
 
@@ -116,7 +116,7 @@ public class Client {
      * </p>
      * */
     public void sendMessageClient(String recipient, String message) {
-        String command = ServerProtocol.SEND_MESSAGE_CLIENT.toString() + ServerProtocol.SEPARATOR + recipient + ServerProtocol.SEPARATOR + message;
+        String command = ServerProtocol.WHISPER.toString() + ServerProtocol.SEPARATOR + recipient + ServerProtocol.SEPARATOR + message;
         this.outputSocket.sendToServer(command);
     }
 
@@ -152,5 +152,9 @@ public class Client {
     public void joinLobby(String name, String password) {
         String command = ClientProtocol.JOIN_LOBBY.toString() + ServerProtocol.SEPARATOR + name + ServerProtocol.SEPARATOR + password;
         this.outputSocket.sendToServer(command);
+    }
+
+    public void whoami() {
+        System.out.println(this.username);
     }
 }

@@ -64,6 +64,11 @@ public enum ClientProtocol {
      */
     CREATE_LOBBY(2),
 
+    /**
+     * Client requests to know their own username
+     */
+    WHOAMI(0),
+
     PING(0);
 
     private final int numArgs;
