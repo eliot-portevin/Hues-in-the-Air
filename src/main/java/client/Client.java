@@ -4,6 +4,8 @@ import server.ServerProtocol;
 
 import java.net.Socket;
 import java.io.IOException;
+import static shared.Encryption.decrypt;
+import static shared.Encryption.encrypt;
 
 public class Client {
 

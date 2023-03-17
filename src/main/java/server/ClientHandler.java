@@ -194,7 +194,7 @@ public class ClientHandler implements Runnable {
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
-      this.out.println(message);
+      this.out.println(encrypt(message));
     } else {
       String[] suffixes = {
         " the Great", " the Wise", " the Brave", " the Strong", " the Mighty", " the Magnificent"
