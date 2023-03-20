@@ -62,6 +62,14 @@ public enum ClientProtocol {
   /** Client requests to know their own username */
   WHOAMI(0),
 
+  /**Client wants to know the name of the other players
+   *
+   */
+  GET_CLIENTS_SERVER(0),
+
+  GET_CLIENTS_LOBBY(0),
+
+
   PING(0);
 
   private final int numArgs;
