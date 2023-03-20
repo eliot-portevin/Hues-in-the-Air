@@ -71,6 +71,7 @@ public class ServerIn implements Runnable {
               Arrays.copyOfRange(command, 1, command.length), "Lobby");
           case PONG -> this.resetClientStatus();
           case USERNAME_SET_TO -> this.client.username = command[1];
+          case SEND_CLIENT_LIST -> this.client.printClientList(Arrays.copyOfRange(command, 1, command.length));
         }
       }
     } catch (IllegalArgumentException e) {

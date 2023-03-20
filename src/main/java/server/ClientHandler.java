@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Arrays;import java.util.stream.Collectors;
 
 public class ClientHandler implements Runnable {
 
@@ -165,8 +165,8 @@ public class ClientHandler implements Runnable {
           case PING -> this.pong();
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
           case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
-          case GET_CLIENTS_LOBBY -> this.server.getClientHandlers();
-          case GET_CLIENTS_SERVER ->  this.lobby.getClients();
+          case LIST_LOBBY -> this.sendClientList(this.server.getClientHandlers());
+          case LIST_SERVER ->  this.sendClientList(this.lobby.getClients());
 
           default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
         }
@@ -232,6 +232,12 @@ public class ClientHandler implements Runnable {
   }
   protected ArrayList<ClientHandler> getClients() {
     return this.server.getClientHandlers();
+  }
+
+  protected void sendClientList(ArrayList<ClientHandler> clients) {
+    String command = ServerProtocol.SEND_CLIENT_LIST.toString() + ServerProtocol.SEPARATOR +
+            clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(ServerProtocol.SEPARATOR.toString()));
+    this.out.println(encrypt(command));
   }
 
 }

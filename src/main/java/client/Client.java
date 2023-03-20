@@ -167,4 +167,18 @@ public class Client {
   protected void whoami() {
     System.out.println(this.username);
   }
-}
+
+  protected void listClientsLobby() {
+    String command = ClientProtocol.LIST_LOBBY.toString();
+    this.outputSocket.sendToServer(command);
+  }
+
+  protected void listClientsServer() {
+    String command = ClientProtocol.LIST_SERVER.toString();
+    this.outputSocket.sendToServer(command);
+  }
+public void printClientList(String[] clients) {
+    for (String client : clients) {
+      System.out.println(client);
+    }
+}}

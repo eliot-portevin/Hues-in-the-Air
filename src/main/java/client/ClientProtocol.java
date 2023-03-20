@@ -65,9 +65,9 @@ public enum ClientProtocol {
   /**Client wants to know the name of the other players
    *
    */
-  GET_CLIENTS_SERVER(0),
+  LIST_SERVER(0),
 
-  GET_CLIENTS_LOBBY(0),
+  LIST_LOBBY(0),
 
 
   PING(0);
