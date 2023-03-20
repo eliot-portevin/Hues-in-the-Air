@@ -42,7 +42,7 @@ public class Lobby {
     return this.clients.size();
   }
 
-  protected ArrayList<ClientHandler> getClients() {
+  protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clients;
   }
 }

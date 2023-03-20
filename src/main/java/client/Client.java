@@ -178,7 +178,9 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 public void printClientList(String[] clients) {
+    System.out.println();
     for (String client : clients) {
-      System.out.println(client);
+      System.out.println(" - " + client);
     }
+    System.out.print("> ");
 }}

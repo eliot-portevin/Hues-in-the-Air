@@ -84,6 +84,8 @@ public class ServerOut implements Runnable {
           switch (protocol) {
             case LOGOUT -> this.client.logout();
             case WHOAMI -> this.client.whoami();
+            case LIST_LOBBY -> this.client.listClientsLobby();
+            case LIST_SERVER -> this.client.listClientsServer();
           }
         } else {
           String[] args = command.substring(firstSpace + 1).split(" ");
@@ -96,8 +98,6 @@ public class ServerOut implements Runnable {
             case SET_USERNAME -> this.client.setUsername(args[0].replaceAll(" ", "_"));
             case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
             case JOIN_LOBBY -> this.client.joinLobby(args[0], args[1]);
-            case LIST_LOBBY -> this.client.listClientsLobby();
-            case LIST_SERVER -> this.client.listClientsServer();
           }
         }
       } catch (IllegalArgumentException e) {

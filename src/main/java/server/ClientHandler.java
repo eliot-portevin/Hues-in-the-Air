@@ -9,7 +9,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ClientHandler implements Runnable {
 
@@ -128,7 +129,7 @@ public class ClientHandler implements Runnable {
             + ServerProtocol.SEPARATOR
             + message;
 
-    for (ClientHandler client : this.lobby.getClients()) {
+    for (ClientHandler client : this.lobby.getClientHandlers()) {
       client.out.println(encrypt(command));
     }
   }
@@ -165,8 +166,10 @@ public class ClientHandler implements Runnable {
           case PING -> this.pong();
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
           case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
-          case LIST_LOBBY -> this.sendClientList(this.server.getClientHandlers());
-          case LIST_SERVER ->  this.sendClientList(this.lobby.getClients());
+          case LIST_LOBBY -> {
+            if (this.lobby != null) this.sendClientList(this.lobby.getClientHandlers());
+          }
+          case LIST_SERVER -> this.sendClientList(this.server.getClientHandlers());
 
           default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
         }
@@ -174,7 +177,6 @@ public class ClientHandler implements Runnable {
     } catch (IllegalArgumentException e) {
       System.out.println("[CLIENT_HANDLER] Unknown command: " + command[0]);
     }
-
   }
 
   /** Requests the client's username upon connection. */
@@ -189,9 +191,8 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * Called when the client has sent a new username in.
-   * If the username is already taken, a random suffix is added to the username and the method
-   * is called recursively.
+   * Called when the client has sent a new username in. If the username is already taken, a random
+   * suffix is added to the username and the method is called recursively.
    */
   private void setUsername(String username) {
     if (this.username != null) {
@@ -219,8 +220,8 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * Upon entry of a lobby (handled by {@link Server#joinLobby(String, String, ClientHandler)}), the client
-   * is informed of the success of the operation.
+   * Upon entry of a lobby (handled by {@link Server#joinLobby(String, String, ClientHandler)}), the
+   * client is informed of the success of the operation.
    */
   protected void enterLobby(Lobby lobby) {
     this.lobby = lobby;
@@ -230,14 +231,18 @@ public class ClientHandler implements Runnable {
   protected Lobby getLobby() {
     return this.lobby;
   }
+
   protected ArrayList<ClientHandler> getClients() {
     return this.server.getClientHandlers();
   }
 
   protected void sendClientList(ArrayList<ClientHandler> clients) {
-    String command = ServerProtocol.SEND_CLIENT_LIST.toString() + ServerProtocol.SEPARATOR +
-            clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(ServerProtocol.SEPARATOR.toString()));
+    String command =
+        ServerProtocol.SEND_CLIENT_LIST.toString()
+            + ServerProtocol.SEPARATOR
+            + clients.stream()
+                .map(ClientHandler::getUsername)
+                .collect(Collectors.joining(" "));
     this.out.println(encrypt(command));
   }
-
 }
