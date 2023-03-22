@@ -21,6 +21,9 @@ public class Encryption {
    * @return
    */
   public static String shifter(String message, int shift) {
+    if (message == null) {
+      return null;
+    }
     char[] chars = message.toCharArray();
 
     for (int i = 0; i < chars.length; i++) {

@@ -1,7 +1,10 @@
 package client;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.Buffer;
 import server.ServerProtocol;
 
 public class Client {
@@ -103,9 +106,33 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  protected void setUsername() {
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Enter username: \n> ");
+      String username = reader.readLine();
+      this.setUsername(username);
+    } catch (IOException e) {
+      System.err.println("[CLIENT] Failed to read username: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
   protected void sendMessageServer(String message) {
     String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
+  }
+
+  protected void sendMessageServer() {
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Enter message: \n> ");
+      String message = reader.readLine();
+      this.sendMessageServer(message);
+    } catch (IOException e) {
+      System.err.println("[CLIENT] Failed to read message: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -123,10 +150,36 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  protected void sendMessageClient() {
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Enter recipient name: \n> ");
+      String recipient = reader.readLine();
+      System.out.print("Enter message: \n> ");
+      String message = reader.readLine();
+      this.sendMessageClient(recipient, message);
+    } catch (IOException e) {
+      System.err.println("[CLIENT] Failed to read message: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
   protected void sendMessageLobby(String message) {
     String command =
         ClientProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
+  }
+
+  protected void sendMessageLobby() {
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Enter message: \n> ");
+      String message = reader.readLine();
+      this.sendMessageLobby(message);
+    } catch (IOException e) {
+      System.err.println("[CLIENT] Failed to read message: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 
   protected void logout() {
@@ -157,6 +210,20 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  protected void createLobby() {
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Enter lobby name: \n> ");
+      String name = reader.readLine();
+      System.out.print("Enter lobby password: \n> ");
+      String password = reader.readLine();
+      this.createLobby(name, password);
+    } catch (IOException e) {
+      System.err.println("[CLIENT] Failed to read lobby name: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
   protected void joinLobby(String name, String password) {
     String command =
         ClientProtocol.JOIN_LOBBY.toString()
@@ -165,6 +232,20 @@ public class Client {
             + ServerProtocol.SEPARATOR
             + password;
     this.outputSocket.sendToServer(command);
+  }
+
+  protected void joinLobby() {
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Enter lobby name: \n> ");
+      String name = reader.readLine();
+      System.out.print("Enter lobby password: \n> ");
+      String password = reader.readLine();
+      this.joinLobby(name, password);
+    } catch (IOException e) {
+      System.err.println("[CLIENT] Failed to read lobby name: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 
   protected void whoami() {
@@ -180,10 +261,12 @@ public class Client {
     String command = ClientProtocol.LIST_SERVER.toString();
     this.outputSocket.sendToServer(command);
   }
-public void printClientList(String[] clients) {
+
+  public void printClientList(String[] clients) {
     System.out.println();
     for (String client : clients) {
       System.out.println(" - " + client);
     }
     System.out.print("> ");
-}}
+  }
+}

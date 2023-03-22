@@ -62,9 +62,7 @@ public enum ClientProtocol {
   /** Client requests to know their own username */
   WHOAMI(0),
 
-  /**Client wants to know the name of the other players
-   *
-   */
+  /** Client wants to know the name of the other players */
   LIST_SERVER(0),
 
   LIST_LOBBY(0),
