@@ -1,6 +1,6 @@
 package client;
 
-import static shared.Encryption.*;
+import server.ServerProtocol;import static shared.Encryption.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,7 +62,25 @@ public class ServerOut implements Runnable {
   }
 
   protected void sendToServer(String message) {
-    this.out.println(encrypt(message));
+    if (this.validateMessage(message)) {
+      this.out.println(encrypt(message));
+    }
+  }
+
+  private Boolean validateMessage(String message) {
+    if (message == null) {
+      System.out.println("[SERVER_OUT] Message is null");
+      return false;
+    }
+    else {
+      String[] command = message.split(ServerProtocol.SEPARATOR.toString());
+      if (command.length > ClientProtocol.valueOf(command[0]).getNumArgs() + 1){
+        System.out.println("[SERVER_OUT] Tried to send too many arguments: " + Arrays.toString(command) +
+            "\n Would you just have happened to have " + ServerProtocol.SEPARATOR.toString() + " in your message?");
+        return false;
+      }
+    }
+    return true;
   }
 
   private void handleCommand(String command) {
