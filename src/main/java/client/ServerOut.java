@@ -86,6 +86,13 @@ public class ServerOut implements Runnable {
             case WHOAMI -> this.client.whoami();
             case LIST_LOBBY -> this.client.listClientsLobby();
             case LIST_SERVER -> this.client.listClientsServer();
+
+            case SET_USERNAME -> this.client.setUsername();
+            case BROADCAST -> this.client.sendMessageServer();
+            case WHISPER -> this.client.sendMessageClient();
+            case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby();
+            case CREATE_LOBBY -> this.client.createLobby();
+            case JOIN_LOBBY -> this.client.joinLobby();
           }
         } else {
           String[] args = command.substring(firstSpace + 1).split(" ");

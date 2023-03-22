@@ -226,6 +226,7 @@ public class ClientHandler implements Runnable {
   protected void enterLobby(Lobby lobby) {
     this.lobby = lobby;
     System.out.println(this.username + " entered lobby " + lobby.getName());
+    this.sendMessageLobby(this.username + " entered the lobby " + this.lobby.getName() + ".");
   }
 
   protected Lobby getLobby() {
@@ -240,9 +241,7 @@ public class ClientHandler implements Runnable {
     String command =
         ServerProtocol.SEND_CLIENT_LIST.toString()
             + ServerProtocol.SEPARATOR
-            + clients.stream()
-                .map(ClientHandler::getUsername)
-                .collect(Collectors.joining(" "));
+            + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
     this.out.println(encrypt(command));
   }
 }

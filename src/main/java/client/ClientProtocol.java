@@ -13,7 +13,11 @@ public enum ClientProtocol {
   /**
    * Symbol inputted by the client in the console to indicate that the following input is a command.
    */
-  COMMAND_SYMBOL(0) { public String toString() { return "!"; } },
+  COMMAND_SYMBOL(0) {
+    public String toString() {
+      return "!";
+    }
+  },
   /**
    * Set client username
    *
@@ -62,13 +66,10 @@ public enum ClientProtocol {
   /** Client requests to know their own username */
   WHOAMI(0),
 
-  /**Client wants to know the name of the other players
-   *
-   */
+  /** Client wants to know the name of the other players */
   LIST_SERVER(0),
 
   LIST_LOBBY(0),
-
 
   PING(0);
 
