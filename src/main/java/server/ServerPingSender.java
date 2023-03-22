@@ -17,14 +17,15 @@ public class ServerPingSender implements Runnable{
     while(this.running) {
       try {
         Thread.sleep(1000);
-        for(ClientHandler client : clients) {
+        ClientHandler client;
+        for(int i = 0; i < this.clients.size(); i++) {
+          client = this.clients.get(i);
           if (client.clientConnected) {
             client.clientConnected = false;
             client.ping();
           } else {
             if(client.noAnswerCounter > 3) {
-              System.out.println("[SERVER] Client " + client.getUsername() + " was disconnected");
-              server.removeClient(client);
+                server.removeClient(client);
             }
             else {
               client.noAnswerCounter++;
