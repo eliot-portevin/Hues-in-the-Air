@@ -70,14 +70,14 @@ public class Server implements Runnable {
    */
   protected void removeClient(ClientHandler client) {
     client.running = false;
-    if(client.getLobby() != null) {
+    if (client.getLobby() != null) {
       client.getLobby().removeClient(client);
     }
     this.clientThreads.get(this.clientHandlers.indexOf(client)).interrupt();
     this.clientThreads.remove(this.clientHandlers.indexOf(client));
     this.clientHandlers.remove(client);
 
-    System.out.println("[SERVER] Client disconnected!");
+    System.out.println("[SERVER] Client " + client.getUsername() + " disconnected!");
   }
 
   protected void shutdown() throws IOException {
@@ -130,6 +130,6 @@ public class Server implements Runnable {
         return;
       }
     }
-    // Lobby does not exist
+    // Lobby does not exist, do nothing
   }
 }
