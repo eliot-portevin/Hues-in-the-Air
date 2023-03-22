@@ -70,7 +70,7 @@ public enum ClientProtocol {
   LIST_LOBBY(0),
 
 
-  PING(0);
+  PONG(0);
 
   private final int numArgs;
 

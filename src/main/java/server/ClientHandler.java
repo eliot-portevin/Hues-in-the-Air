@@ -16,6 +16,8 @@ public class ClientHandler implements Runnable {
 
   // The client's socket
   private final Socket client;
+  boolean clientConnected = true;
+  int noAnswerCounter = 0;
 
   // Input and output streams
   private final BufferedReader in;
@@ -49,18 +51,18 @@ public class ClientHandler implements Runnable {
     while (this.running) {
       // Receive message, decrypt it and split it into an array
       String message = this.receiveFromClient();
-      if (message == null) {
+      /*if (message == null) {
         this.missedConnections++;
-        System.out.println(
-            "[CLIENT_HANDLER] " + this.username + " failed to receive message from client");
-      } else {
+        System.out.println("[CLIENT_HANDLER] " + this.username + " failed to receive message from client");
+      } else {*/
         this.missedConnections = 0;
+        System.out.println(message);
         String[] command = decrypt(message).split(ServerProtocol.SEPARATOR.toString());
         this.protocolSwitch(command);
-      }
+      /*}
       if (this.missedConnections >= 3) {
         this.running = false;
-      }
+      }*/
     }
     try {
       client.close();
@@ -70,8 +72,8 @@ public class ClientHandler implements Runnable {
     }
   }
 
-  private void pong() {
-    String command = ServerProtocol.PONG.toString();
+  protected void ping() {
+    String command = ServerProtocol.PING.toString();
     this.out.println(encrypt(command));
   }
 
@@ -163,7 +165,7 @@ public class ClientHandler implements Runnable {
           case BROADCAST -> this.sendMessageServer(command[1]);
           case WHISPER -> this.sendMessageClient(command[1], command[2]);
           case SEND_MESSAGE_LOBBY -> this.sendMessageLobby(command[1]);
-          case PING -> this.pong();
+          case PONG -> this.resetClientStatus();
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
           case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
           case LIST_LOBBY -> {
@@ -177,6 +179,11 @@ public class ClientHandler implements Runnable {
     } catch (IllegalArgumentException e) {
       System.out.println("[CLIENT_HANDLER] Unknown command: " + command[0]);
     }
+  }
+
+  private void resetClientStatus() {
+    this.clientConnected = true;
+    this.noAnswerCounter = 0;
   }
 
   /** Requests the client's username upon connection. */

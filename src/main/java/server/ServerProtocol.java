@@ -48,7 +48,7 @@ public enum ServerProtocol {
 
   SEND_CLIENT_LIST(1),
 
-  PONG(0);
+  PING(0);
 
   private final int numArgs;
 

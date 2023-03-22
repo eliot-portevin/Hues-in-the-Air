@@ -10,13 +10,15 @@ public class Server implements Runnable {
 
   private final int PORT;
 
-  private final ArrayList<ClientHandler> clientsHandlers = new ArrayList<>();
+  private final ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
   private final ArrayList<Thread> clientThreads = new ArrayList<>();
   private final HashMap<String, Lobby> lobbies = new HashMap<>();
 
   private ServerSocket listener;
 
   private boolean shuttingDown = false;
+  private boolean noClientConnected = true;
+  private Thread pingSender;
 
   public Server(String PORT) {
     this.PORT = Integer.parseInt(PORT);
@@ -29,9 +31,14 @@ public class Server implements Runnable {
   public void run() {
     try {
       this.listener = new ServerSocket(this.PORT);
+      this.pingSender = new Thread(new ServerPingSender(this.clientHandlers, this));
 
       while (true) {
         if (!shuttingDown) {
+          if(this.noClientConnected) {
+            this.noClientConnected = false;
+            this.pingSender.start();
+          }
           System.out.println("[SERVER] Waiting for client connection...");
           Socket client = listener.accept();
           this.addClient(client);
@@ -47,7 +54,7 @@ public class Server implements Runnable {
 
   private void addClient(Socket clientSocket) throws IOException {
     ClientHandler clientHandler = new ClientHandler(clientSocket, this);
-    this.clientsHandlers.add(clientHandler);
+    this.clientHandlers.add(clientHandler);
 
     Thread clientThread = new Thread(clientHandler);
     this.clientThreads.add(clientThread);
@@ -66,9 +73,9 @@ public class Server implements Runnable {
     if(client.getLobby() != null) {
       client.getLobby().removeClient(client);
     }
-    this.clientThreads.get(this.clientsHandlers.indexOf(client)).interrupt();
-    this.clientThreads.remove(this.clientsHandlers.indexOf(client));
-    this.clientsHandlers.remove(client);
+    this.clientThreads.get(this.clientHandlers.indexOf(client)).interrupt();
+    this.clientThreads.remove(this.clientHandlers.indexOf(client));
+    this.clientHandlers.remove(client);
 
     System.out.println("[SERVER] Client disconnected!");
   }
@@ -80,7 +87,7 @@ public class Server implements Runnable {
     for (Thread clientThread : this.clientThreads) {
       clientThread.interrupt();
     }
-    for (ClientHandler client : this.clientsHandlers) {
+    for (ClientHandler client : this.clientHandlers) {
       removeClient(client);
     }
 
@@ -89,11 +96,11 @@ public class Server implements Runnable {
   }
 
   protected ArrayList<ClientHandler> getClientHandlers() {
-    return this.clientsHandlers;
+    return this.clientHandlers;
   }
 
   protected ClientHandler getClientHandler(String username) {
-    for (ClientHandler client : this.clientsHandlers) {
+    for (ClientHandler client : this.clientHandlers) {
       if (client.getUsername() != null) {
         if (client.getUsername().equals(username)) {
           return client;

@@ -9,6 +9,7 @@ public class Client {
   // Status of client
   boolean connectedToServer = true;
   int noAnswerCounter = 0;
+  boolean shuttingDown = false;
 
   // Server info
   private static int SERVER_PORT;
@@ -34,18 +35,20 @@ public class Client {
 
     this.inputThread = new Thread(this.inputSocket);
     this.outputThread = new Thread(this.outputSocket);
-    this.pingSender = new Thread(new PingSender(this));
+    this.pingSender = new Thread(new ClientPingSender(this));
 
     inputThread.start();
     outputThread.start();
-    this.pingSender.run();
+    this.pingSender.start();
 
     System.out.println("[CLIENT] Connection to server established");
   }
 
-  protected void ping() {
-    String command = ClientProtocol.PING.toString();
-    this.outputSocket.sendToServer(command);
+  protected void pong() {
+    if (!shuttingDown) {
+      String command = ClientProtocol.PONG.toString();
+      this.outputSocket.sendToServer(command);
+    }
   }
 
   public static void start(String[] args) {

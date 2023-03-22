@@ -1,12 +1,12 @@
 package client;
 
 
-public class PingSender implements Runnable{
+public class ClientPingSender implements Runnable{
 
     Client client;
-    Boolean running = true;
+    boolean running = true;
 
-    public PingSender(Client client) {
+    public ClientPingSender(Client client) {
         this.client = client;
     }
 
@@ -16,11 +16,11 @@ public class PingSender implements Runnable{
                 Thread.sleep(1000);
                 if(client.connectedToServer) {
                     client.connectedToServer = false;
-                    client.ping();
+                    client.pong();
                 }
                 else {
                     if(client.noAnswerCounter > 3) {
-                        client.reconnect();
+                        //client.reconnect();
                     }
                     else {
                         client.noAnswerCounter++;
@@ -29,7 +29,7 @@ public class PingSender implements Runnable{
 
                 }
             } catch (InterruptedException e) {
-                System.out.println("Ping sender couldn't sleep.");
+                System.out.println("CLient ping sender couldn't sleep.");
                 throw new RuntimeException(e);
             }
         }
