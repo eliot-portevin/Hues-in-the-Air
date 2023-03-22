@@ -14,12 +14,12 @@ Example: ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + re
 Command sent form server to client. Here the separator is used to separate the argument NO_USER_FOUND from the argument recipient (the specific user not found)
 
 ### NO_USERNAME_SET
-Used to request username from client <br>
+Used to request username from client when it hasn't been set yet (called upon startup of the game).<br>
 Example: ServerProtocol.NO_USERNAME_SET.toString() <br>
 Command sent from server to client, to receive the username of the clients system.
 
 ### USERNAME_SET_TO
-Inform client which username he has now <br>
+Inform client that their username has been changed. <br>
 Example: ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username; <br>
 Command sent form server to client, to tell the client, its username is now set to this.username <br>
 
@@ -44,9 +44,9 @@ Example: ServerProtocol.SEND_MESSAGE_LOBBY + ServerProtocol.Separator + username
 Command sent form server all clients in the lobby, to send message to all clients connected to the lobby
 
 ### SEND_CLIENT_LIST
-List of all clients is being sent to a client <br>
+List of all clients is being sent to a client upon their request.<br>
 Example: ServerProtocol.SEND_CLIENT_LIST.toString() + ServerProtocol.SEPARATOR + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" ")); <br>
-Command sent form server to client, to inform client who is connected to the server
+Command sent form server to client, to inform client of who is connected to the server
 
 ### PONG
 Signal regularly sent from server to client to confirm connection
@@ -63,10 +63,11 @@ Here the client detects if a user input is meant as a command and if yes sends i
 ### SET_USERNAME
 Set client username <br>
 Example: ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username <br>
-Sends command to server which tells server to update the username
+Sends command to server which asks server to update the username. The server then has the right
+to modify that request if the username is already taken.
 
 ### SEND_MESSAGE_LOBBY
-Sends message to whole lobby <br>
+Sends message to the whole lobby <br>
 Example: ClientProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + message <br>
 Command sent from client to server. Server then sends message to all clients in lobby.
 
