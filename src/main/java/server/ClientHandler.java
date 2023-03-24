@@ -156,7 +156,7 @@ public class ClientHandler implements Runnable {
 
       if (protocol.getNumArgs() == command.length - 1) {
         switch (protocol) {
-          case LOGOUT -> this.server.removeClient(this);
+          case EXIT -> this.server.removeClient(this);
           case SET_USERNAME -> this.setUsername(command[1]);
           case BROADCAST -> this.sendMessageServer(command[1]);
           case WHISPER -> this.sendMessageClient(command[1], command[2]);
@@ -169,6 +169,9 @@ public class ClientHandler implements Runnable {
             if (this.lobby != null) this.sendClientList(this.lobby.getClientHandlers());
           }
           case LIST_SERVER -> this.sendClientList(this.server.getClientHandlers());
+          case EXIT_LOBBY -> {
+            if (this.lobby != null) this.lobby.removeClient(this);
+          }
 
           default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
         }

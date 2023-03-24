@@ -65,7 +65,7 @@ public class Server implements Runnable {
 
   /**
    * Called from {@link ClientHandler} when a client disconnects ({@link
-   * client.ClientProtocol#LOGOUT}). Removes the client from the list of clients, from its lobby and
+   * client.ClientProtocol#EXIT}). Removes the client from the list of clients, from its lobby and
    * interrupts the client's dedicated thread.
    */
   protected void removeClient(ClientHandler client) {

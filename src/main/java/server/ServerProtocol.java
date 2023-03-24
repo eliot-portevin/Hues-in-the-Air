@@ -1,6 +1,7 @@
 package server;
 
 import client.ClientProtocol;
+import com.sun.glass.ui.Accessible;
 
 /**
  * Server protocol for Hues in the Air

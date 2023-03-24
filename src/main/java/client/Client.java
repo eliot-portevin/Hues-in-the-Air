@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import server.Lobby;
 import server.ServerProtocol;
 
 public class Client {
@@ -186,10 +187,10 @@ public class Client {
     }
   }
 
-  protected void logout() {
+  protected void exit() {
     // Communicate with server that client is logging out
     // TODO: solve SocketException when logging out
-    String command = ClientProtocol.LOGOUT.toString();
+    String command = ClientProtocol.EXIT.toString();
     this.outputSocket.sendToServer(command);
 
     // Close the socket and stop the threads
@@ -202,6 +203,11 @@ public class Client {
       e.printStackTrace();
     }
     System.exit(0);
+  }
+  protected void exitLobby() {
+    String command = ClientProtocol.EXIT_LOBBY.toString();
+    this.outputSocket.sendToServer(command);
+    System.out.println("exit");
   }
 
   protected void createLobby(String name, String password) {
@@ -272,5 +278,8 @@ public class Client {
       System.out.println(" - " + client);
     }
     System.out.print("> ");
+  }
+  public void lobbyExited(Lobby lobby) {
+    System.out.print("Exiting lobby " + lobby.getName());
   }
 }

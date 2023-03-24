@@ -9,6 +9,11 @@ public class GuiFirstAttempts {
         frame.setSize(700, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        JButton  startButton = new JButton("Start");
+        JPanel newPanel= new JPanel();
+        newPanel.setSize(700, 500);
+
     }
 
 }

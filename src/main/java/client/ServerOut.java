@@ -102,10 +102,11 @@ public class ServerOut implements Runnable {
         // If the command has no arguments
         if (firstSpace == command.length()) {
           switch (protocol) {
-            case LOGOUT -> this.client.logout();
+            case EXIT -> this.client.exit();
             case WHOAMI -> this.client.whoami();
             case LIST_LOBBY -> this.client.listClientsLobby();
             case LIST_SERVER -> this.client.listClientsServer();
+            case EXIT_LOBBY -> this.client.exitLobby();
 
             case SET_USERNAME -> this.client.setUsername();
             case BROADCAST -> this.client.sendMessageServer();

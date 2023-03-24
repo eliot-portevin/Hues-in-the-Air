@@ -43,7 +43,7 @@ public enum ClientProtocol {
   BROADCAST(1),
 
   /** Client is exitting the program. */
-  LOGOUT(0),
+  EXIT(0),
 
   /**
    * Client wants to join a lobby
@@ -66,6 +66,7 @@ public enum ClientProtocol {
   LIST_SERVER(0),
 
   LIST_LOBBY(0),
+  EXIT_LOBBY(0),
 
   CLIENT_PING(0),
   CLIENT_PONG(0);

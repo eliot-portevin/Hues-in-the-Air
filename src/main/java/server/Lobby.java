@@ -23,9 +23,10 @@ public class Lobby {
 
   protected void removeClient(ClientHandler client) {
     this.clients.remove(client);
+
   }
 
-  protected String getName() {
+  public String getName() {
     return name;
   }
 
