@@ -48,10 +48,12 @@ public enum ServerProtocol {
   SEND_MESSAGE_LOBBY(2),
 
   SEND_CLIENT_LIST(1),
+  LOBBY_EXITED(1),
 
   SERVER_PING(0),
 
   SERVER_PONG(0);
+
 
   private final int numArgs;
 

@@ -240,11 +240,18 @@ public class ClientHandler implements Runnable {
     return this.lobby;
   }
 
+
   protected void sendClientList(ArrayList<ClientHandler> clients) {
     String command =
-        ServerProtocol.SEND_CLIENT_LIST.toString()
-            + ServerProtocol.SEPARATOR
-            + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
+            ServerProtocol.SEND_CLIENT_LIST.toString()
+                    + ServerProtocol.SEPARATOR
+                    + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
     this.out.println(encrypt(command));
   }
+  protected void exitLobby(){
+    String command = ServerProtocol.LOBBY_EXITED.toString() + ServerProtocol.SEPARATOR + this.lobby.getName();
+    this.out.println(encrypt(command));
+    this.lobby = null;
+  }
 }
+

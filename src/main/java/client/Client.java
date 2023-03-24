@@ -279,7 +279,7 @@ public class Client {
     }
     System.out.print("> ");
   }
-  public void lobbyExited(Lobby lobby) {
-    System.out.print("Exiting lobby " + lobby.getName());
+  public void lobbyExited(String lobbyName) {
+    System.out.print("Exiting lobby " + lobbyName);
   }
 }

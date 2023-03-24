@@ -22,8 +22,8 @@ public class Lobby {
   }
 
   protected void removeClient(ClientHandler client) {
+    client.exitLobby();
     this.clients.remove(client);
-
   }
 
   public String getName() {
