@@ -34,8 +34,6 @@ public class ServerIn implements Runnable {
         String[] command = this.receiveFromServer();
         if (command != null) {
           this.protocolSwitch(command);
-        } else {
-          System.out.println("[CLIENT] ServerIn: command is null");
         }
       }
       this.serverSocket.close();
@@ -47,7 +45,15 @@ public class ServerIn implements Runnable {
   }
 
   private String[] receiveFromServer() throws IOException {
-    return decrypt(this.in.readLine()).split(ServerProtocol.SEPARATOR.toString());
+    String input = this.in.readLine();
+    if (input != null) {
+      return decrypt(input).split(ServerProtocol.SEPARATOR.toString());
+    }
+    else {
+      this.client.receivedNullCounter++;
+      // Received null from server
+      return null;
+    }
   }
 
   /**

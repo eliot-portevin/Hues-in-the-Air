@@ -51,18 +51,8 @@ public class ClientHandler implements Runnable {
     while (this.running) {
       // Receive message, decrypt it and split it into an array
       String message = this.receiveFromClient();
-      /*if (message == null) {
-        this.missedConnections++;
-        System.out.println("[CLIENT_HANDLER] " + this.username + " failed to receive message from client");
-      } else {*/
-        this.missedConnections = 0;
-        System.out.println(message);
-        String[] command = decrypt(message).split(ServerProtocol.SEPARATOR.toString());
-        this.protocolSwitch(command);
-      /*}
-      if (this.missedConnections >= 3) {
-        this.running = false;
-      }*/
+      String[] command = decrypt(message).split(ServerProtocol.SEPARATOR.toString());
+      this.protocolSwitch(command);
     }
     try {
       client.close();

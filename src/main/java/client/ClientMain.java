@@ -7,6 +7,9 @@ public class ClientMain {
         Client client = new Client();
 
         try {
+            if (args.length == 2) {
+                serverInfo[0] = args[0] + ":" + args[1];
+            }
             client.run(serverInfo);
         } catch (Exception e) {
             e.printStackTrace();
