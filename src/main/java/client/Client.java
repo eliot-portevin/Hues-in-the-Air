@@ -62,8 +62,6 @@ public class Client {
     }
   }
 
-
-
   public static void start(String[] args) {
     System.out.println("Starting client...");
     String[] serverInfo = args[0].split(":");
@@ -104,10 +102,6 @@ public class Client {
     if (this.socket.isConnected()) {
       this.connectedToServer = true;
     }
-  }
-
-  public void reconnect() {
-    this.connectToServer();
   }
 
   protected void setUsername(String username) {

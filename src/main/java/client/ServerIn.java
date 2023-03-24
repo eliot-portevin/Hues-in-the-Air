@@ -48,8 +48,7 @@ public class ServerIn implements Runnable {
     String input = this.in.readLine();
     if (input != null) {
       return decrypt(input).split(ServerProtocol.SEPARATOR.toString());
-    }
-    else {
+    } else {
       this.client.receivedNullCounter++;
       // Received null from server
       return null;

@@ -31,7 +31,6 @@ public class ClientHandler implements Runnable {
   // Client values
   private String username;
   private Lobby lobby;
-  private int missedConnections = 0;
 
   /** Is in charge of a single client. */
   public ClientHandler(Socket clientSocket, Server server) throws IOException {
@@ -51,8 +50,10 @@ public class ClientHandler implements Runnable {
     while (this.running) {
       // Receive message, decrypt it and split it into an array
       String message = this.receiveFromClient();
-      String[] command = decrypt(message).split(ServerProtocol.SEPARATOR.toString());
-      this.protocolSwitch(command);
+      if (message != null) {
+        String[] command = decrypt(message).split(ServerProtocol.SEPARATOR.toString());
+        this.protocolSwitch(command);
+      }
     }
     try {
       client.close();
@@ -234,10 +235,6 @@ public class ClientHandler implements Runnable {
 
   protected Lobby getLobby() {
     return this.lobby;
-  }
-
-  protected ArrayList<ClientHandler> getClients() {
-    return this.server.getClientHandlers();
   }
 
   protected void sendClientList(ArrayList<ClientHandler> clients) {

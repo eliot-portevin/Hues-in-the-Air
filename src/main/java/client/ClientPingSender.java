@@ -18,7 +18,8 @@ public class ClientPingSender implements Runnable {
           client.ping();
         } else {
           if (client.noAnswerCounter > 3) {
-            System.out.println("[CLIENT_PING_SENDER] Server didn't respond to 3 pings. Logging out.");
+            System.out.println(
+                "[CLIENT_PING_SENDER] Server didn't respond to 3 pings. Logging out.");
             this.client.logout();
           } else {
             client.noAnswerCounter++;
