@@ -1,6 +1,7 @@
 package client;
 
-import server.ServerProtocol;import static shared.Encryption.*;
+import server.ServerProtocol;
+import static shared.Encryption.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,12 +32,10 @@ public class ServerOut implements Runnable {
   public void run() {
     try {
       while (this.running) {
-        System.out.print("> ");
         String command = this.keyboard.readLine();
 
-        if (command == null) {
-          System.out.println("[CLIENT] Keyboard: command is null");
-        } else {
+        if (command != null) {
+          System.out.print("> ");
           this.handleCommand(command);
         }
       }
@@ -71,12 +70,15 @@ public class ServerOut implements Runnable {
     if (message == null) {
       System.out.println("[SERVER_OUT] Message is null");
       return false;
-    }
-    else {
+    } else {
       String[] command = message.split(ServerProtocol.SEPARATOR.toString());
-      if (command.length > ClientProtocol.valueOf(command[0]).getNumArgs() + 1){
-        System.out.println("[SERVER_OUT] Tried to send too many arguments: " + Arrays.toString(command) +
-            "\n Would you just have happened to have " + ServerProtocol.SEPARATOR.toString() + " in your message?");
+      if (command.length > ClientProtocol.valueOf(command[0]).getNumArgs() + 1) {
+        System.out.println(
+            "[SERVER_OUT] Tried to send too many arguments: "
+                + Arrays.toString(command)
+                + "\n Would you just have happened to have "
+                + ServerProtocol.SEPARATOR.toString()
+                + " in your message?");
         return false;
       }
     }
