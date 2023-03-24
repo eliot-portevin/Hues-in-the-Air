@@ -12,6 +12,7 @@ public class Client {
   // Status of client
   boolean connectedToServer = true;
   int noAnswerCounter = 0;
+  int receivedNullCounter = 0;
   boolean shuttingDown = false;
 
   // Server info
