@@ -73,7 +73,12 @@ public class ClientHandler implements Runnable {
   }
 
   protected void ping() {
-    String command = ServerProtocol.PING.toString();
+    String command = ServerProtocol.SERVER_PING.toString();
+    this.out.println(encrypt(command));
+  }
+
+  protected void pong() {
+    String command = ServerProtocol.SERVER_PONG.toString();
     this.out.println(encrypt(command));
   }
 
@@ -165,7 +170,8 @@ public class ClientHandler implements Runnable {
           case BROADCAST -> this.sendMessageServer(command[1]);
           case WHISPER -> this.sendMessageClient(command[1], command[2]);
           case SEND_MESSAGE_LOBBY -> this.sendMessageLobby(command[1]);
-          case PONG -> this.resetClientStatus();
+          case CLIENT_PING -> this.pong();
+          case CLIENT_PONG -> this.resetClientStatus();
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
           case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
           case LIST_LOBBY -> {

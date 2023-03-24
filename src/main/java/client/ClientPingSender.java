@@ -16,11 +16,11 @@ public class ClientPingSender implements Runnable{
                 Thread.sleep(1000);
                 if(client.connectedToServer) {
                     client.connectedToServer = false;
-                    client.pong();
+                    client.ping();
                 }
                 else {
                     if(client.noAnswerCounter > 3) {
-                        //client.reconnect();
+                        System.out.println("[CLIENT] Client disconnected");
                     }
                     else {
                         client.noAnswerCounter++;

@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.nio.Buffer;
+
 import server.ServerProtocol;
 
 public class Client {
@@ -47,12 +47,21 @@ public class Client {
     System.out.println("[CLIENT] Connection to server established");
   }
 
-  protected void pong() {
+  protected void ping() {
     if (!shuttingDown) {
-      String command = ClientProtocol.PONG.toString();
+      String command = ClientProtocol.CLIENT_PING.toString();
       this.outputSocket.sendToServer(command);
     }
   }
+
+  protected void pong() {
+    if (!shuttingDown) {
+      String command = ClientProtocol.CLIENT_PONG.toString();
+      this.outputSocket.sendToServer(command);
+    }
+  }
+
+
 
   public static void start(String[] args) {
     System.out.println("Starting client...");
