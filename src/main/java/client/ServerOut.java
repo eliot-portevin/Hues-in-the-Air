@@ -73,12 +73,13 @@ public class ServerOut implements Runnable {
     } else {
       String[] command = message.split(ServerProtocol.SEPARATOR.toString());
       if (command.length > ClientProtocol.valueOf(command[0]).getNumArgs() + 1) {
-        System.out.println(
+        System.out.print(
             "[SERVER_OUT] Tried to send too many arguments: "
                 + Arrays.toString(command)
-                + "\n Would you just have happened to have "
+                + "\n> Would you just have happened to have "
                 + ServerProtocol.SEPARATOR.toString()
-                + " in your message?");
+                + " in your message?" +
+                "\n> If you are trying to test this program's security, feel free to go away.\n> ");
         return false;
       }
     }
@@ -97,7 +98,7 @@ public class ServerOut implements Runnable {
       try {
         ClientProtocol protocol =
             ClientProtocol.valueOf(
-                command.substring(1, firstSpace).replace(commandSymbol, "").toUpperCase());
+                command.substring(0, firstSpace).replace(commandSymbol, "").toUpperCase());
 
         // If the command has no arguments
         if (firstSpace == command.length()) {
@@ -108,6 +109,10 @@ public class ServerOut implements Runnable {
             case LIST_SERVER -> this.client.listClientsServer();
             case EXIT_LOBBY -> this.client.exitLobby();
 
+              /*
+               Methods requiring further inputs from user. These can also be called directly with the
+               required arguments.
+              */
             case SET_USERNAME -> this.client.setUsername();
             case BROADCAST -> this.client.sendMessageServer();
             case WHISPER -> this.client.sendMessageClient();
@@ -118,22 +123,31 @@ public class ServerOut implements Runnable {
         } else {
           String[] args = command.substring(firstSpace + 1).split(" ");
 
-          switch (protocol) {
-            case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
-            case WHISPER -> this.client.sendMessageClient(
-                args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-            case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby(String.join(" ", args));
-            case SET_USERNAME -> this.client.setUsername(args[0].replaceAll(" ", "_"));
-            case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
-            case JOIN_LOBBY -> this.client.joinLobby(args[0], args[1]);
+          if (protocol.getNumArgs() == args.length) {
+            switch (protocol) {
+              case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
+              case WHISPER -> this.client.sendMessageClient(
+                  args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+              case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby(String.join(" ", args));
+              case SET_USERNAME -> this.client.setUsername(args[0].replaceAll(" ", "_"));
+              case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
+              case JOIN_LOBBY -> this.client.joinLobby(args[0], args[1]);
+            }
+          } else {
+            System.out.print(
+                "[SERVER_OUT] The command "
+                    + protocol.toString()
+                    + " requires "
+                    + protocol.getNumArgs()
+                    + " arguments: see NetworkProtocol.md for more information.\n> ");
           }
         }
       } catch (IllegalArgumentException e) {
-        System.out.println("ServerOut: command " + command + " not recognized");
+        System.out.print("[SERVER_OUT] Command '" + command.substring(1) + "' not recognized.\n> ");
       }
 
     } else {
-      System.out.println("[CLIENT] ServerOut: command does not start with command symbol");
+      System.out.print("[SERVER_OUT] Command does not start with command symbol.\n> ");
     }
   }
 }

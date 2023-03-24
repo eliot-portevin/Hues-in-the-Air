@@ -211,7 +211,7 @@ public class ClientHandler implements Runnable {
     ClientHandler client = this.server.getClientHandler(username);
 
     if (client == null) {
-      System.out.printf("%s changed their username to %s.\n", this.username, username);
+      System.out.printf("[CLIENT_HANDLER] %s changed their username to %s.\n", this.username, username);
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;

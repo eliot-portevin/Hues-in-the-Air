@@ -59,6 +59,8 @@ public enum ClientProtocol {
    */
   CREATE_LOBBY(2),
 
+  EXIT_LOBBY(0),
+
   /** Client requests to know their own username */
   WHOAMI(0),
 
@@ -66,7 +68,6 @@ public enum ClientProtocol {
   LIST_SERVER(0),
 
   LIST_LOBBY(0),
-  EXIT_LOBBY(0),
 
   CLIENT_PING(0),
   CLIENT_PONG(0);

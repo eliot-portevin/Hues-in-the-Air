@@ -119,7 +119,7 @@ public class Server implements Runnable {
     }
 
     this.lobbies.put(lobbyName, new Lobby(lobbyName, password));
-    System.out.printf("%s created lobby %s\n", client.getUsername(), lobbyName);
+    System.out.printf("[SERVER] %s created lobby %s\n", client.getUsername(), lobbyName);
     this.lobbies.get(lobbyName).addClient(client, password);
   }
 

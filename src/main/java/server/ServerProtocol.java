@@ -32,8 +32,7 @@ public enum ServerProtocol {
   /**
    * A message is being sent to another client.
    *
-   * <p>Format:
-   * WHISPER<Separator>sender.username<Separator>message
+   * <p>Format: WHISPER<Separator>sender.username<Separator>message
    */
   WHISPER(2),
 
@@ -48,12 +47,15 @@ public enum ServerProtocol {
   SEND_MESSAGE_LOBBY(2),
 
   SEND_CLIENT_LIST(1),
+
+  /*
+  A client has successfully exited the lobby.
+   */
   LOBBY_EXITED(1),
 
   SERVER_PING(0),
 
   SERVER_PONG(0);
-
 
   private final int numArgs;
 

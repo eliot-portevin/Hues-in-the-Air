@@ -47,6 +47,7 @@ public class Client {
     this.pingSender.start();
 
     System.out.println("[CLIENT] Connection to server established");
+    System.out.print("> ");
   }
 
   protected void ping() {
@@ -273,13 +274,14 @@ public class Client {
   }
 
   public void printClientList(String[] clients) {
-    System.out.println();
+    System.out.println("###############");
     for (String client : clients) {
-      System.out.println(" - " + client);
+      System.out.println("> " + client);
     }
+    System.out.println("> ###############");
     System.out.print("> ");
   }
   public void lobbyExited(String lobbyName) {
-    System.out.print("Exiting lobby " + lobbyName);
+    System.out.print("> Exiting lobby " + lobbyName + "\n> ");
   }
 }
