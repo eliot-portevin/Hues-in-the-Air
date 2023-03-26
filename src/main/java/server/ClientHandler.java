@@ -108,7 +108,7 @@ public class ClientHandler implements Runnable {
             + message;
 
     ClientHandler recipientHandler = this.server.getClientHandler(recipient);
-    if (recipientHandler != null) {
+    if (recipientHandler != null && recipientHandler != this) {
       output = encrypt(output);
       recipientHandler.out.println(output);
       this.out.println(output);

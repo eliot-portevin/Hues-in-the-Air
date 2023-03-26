@@ -261,6 +261,7 @@ public class Client {
 
   protected void whoami() {
     System.out.println(this.username);
+    System.out.print("> ");
   }
 
   protected void listClientsLobby() {
