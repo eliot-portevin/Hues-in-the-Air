@@ -26,7 +26,7 @@ public class ClientPingSender implements Runnable {
           if (client.noAnswerCounter > 3) {
             System.out.println(
                 "[CLIENT_PING_SENDER] Server didn't respond to 3 pings. Logging out.");
-            this.client.logout();
+            this.client.exit();
           } else {
             client.noAnswerCounter++;
             client.connectedToServer = true;

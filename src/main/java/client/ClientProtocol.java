@@ -13,11 +13,7 @@ public enum ClientProtocol {
   /**
    * Symbol inputted by the client in the console to indicate that the following input is a command.
    */
-  COMMAND_SYMBOL(0) {
-    public String toString() {
-      return "!";
-    }
-  },
+  COMMAND_SYMBOL(0) { public String toString() { return "!"; } },
   /**
    * Set client username
    *
@@ -47,7 +43,7 @@ public enum ClientProtocol {
   BROADCAST(1),
 
   /** Client is exitting the program. */
-  LOGOUT(0),
+  EXIT(0),
 
   /**
    * Client wants to join a lobby
@@ -63,19 +59,17 @@ public enum ClientProtocol {
    */
   CREATE_LOBBY(2),
 
-  /** Client requests to know their own username. */
+  EXIT_LOBBY(0),
+
+  /** Client requests to know their own username */
   WHOAMI(0),
 
-  /** Client wants to know the name of the other players on the server. */
+  /** Client wants to know the name of the other players */
   LIST_SERVER(0),
 
-  /** Client wants to know the name of the other players in their lobby. */
   LIST_LOBBY(0),
 
-  /** Client pings the server. */
   CLIENT_PING(0),
-
-  /** Client pongs the server upon receiving a ping. */
   CLIENT_PONG(0);
 
   private final int numArgs;
@@ -84,9 +78,6 @@ public enum ClientProtocol {
     this.numArgs = numArgs;
   }
 
-  /**
-   * @return the number of arguments that this protocol expects.
-   */
   public int getNumArgs() {
     return this.numArgs;
   }

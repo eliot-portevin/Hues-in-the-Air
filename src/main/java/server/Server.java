@@ -65,7 +65,7 @@ public class Server implements Runnable {
 
   /**
    * Called from {@link ClientHandler} when a client disconnects ({@link
-   * client.ClientProtocol#LOGOUT}). Removes the client from the list of clients, from its lobby and
+   * client.ClientProtocol#EXIT}). Removes the client from the list of clients, from its lobby and
    * interrupts the client's dedicated thread.
    */
   protected void removeClient(ClientHandler client) {
@@ -119,7 +119,7 @@ public class Server implements Runnable {
     }
 
     this.lobbies.put(lobbyName, new Lobby(lobbyName, password));
-    System.out.printf("%s created lobby %s\n", client.getUsername(), lobbyName);
+    System.out.printf("[SERVER] %s created lobby %s\n", client.getUsername(), lobbyName);
     this.lobbies.get(lobbyName).addClient(client, password);
   }
 

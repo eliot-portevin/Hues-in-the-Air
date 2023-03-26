@@ -22,10 +22,12 @@ public class Lobby {
   }
 
   protected void removeClient(ClientHandler client) {
+    client.exitLobby();
+    System.out.println("[LOBBY] Client " + client.getUsername() + " left lobby!");
     this.clients.remove(client);
   }
 
-  protected String getName() {
+  public String getName() {
     return name;
   }
 

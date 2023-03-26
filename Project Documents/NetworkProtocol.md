@@ -52,6 +52,11 @@ Command sent form server to client, to inform client of who is connected to the 
 Signal regularly sent from server to client to confirm connection
 Example: ServerProtocol.PONG.toString(); <br>
 
+### LOBBY_EXITED
+Sent to a client to inform them that they have successfully exited a lobby. Enables them to print
+a message to the console.
+Example: ServerProtocol.LOBBY_EXITED.toString() + ServerProtocol.SEPARATOR + lobbyName <br>
+
 ## ClientProtocol
 
 ### COMMAND_SYMBOL
@@ -81,9 +86,9 @@ Send a chat message to the whole server <br>
 Example: ClientProtocol.BROADCAST + ClientProtocol.Separator + username + ClientProtocol.Separator + message <br>
 Command sent from client to server. Server then sends message to all clients connected
 
-### LOGOUT
+### EXIT
 Used when client is exiting the program <br>
-Example: ClientProtocol.LOGOUT.toString() <br>
+Example: ClientProtocol.EXIT.toString() <br>
 Command sent from client to server. Server get information, that client is disconnecting --> Logout protocol on serverside
 
 ### JOIN_LOBBY
@@ -95,6 +100,10 @@ Command sent from client to server. Client requests to join specific lobby
 Client wants to create a lobby
 Example: ClientProtocol.CREATE_LOBBY + ClientProtocol.Separator + lobbyName + ClientProtocol.Separator + password <br>
 Command sent from client to server. Client requests to create lobby on server.
+
+### EXIT_LOBBY
+Client wants to exit a lobby. If they are not in a lobby, the server will ignore their request. <br>
+Example: ClientProtocol.EXIT_LOBBY <br>
 
 ### WHOAMI
 Client requests its name from server

@@ -156,7 +156,7 @@ public class ClientHandler implements Runnable {
 
       if (protocol.getNumArgs() == command.length - 1) {
         switch (protocol) {
-          case LOGOUT -> this.server.removeClient(this);
+          case EXIT -> this.server.removeClient(this);
           case SET_USERNAME -> this.setUsername(command[1]);
           case BROADCAST -> this.sendMessageServer(command[1]);
           case WHISPER -> this.sendMessageClient(command[1], command[2]);
@@ -169,6 +169,9 @@ public class ClientHandler implements Runnable {
             if (this.lobby != null) this.sendClientList(this.lobby.getClientHandlers());
           }
           case LIST_SERVER -> this.sendClientList(this.server.getClientHandlers());
+          case EXIT_LOBBY -> {
+            if (this.lobby != null) this.lobby.removeClient(this);
+          }
 
           default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
         }
@@ -208,7 +211,7 @@ public class ClientHandler implements Runnable {
     ClientHandler client = this.server.getClientHandler(username);
 
     if (client == null) {
-      System.out.printf("%s changed their username to %s.\n", this.username, username);
+      System.out.printf("[CLIENT_HANDLER] %s changed their username to %s.\n", this.username, username);
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
@@ -237,11 +240,18 @@ public class ClientHandler implements Runnable {
     return this.lobby;
   }
 
+
   protected void sendClientList(ArrayList<ClientHandler> clients) {
     String command =
-        ServerProtocol.SEND_CLIENT_LIST.toString()
-            + ServerProtocol.SEPARATOR
-            + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
+            ServerProtocol.SEND_CLIENT_LIST.toString()
+                    + ServerProtocol.SEPARATOR
+                    + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
     this.out.println(encrypt(command));
   }
+  protected void exitLobby(){
+    String command = ServerProtocol.LOBBY_EXITED.toString() + ServerProtocol.SEPARATOR + this.lobby.getName();
+    this.out.println(encrypt(command));
+    this.lobby = null;
+  }
 }
+
