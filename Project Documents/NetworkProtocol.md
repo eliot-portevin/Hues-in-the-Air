@@ -16,7 +16,7 @@ Command sent form server to client. Here the separator is used to separate the a
 ### NO_USERNAME_SET
 Used to request username from client when it hasn't been set yet (called upon startup of the game).<br>
 Example: ServerProtocol.NO_USERNAME_SET.toString() <br>
-Command sent from server to client, to receive the username of the clients system.
+Command sent from server to client, to receive the username of the client's system.
 
 ### USERNAME_SET_TO
 Inform client that their username has been changed. <br>
@@ -73,7 +73,7 @@ Command sent from client to server. Server then sends message to all clients in 
 
 ### WHISPER
 Sends message to specific client <br>
-Example: ClientProtocol.SEND_MESSAGE_CLIENT + ClientProtocol.SEPARATOR + receiver.username + ClientProtocol.SEPARATORm + message <br>
+Example: ClientProtocol.SEND_MESSAGE_CLIENT + ClientProtocol.SEPARATOR + receiver.username + ClientProtocol.SEPARATOR + message <br>
 Command sent from client to server. Server then sends message only to specific client.
 
 ### BROADCAST
@@ -111,7 +111,11 @@ Client wants to know the name of the other players inside its lobby <br>
 Example: ClientProtocol.LIST_SERVER <br>
 Command sent from client to server. Client requests names of all clients in its lobby
 
-### PING
+### CLIENT_PING
 Signal regularly sent from client to server to confirm connection<br>
 Example: ClientProtocol.PING <br>
 Command sent form client to server. Client sends this command regularly to server to detect connection issues.
+
+### CLIENT_PONG
+Signal sent to server upon receiving a PING from the server <br>
+Example: ClientProtocol.PONG <br>

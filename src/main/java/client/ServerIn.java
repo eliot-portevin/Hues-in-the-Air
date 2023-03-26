@@ -44,6 +44,13 @@ public class ServerIn implements Runnable {
     }
   }
 
+  /**
+   * Receives a command from the server via the socket and returns it as a string array. If the
+   * received string is null, the method returns null. This however only happens when the connection
+   * to the server is lost. Called by {@link #run()}.
+   *
+   * @throws IOException
+   */
   private String[] receiveFromServer() throws IOException {
     String input = this.in.readLine();
     if (input != null) {
@@ -85,11 +92,22 @@ public class ServerIn implements Runnable {
     }
   }
 
+  /**
+   * Resets the client status to "connected to server" and "noAnswerCounter" to 0. Called by {@link
+   * #protocolSwitch(String[])} upon receiving a PONG from the server.
+   */
   private void resetClientStatus() {
     this.client.connectedToServer = true;
     this.client.noAnswerCounter = 0;
   }
 
+  /**
+   * Prints a message received from another client to the console by formatting it. Called by {@link
+   * #protocolSwitch(String[])}.
+   *
+   * @param command
+   * @param privacy
+   */
   private void receiveMessage(String[] command, String privacy) {
     if (command[0].equals(this.client.username)) {
       System.out.printf("%s [%s]: %s\n> ", privacy, "You", command[1]);

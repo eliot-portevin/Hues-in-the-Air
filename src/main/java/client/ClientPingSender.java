@@ -9,6 +9,12 @@ public class ClientPingSender implements Runnable {
     this.client = client;
   }
 
+  /**
+   * Method from Runnable interface.
+   *
+   * Sends a ping to the server every 300ms. If the server doesn't respond to 3 pings, the client
+   * logs out.
+   */
   public void run() {
     while (this.running) {
       try {

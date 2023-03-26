@@ -30,6 +30,10 @@ public class Client {
   // Username
   protected String username = System.getProperty("user.name");
 
+  /**
+   * Run method from Runnable. Called from {@link ClientMain}. Creates input and output threads
+   * (server communication) and starts them.
+   */
   public void run(String[] args) throws IOException {
     start(args);
     this.connectToServer();
@@ -48,6 +52,7 @@ public class Client {
     System.out.println("[CLIENT] Connection to server established");
   }
 
+  /** Pings the server. Called from {@link ClientPingSender} */
   protected void ping() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PING.toString();
@@ -55,6 +60,7 @@ public class Client {
     }
   }
 
+  /** Pongs the server when ping from server was received. Called from {@link ServerIn} */
   protected void pong() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PONG.toString();
@@ -62,7 +68,11 @@ public class Client {
     }
   }
 
-  public static void start(String[] args) {
+  /**
+   * Sets the SERVER_IP and SERVER_PORT for the class upon startup. Called from {@link Client#run(
+   * String[])}
+   */
+  private void start(String[] args) {
     System.out.println("Starting client...");
     String[] serverInfo = args[0].split(":");
     if (serverInfo.length != 2) {
@@ -71,18 +81,22 @@ public class Client {
     }
 
     // Set server IP
-    if (serverInfo[0].equals("localhost")) SERVER_IP = "127.0.0.1";
-    else SERVER_IP = serverInfo[0];
+    if (serverInfo[0].equals("localhost")) this.SERVER_IP = "127.0.0.1";
+    else this.SERVER_IP = serverInfo[0];
 
     // Set server port
     try {
-      SERVER_PORT = Integer.parseInt(serverInfo[1]);
+      this.SERVER_PORT = Integer.parseInt(serverInfo[1]);
     } catch (NumberFormatException e) {
       System.err.println(
           "Start the client with the following format: java Client <serverIP>:<serverPort>");
     }
   }
 
+  /**
+   * Tries to connect to the server socket according to the SERVER_IP and SERVER_PORT. Called from
+   * {@link Client#run(String[])}. If connection is refused, retries every 2 seconds.
+   */
   private void connectToServer() {
     this.socket = new Socket();
     // Try to connect to the server, if connection is refused, retry every 2 seconds
@@ -104,12 +118,23 @@ public class Client {
     }
   }
 
+  /**
+   * Client wants to change their username. Sends a command to the server ({@link
+   * server.ClientHandler}) containing the new username. Called upon startup when server requests
+   * username and from {@link ServerOut}.
+   *
+   * @param username
+   */
   protected void setUsername(String username) {
     String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
     this.username = username;
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Client wants to change their username. Reads the new username from the console and calls {@link
+   * Client#setUsername(String)}.
+   */
   protected void setUsername() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -122,11 +147,24 @@ public class Client {
     }
   }
 
+  /**
+   * Client wants to broadcast a message to all clients on server. This method is called if the
+   * client has inputted the message directly in the command line (see {@link ServerOut}). Sends a
+   * command to the server ({@link server.ClientHandler}) containing the message. Called from {@link
+   * ServerOut}.
+   *
+   * @param message
+   */
   protected void sendMessageServer(String message) {
     String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * See {@link Client#sendMessageServer(String)}. This method is called if the client has not
+   * inputted the message directly in the command line. Requests the message from the console and
+   * calls {@link Client#sendMessageServer(String)} with the message as a parameter.
+   */
   protected void sendMessageServer() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -142,11 +180,11 @@ public class Client {
   /**
    * This client wants to send a private message to another client.
    *
-   * <p>Protocol format: SEND_MESSAGE_CLIENT<SEPARATOR>recipient.username<SEPARATOR>message
+   * <p>Protocol format: WHISPER<SEPARATOR>recipient.username<SEPARATOR>message
    */
   protected void sendMessageClient(String recipient, String message) {
     String command =
-        ServerProtocol.WHISPER.toString()
+        ClientProtocol.WHISPER.toString()
             + ServerProtocol.SEPARATOR
             + recipient
             + ServerProtocol.SEPARATOR
@@ -154,6 +192,11 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * See {@link Client#sendMessageClient(String, String)}. This method is called if the client has
+   * not inputted the message directly in the command line. Requests the message from the console
+   * and calls {@link Client#sendMessageClient(String, String)} with the message as a parameter.
+   */
   protected void sendMessageClient() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -168,12 +211,22 @@ public class Client {
     }
   }
 
+  /**
+   * This client wants to send a message to all clients in the lobby.
+   *
+   * <p>Protocol format: SEND_MESSAGE_LOBBY<SEPARATOR>message
+   */
   protected void sendMessageLobby(String message) {
     String command =
         ClientProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * See {@link Client#sendMessageLobby(String)}. This method is called if the client has not
+   * inputted the message directly in the command line. Requests the message from the console and
+   * calls {@link Client#sendMessageLobby(String)} with the message as a parameter.
+   */
   protected void sendMessageLobby() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -186,9 +239,12 @@ public class Client {
     }
   }
 
+  /**
+   * When client exits the program, this method is called. Communicates with server that client is
+   * logging out and closes the socket.
+   */
   protected void logout() {
     // Communicate with server that client is logging out
-    // TODO: solve SocketException when logging out
     String command = ClientProtocol.LOGOUT.toString();
     this.outputSocket.sendToServer(command);
 
@@ -204,6 +260,13 @@ public class Client {
     System.exit(0);
   }
 
+  /**
+   * Client wants to create a lobby. Sends a command to the server ({@link server.ClientHandler})
+   * containing the lobby name and password. Called from {@link ServerOut}.
+   *
+   * @param name
+   * @param password
+   */
   protected void createLobby(String name, String password) {
     String command =
         ClientProtocol.CREATE_LOBBY.toString()
@@ -214,6 +277,11 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * See {@link Client#createLobby(String, String)}. This method is called if the client has not
+   * inputted the lobby name and password directly in the command line. Requests these parameters
+   * from the console and calls {@link Client#createLobby(String, String)}.
+   */
   protected void createLobby() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -228,6 +296,13 @@ public class Client {
     }
   }
 
+  /**
+   * Client wants to join an existing lobby. Sends a command to the server ({@link
+   * server.ClientHandler}) containing the lobby name and password. Called from {@link ServerOut}.
+   *
+   * @param name
+   * @param password
+   */
   protected void joinLobby(String name, String password) {
     String command =
         ClientProtocol.JOIN_LOBBY.toString()
@@ -238,6 +313,11 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * See {@link Client#joinLobby(String, String)}. This method is called if the client has not
+   * inputted the lobby name and password directly in the command line. Requests these parameters
+   * from the console and calls {@link Client#joinLobby(String, String)}.
+   */
   protected void joinLobby() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -252,20 +332,29 @@ public class Client {
     }
   }
 
+  /** Client wants to know their username. Called from {@link ServerOut}. */
   protected void whoami() {
     System.out.println(this.username);
   }
 
+  /** Client wants to know the list of all clients in the lobby. Called from {@link ServerOut}. */
   protected void listClientsLobby() {
     String command = ClientProtocol.LIST_LOBBY.toString();
     this.outputSocket.sendToServer(command);
   }
 
+  /** Client wants to know the list of all clients in the server. Called from {@link ServerOut}. */
   protected void listClientsServer() {
     String command = ClientProtocol.LIST_SERVER.toString();
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Client has called {@link Client#listClientsLobby()} or {@link Client#listClientsServer()}. Upon
+   * receiving the requested list of clients, this list is printed to the console.
+   *
+   * @param clients
+   */
   public void printClientList(String[] clients) {
     System.out.println();
     for (String client : clients) {
