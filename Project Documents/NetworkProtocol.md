@@ -48,8 +48,13 @@ List of all clients is being sent to a client upon their request.<br>
 Example: ServerProtocol.SEND_CLIENT_LIST.toString() + ServerProtocol.SEPARATOR + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" ")); <br>
 Command sent form server to client, to inform client of who is connected to the server
 
-### PONG
-Signal regularly sent from server to client to confirm connection
+### SERVER_PING
+Signal regularly sent from server to client to confirm connection<br>
+Example: ClientProtocol.PING <br>
+Command sent form client to server. Client sends this command regularly to server to detect connection issues.
+
+### SERVER_PONG
+Signal sent to client upon receiving a PING from the client <br>
 Example: ServerProtocol.PONG.toString(); <br>
 
 ### LOBBY_EXITED

@@ -13,11 +13,18 @@ public class ServerPingSender implements Runnable {
     this.server = server;
   }
 
+  /**
+   * Method from Runnable interface.
+   *
+   * Sends a ping to the client every 300ms. If the client doesn't respond to 3 pings, the server
+   * removes the client.
+   */
   public void run() {
     while (this.running) {
       try {
         Thread.sleep(300);
         ClientHandler client;
+
         for (int i = 0; i < this.clients.size(); i++) {
           client = this.clients.get(i);
           if (client.clientConnected) {
