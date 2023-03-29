@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Arrays;
 
-import static shared.Encryption.decrypt;
 
 /** Handles the input from the server */
 public class ServerIn implements Runnable {
@@ -54,7 +53,7 @@ public class ServerIn implements Runnable {
   private String[] receiveFromServer() throws IOException {
     String input = this.in.readLine();
     if (input != null) {
-      return decrypt(input).split(ServerProtocol.SEPARATOR.toString());
+      return input.split(ServerProtocol.SEPARATOR.toString());
     } else {
       this.client.receivedNullCounter++;
       // Received null from server

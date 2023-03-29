@@ -1,7 +1,6 @@
 package server;
 
 import client.ClientProtocol;
-import static shared.Encryption.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,10 +47,10 @@ public class ClientHandler implements Runnable {
   @Override
   public void run() {
     while (this.running) {
-      // Receive message, decrypt it and split it into an array
+      // Receive message and split it into an array
       String message = this.receiveFromClient();
       if (message != null) {
-        String[] command = decrypt(message).split(ServerProtocol.SEPARATOR.toString());
+        String[] command = message.split(ServerProtocol.SEPARATOR.toString());
         this.protocolSwitch(command);
       }
     }
@@ -65,12 +64,12 @@ public class ClientHandler implements Runnable {
 
   protected void ping() {
     String command = ServerProtocol.SERVER_PING.toString();
-    this.out.println(encrypt(command));
+    this.out.println(command);
   }
 
   protected void pong() {
     String command = ServerProtocol.SERVER_PONG.toString();
-    this.out.println(encrypt(command));
+    this.out.println(command);
   }
 
   /**
@@ -85,8 +84,6 @@ public class ClientHandler implements Runnable {
             + this.username
             + ServerProtocol.SEPARATOR
             + message;
-
-    output = encrypt(output);
 
     for (ClientHandler client : this.server.getClientHandlers()) {
       client.out.println(output);
@@ -109,13 +106,12 @@ public class ClientHandler implements Runnable {
 
     ClientHandler recipientHandler = this.server.getClientHandler(recipient);
     if (recipientHandler != null && recipientHandler != this) {
-      output = encrypt(output);
       recipientHandler.out.println(output);
       this.out.println(output);
     } else {
       System.out.println("Didn't find the user");
       this.out.println(
-          encrypt(ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient));
+          ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient);
     }
   }
 
@@ -128,7 +124,7 @@ public class ClientHandler implements Runnable {
             + message;
 
     for (ClientHandler client : this.lobby.getClientHandlers()) {
-      client.out.println(encrypt(command));
+      client.out.println(command);
     }
   }
 
@@ -189,7 +185,7 @@ public class ClientHandler implements Runnable {
   /** Requests the client's username upon connection. */
   private void requestUsernameFromClient() {
     // TODO Add Logger
-    String message = encrypt(ServerProtocol.NO_USERNAME_SET.toString());
+    String message = ServerProtocol.NO_USERNAME_SET.toString();
     this.out.println(message);
   }
 
@@ -215,7 +211,7 @@ public class ClientHandler implements Runnable {
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
-      this.out.println(encrypt(message));
+      this.out.println(message);
     } else {
       String[] suffixes = {
         " the Great", " the Wise", " the Brave", " the Strong", " the Mighty", " the Magnificent"
@@ -246,11 +242,11 @@ public class ClientHandler implements Runnable {
             ServerProtocol.SEND_CLIENT_LIST.toString()
                     + ServerProtocol.SEPARATOR
                     + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
-    this.out.println(encrypt(command));
+    this.out.println(command);
   }
   protected void exitLobby(){
     String command = ServerProtocol.LOBBY_EXITED.toString() + ServerProtocol.SEPARATOR + this.lobby.getName();
-    this.out.println(encrypt(command));
+    this.out.println(command);
     this.lobby = null;
   }
 }

@@ -1,7 +1,6 @@
 package client;
 
 import server.ServerProtocol;
-import static shared.Encryption.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class ServerOut implements Runnable {
 
   protected void sendToServer(String message) {
     if (this.validateMessage(message)) {
-      this.out.println(encrypt(message));
+      this.out.println(message);
     }
   }
 
