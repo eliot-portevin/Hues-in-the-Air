@@ -16,31 +16,17 @@ public class GuiJavaFX extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    /*
-    Colour scheme:
-    Black: #363636
-    White: #ffffff
-    Yellow: #fccf78
-    Pink: #f57dc6
-    Violet: #9d59db
-    Blue 1: #6aa1f7
-    Blue 2: b3d5f2
-    Green: #9ae6ae
-    Grey: #777777
-    Dark grey: #464646
-
-     */
     stage.setTitle("Hues in the Air");
     stage.setFullScreen(true);
     stage.setResizable(false);
 
     Group root = new Group();
-    Scene scene = new Scene(root, Color.valueOf("#363636"));
+    Scene scene = new Scene(root, Colours.BLACK.getHex());
 
     Text title = new Text();
     title.setText("Hues in the Air");
     title.setFont(Font.font("Verdana", 50));
-    title.setFill(Color.valueOf("#ffffff"));
+    title.setFill(Colours.WHITE.getHex());
     title.setX(this.WIDTH / 2 - title.getLayoutBounds().getWidth() / 2);
     title.setY(this.HEIGHT / 3);
 
