@@ -1,0 +1,7 @@
+@font-face {
+    src: url("/fonts/Bebas_Neue_Regular.ttf");
+}
+
+.label {
+    -fx-font-family: 'Bebas Neue Regular';
+}
