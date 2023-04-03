@@ -62,11 +62,16 @@ public class ClientHandler implements Runnable {
     }
   }
 
+  /**
+   * Sends ping to client to check if the connection is still alive.
+   */
   protected void ping() {
     String command = ServerProtocol.SERVER_PING.toString();
     this.out.println(command);
   }
-
+  /**
+   * Sends a Server_PONG message to the client (meant as a response to the CLIENT_PING message)
+   */
   protected void pong() {
     String command = ServerProtocol.SERVER_PONG.toString();
     this.out.println(command);
@@ -114,7 +119,12 @@ public class ClientHandler implements Runnable {
           ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient);
     }
   }
-
+  /**
+   * The client linked to this ClientHandler wants to send a message to all clients in the lobby.
+   *
+   * <p>See {@link ServerProtocol#SEND_MESSAGE_LOBBY}
+   * @param message The message to send
+   */
   private void sendMessageLobby(String message) {
     String command =
         ServerProtocol.SEND_MESSAGE_LOBBY.toString()
@@ -176,7 +186,7 @@ public class ClientHandler implements Runnable {
       System.out.println("[CLIENT_HANDLER] Unknown command: " + command[0]);
     }
   }
-
+  /** Resets noAnswerCounter. */
   private void resetClientStatus() {
     this.clientConnected = true;
     this.noAnswerCounter = 0;
@@ -236,7 +246,11 @@ public class ClientHandler implements Runnable {
     return this.lobby;
   }
 
-
+  /**
+   * Sends a list of clients to the client.
+   *
+   * @param clients The list of clients to send
+   */
   protected void sendClientList(ArrayList<ClientHandler> clients) {
     String command =
             ServerProtocol.SEND_CLIENT_LIST.toString()
@@ -244,6 +258,10 @@ public class ClientHandler implements Runnable {
                     + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
     this.out.println(command);
   }
+  /**
+   * Called when the client leaves a lobby.
+   * @see Server#removeClient(ClientHandler)
+   */
   protected void exitLobby(){
     String command = ServerProtocol.LOBBY_EXITED.toString() + ServerProtocol.SEPARATOR + this.lobby.getName();
     this.out.println(command);
