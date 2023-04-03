@@ -1,0 +1,31 @@
+@font-face {
+    font-family: Raleway;
+    src: url('fonts/Raleway.ttf');
+}
+
+.tab-pane *.tab-header-area *.tab-header-background {
+    -fx-background-color:transparent;
+}
+
+.tab-pane {
+    -fx-tab-min-width:120px;
+    -fx-tab-max-width:120px;
+    -fx-tab-min-height:50px;
+    -fx-tab-max-height:50px;
+}
+
+.tab {
+    -fx-background-color: #464646;
+    -fx-padding: 1;
+}
+
+.tab:selected {
+    -fx-background-color: #363636;
+}
+
+.tab-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20;
+    -fx-font-family: Raleway;
+    -fx-font-weight: bold;
+}

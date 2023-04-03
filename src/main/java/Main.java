@@ -1,5 +1,5 @@
 import client.ClientMain;
-import server.*;
+import javafx.application.Application;import server.*;
 // import client.*;
 
 public class Main {
@@ -11,7 +11,8 @@ public class Main {
         String hostAddress = split[0];
         String port = split[1];
 
-        ClientMain.main(new String[] {hostAddress, port});
+        //ClientMain.main(new String[] {hostAddress, port});
+        Application.launch(gui.GuiMain.class, args);
       } else if (args[0].equals("server")) {
         ServerMain.main(new String[] {args[1]});
       }
