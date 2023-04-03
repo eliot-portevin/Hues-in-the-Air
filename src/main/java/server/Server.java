@@ -52,6 +52,11 @@ public class Server implements Runnable {
     }
   }
 
+  /**
+   * Adds a client to the list of clients and starts a dedicated thread for the client.
+   * @param clientSocket The socket of the client
+   * @throws IOException If the client socket is closed
+   */
   private void addClient(Socket clientSocket) throws IOException {
     ClientHandler clientHandler = new ClientHandler(clientSocket, this);
     this.clientHandlers.add(clientHandler);
@@ -80,6 +85,10 @@ public class Server implements Runnable {
     System.out.println("[SERVER] Client " + client.getUsername() + " disconnected!");
   }
 
+  /**
+   * Called from {@link ClientHandler} when a client disconnects
+   * @throws IOException
+   */
   protected void shutdown() throws IOException {
     this.shuttingDown = true;
     this.listener.close();
@@ -110,6 +119,14 @@ public class Server implements Runnable {
     return null;
   }
 
+  /**
+   * Called from {@link ClientHandler} when a client wants to create a lobby
+   * Creates a new lobby and adds the client to it.
+   * @param lobbyName The name of the lobby
+   * @param password The password of the lobby
+   * @param client The client that wants to create the lobby
+   * @return if the lobby already exists exit early
+   */
   protected void createLobby(String lobbyName, String password, ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
@@ -123,6 +140,14 @@ public class Server implements Runnable {
     this.lobbies.get(lobbyName).addClient(client, password);
   }
 
+  /**
+   * Called from {@link ClientHandler} when a client wants to join a lobby
+   * Adds the client to the lobby.
+   * @param lobbyName The name of the lobby
+   * @param password The password of the lobby
+   * @param client The client that wants to join the lobby
+   * @return if the lobby does not exist do nothing
+   */
   protected void joinLobby(String lobbyName, String password, ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
@@ -130,6 +155,5 @@ public class Server implements Runnable {
         return;
       }
     }
-    // Lobby does not exist, do nothing
   }
 }

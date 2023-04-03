@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import server.Lobby;
 import server.ServerProtocol;
 
 public class Client {
@@ -30,7 +29,12 @@ public class Client {
 
   // Username
   protected String username = System.getProperty("user.name");
-
+  /**
+   * Starts the client
+   *
+   * @param args The first argument should be the server IP and port in the following format:
+   *     <code>serverIP:serverPort</code>
+   */
   public void run(String[] args) throws IOException {
     start(args);
     this.connectToServer();
@@ -50,6 +54,9 @@ public class Client {
     System.out.print("> ");
   }
 
+  /**
+   * Sends a CLIENT_PING message to the server
+   */
   protected void ping() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PING.toString();
@@ -57,13 +64,16 @@ public class Client {
     }
   }
 
+  /**
+   * Sends a CLIENT_PONG message to the server (meant as a response to the SERVER_PING message)
+   */
   protected void pong() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PONG.toString();
       this.outputSocket.sendToServer(command);
     }
   }
-
+  /** Starts the client */
   public static void start(String[] args) {
     System.out.println("Starting client...");
     String[] serverInfo = args[0].split(":");
@@ -84,7 +94,7 @@ public class Client {
           "Start the client with the following format: java Client <serverIP>:<serverPort>");
     }
   }
-
+  /** Connects client to the server */
   private void connectToServer() {
     this.socket = new Socket();
     // Try to connect to the server, if connection is refused, retry every 2 seconds
@@ -105,13 +115,13 @@ public class Client {
       this.connectedToServer = true;
     }
   }
-
+  /** sets the username of the client */
   protected void setUsername(String username) {
     String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
     this.username = username;
     this.outputSocket.sendToServer(command);
   }
-
+  /** Handles interaction with client when the client wants to set a username */
   protected void setUsername() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -124,11 +134,20 @@ public class Client {
     }
   }
 
+
+  /**
+   * This client wants to send a public message to all clients (broadcast)
+   * <p>Protocol format: BROADCAST&#60SEPARATOR&#62message</p>
+   */
   protected void sendMessageServer(String message) {
     String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Handles interaction with client in the console when the client wants to send a public
+   * message to all other clients (calls <code>sendMessageServer(String message)</code>)
+   */
   protected void sendMessageServer() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -142,9 +161,9 @@ public class Client {
   }
 
   /**
-   * This client wants to send a private message to another client.
+   * This client wants to send a private message to another client (whisper chat).
    *
-   * <p>Protocol format: SEND_MESSAGE_CLIENT<SEPARATOR>recipient.username<SEPARATOR>message
+   * <p>Protocol format: SEND_MESSAGE_CLIENT&#60SEPARATOR&#62recipient.username&#60SEPARATOR&#62message</p>
    */
   protected void sendMessageClient(String recipient, String message) {
     String command =
@@ -156,6 +175,10 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Handles interaction with client in the console when the client wants to send a private
+   * message to another client (calls <code>sendMessageClient(String recipient, String message)</code>)
+   */
   protected void sendMessageClient() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -170,12 +193,21 @@ public class Client {
     }
   }
 
+  /**
+   * This client wants to send a message to the other clients in the lobby.
+   *
+   * <p>Protocol format: SEND_MESSAGE_LOBBY&#60SEPARATOR&#62message</p>
+   */
   protected void sendMessageLobby(String message) {
     String command =
         ClientProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Handles interaction with client in the console when the client wants to send a message
+   * to the other clients in the lobby (calls <code>sendMessageLobby(String message)</code>)
+   */
   protected void sendMessageLobby() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -188,6 +220,9 @@ public class Client {
     }
   }
 
+  /**
+   * Notifies server that the client is logging out, closes the socket and stops the threads
+   */
   protected void exit() {
     // Communicate with server that client is logging out
     // TODO: solve SocketException when logging out
@@ -205,12 +240,21 @@ public class Client {
     }
     System.exit(0);
   }
+
+  /**
+   * Notifies the server that the client wants to exit the lobby
+   */
   protected void exitLobby() {
     String command = ClientProtocol.EXIT_LOBBY.toString();
     this.outputSocket.sendToServer(command);
     System.out.println("exit");
   }
 
+  /**
+   * The client creates a new lobby
+   * @param name The name of the lobby
+   * @param password The password required to enter the lobby
+   */
   protected void createLobby(String name, String password) {
     String command =
         ClientProtocol.CREATE_LOBBY.toString()
@@ -221,6 +265,10 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Handles interaction with client in the console when the client wants to create a new lobby
+   * (calls <code>createLobby(String name, String password)</code>)
+   */
   protected void createLobby() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -235,6 +283,11 @@ public class Client {
     }
   }
 
+  /**
+   * Notifies the server that the client wants to join a lobby
+   * @param name The name of the lobby which the client wants to join
+   * @param password The password of the lobby which the client wants to join
+   */
   protected void joinLobby(String name, String password) {
     String command =
         ClientProtocol.JOIN_LOBBY.toString()
@@ -245,6 +298,10 @@ public class Client {
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Handles interaction with client in the console when the client wants to join a lobby
+   * (calls <code>joinLobby(String name, String password)</code>)
+   */
   protected void joinLobby() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -259,21 +316,34 @@ public class Client {
     }
   }
 
+  /**
+   * Prints the username of the client to the console
+   */
   protected void whoami() {
     System.out.println(this.username);
     System.out.print("> ");
   }
 
+  /**
+   * Sends a request to the server asking for the list of clients in the lobby
+   */
   protected void listClientsLobby() {
     String command = ClientProtocol.LIST_LOBBY.toString();
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Sends a request to the server asking for the list of total clients connected with the server
+   */
   protected void listClientsServer() {
     String command = ClientProtocol.LIST_SERVER.toString();
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Prints the list of clients that are passed in to the console
+   * @param clients A String array containing the usernames of clients
+   */
   public void printClientList(String[] clients) {
     System.out.println("###############");
     for (String client : clients) {
@@ -282,6 +352,11 @@ public class Client {
     System.out.println("> ###############");
     System.out.print("> ");
   }
+
+  /**
+   * Prints a confirmation to the console that the client has exited the lobby <code>lobbyName</code>
+   * @param lobbyName The name of the lobby that was exited
+   */
   public void lobbyExited(String lobbyName) {
     System.out.print("> Exiting lobby " + lobbyName + "\n> ");
   }

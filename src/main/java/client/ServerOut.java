@@ -58,13 +58,18 @@ public class ServerOut implements Runnable {
       e.printStackTrace();
     }
   }
-
+  /** Sends a message to the server. Called by {@link #run()}
+   * @param message The message to send to the server
+   * */
   protected void sendToServer(String message) {
     if (this.validateMessage(message)) {
       this.out.println(message);
     }
   }
-
+  /** Validates the message to be sent to the server. Called by {@link #sendToServer(String)}
+   * @param message The message to validate
+   * @return True if the message is valid, false otherwise
+   * */
   private Boolean validateMessage(String message) {
     if (message == null) {
       System.out.println("[SERVER_OUT] Message is null");
@@ -84,7 +89,9 @@ public class ServerOut implements Runnable {
     }
     return true;
   }
-
+  /** Handles the command from the user. Called by {@link #run()}
+   * @param command The command to handle
+   * */
   private void handleCommand(String command) {
     String commandSymbol = ClientProtocol.COMMAND_SYMBOL.toString();
 
