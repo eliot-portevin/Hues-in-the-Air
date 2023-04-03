@@ -7,7 +7,12 @@ public class ServerPingSender implements Runnable {
   ArrayList<ClientHandler> clients;
   boolean running = true;
   private Server server;
-
+  /**
+   * Creates a new ServerPingSender. It sends a ping to the client every 300ms.
+   * If the client doesn't respond to 3 pings, the server removes the client.
+   * @param clients The list of clients
+   * @param server The server
+   */
   public ServerPingSender(ArrayList<ClientHandler> clients, Server server) {
     this.clients = clients;
     this.server = server;

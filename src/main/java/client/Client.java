@@ -29,7 +29,12 @@ public class Client {
 
   // Username
   protected String username = System.getProperty("user.name");
-
+  /**
+   * Starts the client
+   *
+   * @param args The first argument should be the server IP and port in the following format:
+   *     <code>serverIP:serverPort</code>
+   */
   public void run(String[] args) throws IOException {
     start(args);
     this.connectToServer();
@@ -68,7 +73,7 @@ public class Client {
       this.outputSocket.sendToServer(command);
     }
   }
-
+  /** Starts the client */
   public static void start(String[] args) {
     System.out.println("Starting client...");
     String[] serverInfo = args[0].split(":");
@@ -89,7 +94,7 @@ public class Client {
           "Start the client with the following format: java Client <serverIP>:<serverPort>");
     }
   }
-
+  /** Connects client to the server */
   private void connectToServer() {
     this.socket = new Socket();
     // Try to connect to the server, if connection is refused, retry every 2 seconds
@@ -110,13 +115,13 @@ public class Client {
       this.connectedToServer = true;
     }
   }
-
+  /** sets the username of the client */
   protected void setUsername(String username) {
     String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
     this.username = username;
     this.outputSocket.sendToServer(command);
   }
-
+  /** Handles interaction with client when the client wants to set a username */
   protected void setUsername() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

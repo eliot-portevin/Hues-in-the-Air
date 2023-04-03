@@ -1,5 +1,7 @@
 package server;
-
+/**
+ * The main class of the server. It creates a new server and starts it.
+ */
 public class ServerMain {
     public static void main(String[] args) {
         String PORT = "9090";
