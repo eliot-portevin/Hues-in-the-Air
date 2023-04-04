@@ -1,0 +1,14 @@
+#backgroundPane{
+    -fx-background-color: #363636;
+}
+
+#mainPane {
+    -fx-background-color: #464646;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+}
+
+#text1 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #2c3e50;
+}
