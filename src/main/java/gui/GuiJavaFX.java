@@ -42,6 +42,9 @@ public class GuiJavaFX extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
+    // Load fonts from css file
+    Font.loadFont(getClass().getResourceAsStream("/layout/fonts.css"), 10);
+
     // Create a black scene depending on the screen resolution
     Scene scene = initScene();
 
@@ -59,11 +62,10 @@ public class GuiJavaFX extends Application {
           this.handleEscape();
         });
 
-    //this.stage.setFullScreen(true);
-    //this.fullscreen = true;
+    this.stage.setFullScreen(true);
+    this.fullscreen = true;
     this.stage.setResizable(true);
     this.stage.show();
-    System.out.printf("Width: %f, Height: %f, Scaling factor: %f", this.WIDTH, this.HEIGHT, this.scalingFactor);
   }
 
   /**
@@ -99,6 +101,10 @@ public class GuiJavaFX extends Application {
   private void handleEscape() {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("Hues in the Air");
+
+    // Set dialog pane style
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.getStylesheets().add("/layout/Dialog.css");
 
     // Add logo
     ImageView logo = new ImageView(new Image("images/logo.jpg"));

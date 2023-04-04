@@ -1,3 +1,9 @@
+.root {
+    -fx-font-family: "Bebas Neue Regular";
+    -fx-focus-color: transparent;
+    -fx-focus-traversable: false;
+}
+
 #backgroundPane{
     -fx-background-color: #363636;
 }
@@ -8,7 +14,42 @@
     -fx-background-radius: 50;
 }
 
-#text1 {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #2c3e50;
+#hboxPort {
+    -fx-background-color: #464646;
+    -fx-border-radius: 50 50 0 0;
+    -fx-background-radius: 50 50 0 0;
+}
+
+#hboxIp {
+    -fx-background-color: #464646;
+}
+
+#hboxLogin {
+    -fx-background-color: #464646;
+    -fx-border-radius: 0 0 50 50;
+    -fx-background-radius: 0 0 50 50;
+}
+
+#labelPort {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30;
+}
+
+#labelIp {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30;
+}
+
+#textPort {
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-font-size: 20;
+    -fx-focus-traversable: false;
+}
+
+#textIp {
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-font-size: 20;
+    -fx-focus-traversable: false;
 }
