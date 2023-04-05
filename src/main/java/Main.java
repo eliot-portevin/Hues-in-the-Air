@@ -12,7 +12,7 @@ public class Main {
         String port = split[1];
 
         //ClientMain.main(new String[] {hostAddress, port});
-        Application.launch(gui.GuiMain.class, args);
+        gui.GuiMain.main(new String[] {hostAddress, port});
       } else if (args[0].equals("server")) {
         ServerMain.main(new String[] {args[1]});
       }

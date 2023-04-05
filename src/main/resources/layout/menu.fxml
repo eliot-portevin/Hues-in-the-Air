@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.effect.Blend?>
+<?import com.gluonhq.charm.glisten.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: #363636;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuController">
+
+<AnchorPane fx:id="backgroundPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@LoginPage.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TabPane prefHeight="200.0" prefWidth="200.0" stylesheets="@TabPane.css" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab fx:id="tab_home" text="Home">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </Tab>
-          <Tab fx:id="tab_chat" text="Chat">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </Tab>
-            <Tab fx:id="tab_settings" text="Settings">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-              </content>
-            </Tab>
-        </tabs>
-         <effect>
-            <Blend />
-         </effect>
-      </TabPane>
+      <AnchorPane fx:id="mainPane" layoutX="510.0" layoutY="90.0" opacity="0.8" prefHeight="900.0" prefWidth="900.0">
+         <children>
+            <Label id="title" layoutX="437.0" layoutY="79.0" text="Hues in the Air" />
+            <Label layoutX="171.0" layoutY="404.0" text="Server Port" />
+            <Label layoutX="167.0" layoutY="579.0" text="Server IP" />
+            <Button layoutX="403.0" layoutY="747.0" mnemonicParsing="false" text="Connect to Server" />
+            <TextField layoutX="618.0" layoutY="402.0" />
+            <TextField layoutX="610.0" layoutY="573.0" />
+         </children>
+      </AnchorPane>
    </children>
-</StackPane>
+</AnchorPane>

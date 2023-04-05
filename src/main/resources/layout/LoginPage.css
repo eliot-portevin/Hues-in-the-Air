@@ -1,0 +1,75 @@
+.root {
+    -fx-focus-color: transparent;
+    -fx-focus-traversable: false;
+}
+
+#backgroundPane{
+    -fx-background-color: #363636;
+}
+
+#mainPane {
+    -fx-background-color: #464646;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+}
+
+#hboxPort {
+    -fx-background-color: #464646;
+    -fx-border-radius: 50 50 0 0;
+    -fx-background-radius: 50 50 0 0;
+}
+
+#hboxIp {
+    -fx-background-color: #464646;
+}
+
+#hboxLogin {
+    -fx-background-color: #464646;
+    -fx-border-radius: 0 0 50 50;
+    -fx-background-radius: 0 0 50 50;
+}
+
+#labelPort {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30;
+}
+
+#labelIp {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30;
+}
+
+#textPort {
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-font-size: 20;
+    -fx-focus-traversable: false;
+    -fx-border-radius: 5 5 5 5;
+    -fx-background-radius: 5 5 5 5;
+}
+
+#textIp {
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-font-size: 20;
+    -fx-focus-traversable: false;
+    -fx-border-radius: 5 5 5 5;
+    -fx-background-radius: 5 5 5 5;
+}
+
+#button {
+    -fx-background-color: linear-gradient(to bottom right, #fccf78 10%, #9ae6ae 50%, #b3d5f2 90%), #363636;
+    -fx-background-insets: 0, 3;
+    -fx-padding: 25 25 25 25;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 27;
+    -fx-focus-traversable: false;
+}
+
+#button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #fccf78 10%, #9ae6ae 50%, #b3d5f2 90%);
+}

@@ -1,40 +1,40 @@
 package gui;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Optional;
+
+import client.controllers.LoginController;
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class GuiJavaFX extends Application {
 
-  // Screen resolution
-  private double WIDTH = (int) Screen.getPrimary().getBounds().getWidth();
-  private double HEIGHT = (int) Screen.getPrimary().getBounds().getHeight();
-  private double scalingFactor = 1;
-
-  Group root = new Group();
+  private GridPane root = new GridPane();
   private Stage stage;
 
-  // Fonts
-  private Font titleFont =
-      Font.loadFont(getClass().getResourceAsStream("/fonts/Raleway.ttf"), 100 * this.scalingFactor);
-  private Font textFont =
-      Font.loadFont(
-          getClass().getResourceAsStream("/fonts/Bebas_Neue_Regular.ttf"), 20 * this.scalingFactor);
-
+  /**
+   * Starts the application by creating a scene and setting the stage properties. Then proceeds to
+   * set the scene as the login screen.
+   */
   @Override
-  public void start(Stage primaryStage) throws Exception {
+  public void start(Stage primaryStage) {
+    // TODO: Error appears when setting fullscreen on mac. This is due to the menu bar. Fix?
+
+    // Load fonts from css file
+    Font.loadFont(getClass().getResourceAsStream("/layout/fonts.css"), 10);
+
     // Create a black scene depending on the screen resolution
     Scene scene = initScene();
 
@@ -43,14 +43,12 @@ public class GuiJavaFX extends Application {
     this.stage.setTitle("Hues in the Air");
     this.stage.setScene(scene);
 
-    Text title = new Text();
-    title.setText("Hues in the Air");
-    title.setFont(this.titleFont);
-    title.setFill(Colours.WHITE.getHex());
-    title.setX(this.WIDTH / 2 - title.getLayoutBounds().getWidth() / 2);
-    title.setY(this.HEIGHT / 3);
-
-    root.getChildren().add(title);
+    try {
+      this.loadLoginScreen();
+    } catch (IOException e) {
+      System.out.println("Could not load login screen. Closing the program.");
+      System.exit(1);
+    }
 
     // Set stage properties
     this.stage.setOnCloseRequest(
@@ -59,9 +57,8 @@ public class GuiJavaFX extends Application {
           this.handleEscape();
         });
 
-    this.stage.setFullScreen(true);
-    this.stage.setResizable(false);
-    this.stage.getIcons().add(new Image("images/logo.jpg"));
+    //this.stage.setFullScreen(true);
+    this.stage.setResizable(true);
     this.stage.show();
   }
 
@@ -76,25 +73,19 @@ public class GuiJavaFX extends Application {
     double width = screenSize.getWidth();
     double height = screenSize.getHeight();
 
-    this.HEIGHT = width / 16 * 9;
-    this.WIDTH = width;
+    double HEIGHT = width / 16 * 9;
+    // Screen resolution
+    double WIDTH = width;
 
-    this.scalingFactor = width / 1920;
-    if (this.scalingFactor > 1) {
-      this.scalingFactor = height / 1080;
-      this.HEIGHT = height;
-      this.WIDTH = height / 9 * 16;
+    double scalingFactor = width / 1920;
+    if (scalingFactor > 1) {
+      HEIGHT = height;
+      WIDTH = height / 9 * 16;
     }
 
-    this.scalingFactor *= 0.8;
-
-    Scene scene = new Scene(this.root, this.WIDTH, this.HEIGHT, Colours.BLACK.getHex());
-    scene.getStylesheets().add("layout/default_style.css");
-    scene.getStylesheets().add("layout/title_font_style.css");
-    scene.getStylesheets().add("layout/text_font_style.css");
-
-    return scene;
+    return new Scene(this.root, WIDTH, HEIGHT);
   }
+
   /**
    * The user has pressed the escape key or clicked the close button. A dialog is shown to confirm
    * the user's intention to exit the game.
@@ -102,6 +93,10 @@ public class GuiJavaFX extends Application {
   private void handleEscape() {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("Hues in the Air");
+
+    // Set dialog pane style
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.getStylesheets().add("/layout/Dialog.css");
 
     // Add logo
     ImageView logo = new ImageView(new Image("images/logo.jpg"));
@@ -118,5 +113,21 @@ public class GuiJavaFX extends Application {
     if (result.orElse(null) == ButtonType.YES) {
       stage.close();
     }
+  }
+
+  /**
+   * Loads the login screen from fxml file. Called upon start of the application.
+   *
+   * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
+   */
+  private void loadLoginScreen() throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/LoginPage.fxml"));
+    this.root = loader.load();
+
+    // Set controller
+    LoginController controller = loader.getController();
+
+    // Set the scene
+    this.stage.getScene().setRoot(this.root);
   }
 }
