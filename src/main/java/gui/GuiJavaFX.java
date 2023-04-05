@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
@@ -27,6 +28,8 @@ public class GuiJavaFX extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
+    // TODO: Error appears when setting fullscreen on mac. This is due to the menu bar. Fix?
+
     // Load fonts from css file
     Font.loadFont(getClass().getResourceAsStream("/layout/fonts.css"), 10);
 
@@ -52,7 +55,7 @@ public class GuiJavaFX extends Application {
           this.handleEscape();
         });
 
-    this.stage.setFullScreen(true);
+    //this.stage.setFullScreen(true);
     this.stage.setResizable(true);
     this.stage.show();
   }
