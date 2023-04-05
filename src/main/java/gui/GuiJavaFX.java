@@ -32,11 +32,9 @@ public class GuiJavaFX extends Application {
   public void start(Stage primaryStage) {
     // TODO: Error appears when setting fullscreen on mac. This is due to the menu bar. Fix?
 
-    // Load fonts from css file
-    Font.loadFont(getClass().getResourceAsStream("/layout/fonts.css"), 10);
-
     // Create a black scene depending on the screen resolution
     Scene scene = initScene();
+    scene.getStylesheets().add(getClass().getResource("/layout/FontStyle.css").toExternalForm());
 
     // Set stage scene
     this.stage = primaryStage;

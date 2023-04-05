@@ -73,3 +73,32 @@
 #button:hover {
     -fx-background-color: linear-gradient(to bottom right, #fccf78 10%, #9ae6ae 50%, #b3d5f2 90%);
 }
+
+#titleHues {
+    -fx-font-size: 100;
+    -fx-text-fill: #b3d5f2;
+}
+
+#titleIn {
+    -fx-font-size: 50;
+    -fx-text-fill: #ffffff;
+}
+
+#titleThe {
+    -fx-font-size: 50;
+    -fx-text-fill: #ffffff;
+}
+
+#titleAir {
+    -fx-font-size: 100;
+    -fx-text-fill: #fccf78;
+}
+
+#titleHues, #titleIn, #titleThe, #titleAir {
+    -fx-font-family: 'Raleway';
+}
+
+@font-face {
+    font-family: 'Raleway';
+    src: url('/fonts/Raleway.ttf');
+}

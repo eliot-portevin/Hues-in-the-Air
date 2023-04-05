@@ -12,9 +12,11 @@
 
 <GridPane fx:id="backgroundPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@LoginPage.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.LoginController">
     <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" />
-    <ColumnConstraints hgrow="SOMETIMES" percentWidth="60.0" />
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="20.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="10.0" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" percentHeight="20.0" vgrow="SOMETIMES" />
@@ -23,7 +25,7 @@
       <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <HBox fx:id="hboxPort" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <HBox fx:id="hboxPort" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
          <children>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                <children>
@@ -60,9 +62,41 @@
             <VBox prefHeight="200.0" prefWidth="100.0" />
          </children>
       </HBox>
-      <HBox fx:id="hboxLogin" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <HBox fx:id="hboxLogin" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
          <children>
             <Button fx:id="button" mnemonicParsing="false" text="Connect to Server" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <VBox alignment="BOTTOM_RIGHT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="titleHues" text="Hues" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="titleThe" text="the" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <VBox alignment="BOTTOM_LEFT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="titleIn" text="in" />
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="titleAir" text="Air" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
          </children>
       </HBox>
    </children>
