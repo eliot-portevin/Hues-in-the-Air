@@ -10,94 +10,71 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="backgroundPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@LoginPage.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.LoginController">
-    <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" />
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-    <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="10.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints minHeight="10.0" percentHeight="20.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
-  </rowConstraints>
-   <children>
-      <HBox fx:id="hboxPort" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
-         <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label fx:id="labelIp" text="Server IP" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label fx:id="labelPort" text="Server PORT" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <TextField fx:id="textIp" promptText="localhost">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </TextField>
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <TextField fx:id="textPort" promptText="9090" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0" />
-         </children>
-      </HBox>
-      <HBox fx:id="hboxLogin" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
-         <children>
-            <Button fx:id="button" mnemonicParsing="false" text="Connect to Server" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-         <children>
-            <VBox HBox.hgrow="ALWAYS">
-               <children>
-                  <VBox alignment="BOTTOM_RIGHT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label fx:id="titleHues" text="Hues" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label fx:id="titleThe" text="the" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-            <VBox HBox.hgrow="ALWAYS">
-               <children>
-                  <VBox alignment="BOTTOM_LEFT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label fx:id="titleIn" text="in" />
-                     </children>
-                  </VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label fx:id="titleAir" text="Air" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-   </children>
+<GridPane fx:id="backgroundPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+          prefHeight="1080.0" prefWidth="1920.0" stylesheets="@LoginPage.css" xmlns="http://javafx.com/javafx/19"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.LoginController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0"/>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0"/>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0"/>
+      <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0"/>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="10.0"/>
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" percentHeight="20.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" percentHeight="45.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" percentHeight="15.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+   </rowConstraints>
+   <HBox fx:id="hboxPort" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+            <Label fx:id="labelUsername" text="Username"/>
+         </VBox>
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <Label fx:id="labelIp" text="Server IP"/>
+         </VBox>
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <Label fx:id="labelPort" text="Server PORT"/>
+         </VBox>
+      </VBox>
+      <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+            <TextField fx:id="textUsername" promptText="Juste_Leblanc"/>
+         </VBox>
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <TextField fx:id="textIp" promptText="localhost">
+               <VBox.margin>
+                  <Insets/>
+               </VBox.margin>
+            </TextField>
+         </VBox>
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <TextField fx:id="textPort" promptText="9090"/>
+         </VBox>
+      </VBox>
+      <VBox prefHeight="200.0" prefWidth="100.0"/>
+   </HBox>
+   <HBox fx:id="hboxLogin" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3"
+         GridPane.rowIndex="2">
+      <Button fx:id="button" mnemonicParsing="false" text="Connect to Server"/>
+   </HBox>
+   <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <VBox HBox.hgrow="ALWAYS">
+         <VBox alignment="BOTTOM_RIGHT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <Label fx:id="titleHues" text="Hues"/>
+         </VBox>
+         <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <Label fx:id="titleThe" text="the"/>
+         </VBox>
+      </VBox>
+      <VBox HBox.hgrow="ALWAYS">
+         <VBox alignment="BOTTOM_LEFT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <Label fx:id="titleIn" text="in"/>
+         </VBox>
+         <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <Label fx:id="titleAir" text="Air"/>
+         </VBox>
+      </VBox>
+   </HBox>
 </GridPane>

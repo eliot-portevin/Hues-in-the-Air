@@ -2,27 +2,33 @@ package gui;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
-
-import client.controllers.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class GuiJavaFX extends Application {
 
+  // Window
   private GridPane root = new GridPane();
   private Stage stage;
+
+  // Sound
+  public static Media clickMedia =
+      new Media(
+          Objects.requireNonNull(GuiJavaFX.class.getResource("/sounds/click.wav")).toString());
+  public static MediaPlayer clickPlayer = new MediaPlayer(clickMedia);
 
   /**
    * Starts the application by creating a scene and setting the stage properties. Then proceeds to
@@ -34,7 +40,11 @@ public class GuiJavaFX extends Application {
 
     // Create a black scene depending on the screen resolution
     Scene scene = initScene();
-    scene.getStylesheets().add(getClass().getResource("/layout/FontStyle.css").toExternalForm());
+    scene
+        .getStylesheets()
+        .add(
+            Objects.requireNonNull(getClass().getResource("/layout/FontStyle.css"))
+                .toExternalForm());
 
     // Set stage scene
     this.stage = primaryStage;
@@ -55,8 +65,8 @@ public class GuiJavaFX extends Application {
           this.handleEscape();
         });
 
-    //this.stage.setFullScreen(true);
-    this.stage.setResizable(true);
+    // this.stage.setFullScreen(true);
+    this.stage.setResizable(false);
     this.stage.show();
   }
 
@@ -123,9 +133,14 @@ public class GuiJavaFX extends Application {
     this.root = loader.load();
 
     // Set controller
-    LoginController controller = loader.getController();
+    loader.getController();
 
     // Set the scene
     this.stage.getScene().setRoot(this.root);
+  }
+
+  public static void clickSound() {
+    clickPlayer.play();
+    clickPlayer.seek(clickPlayer.getStartTime());
   }
 }
