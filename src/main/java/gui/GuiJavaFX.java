@@ -3,6 +3,8 @@ package gui;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
+
+import client.controllers.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -121,6 +123,9 @@ public class GuiJavaFX extends Application {
   private void loadLoginScreen() throws IOException {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/LoginPage.fxml"));
     this.root = loader.load();
+
+    // Set controller
+    LoginController controller = loader.getController();
 
     // Set the scene
     this.stage.getScene().setRoot(this.root);
