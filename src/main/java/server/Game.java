@@ -22,21 +22,22 @@ public class  Game extends Application {
   private Pane uiRoot = new Pane();
   private Cube player;
   private int levelWidth;
+  private int gridSize = 50;
 
 
   public void update(){
 
     if (isPressed(KeyCode.UP)) {
-      movePlayerY(-5);
+      movePlayerY(-2);
     }
     if (isPressed(KeyCode.DOWN)) {
-      movePlayerY(5);
+      movePlayerY(2);
     }
     if (isPressed(KeyCode.LEFT)) {
-      movePlayerX(-5);
+      movePlayerX(-2);
     }
     if (isPressed(KeyCode.RIGHT)) {
-      movePlayerX(5);
+      movePlayerX(2);
     }
 
   }
@@ -52,17 +53,17 @@ public class  Game extends Application {
       for (Node platform : platforms) {
         if (player.rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
           if (movingRight) {
-            if (player.rectangle.getTranslateX() + 40 == platform.getTranslateX()) {
+            if (player.rectangle.getTranslateX() + player.size.getX() == platform.getTranslateX()) {
               return;
             }
           } else {
-            if (player.rectangle.getTranslateX() == platform.getTranslateX() + 40) {
+            if (player.rectangle.getTranslateX() == platform.getTranslateX() + gridSize) {
               return;
             }
           }
         }
       }
-      player.rectangle.setTranslateX(player.rectangle.getTranslateX() + (movingRight ? 1 : -1));
+      player.move1X(movingRight);
     }
   }
 
@@ -73,20 +74,29 @@ public class  Game extends Application {
       for (Node platform : platforms) {
         if (player.rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
           if (movingDown) {
-            if (player.rectangle.getTranslateY() + 40 == platform.getTranslateY()) {
+            if (player.rectangle.getTranslateY() + player.size.getY() == platform.getTranslateY()) {
               return;
             }
           } else {
-            if (player.rectangle.getTranslateY() == platform.getTranslateY() + 40) {
+            if (player.rectangle.getTranslateY() == platform.getTranslateY() + gridSize) {
               return;
             }
           }
         }
       }
-      player.rectangle.setTranslateY(player.rectangle.getTranslateY() + (movingDown ? 1 : -1));
+        player.move1Y(movingDown);
     }
   }
 
+  /**
+   * Creates a new rectangle entity
+   * @param x - x position
+   * @param y - y position
+   * @param w - width
+   * @param h - height
+   * @param color - colour
+   * @return - returns the rectangle entity
+   */
   private Node createEntity(int x, int y, int w, int h, Color color) {
     Rectangle entity = new Rectangle(w, h);
     entity.setTranslateX(x);
@@ -96,26 +106,34 @@ public class  Game extends Application {
     return entity;
   }
 
+  /**
+   * Initializes the content of the game
+   * Loads the level data and creates the platforms
+   * Creates the player
+   * Creates the stars
+   * Will create the coin to finish the game
+   */
   public void initializeContent() {
 
-    levelWidth = LevelData.Level1[0].length() * 50;
+    levelWidth = LevelData.Level1[0].length() * gridSize;
+    Rectangle bg = new Rectangle(levelWidth, 600); // Creates the background
+    bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
 
-    for (int i=0; i<LevelData.Level1.length; i++) {
+    for (int i=0; i<LevelData.Level1.length; i++) { // Creates the platforms
       String line = LevelData.Level1[i];
       for (int j = 0; j < line.length(); j++) {
         switch (line.charAt(j)) {
           case '0':
             break;
           case '1':
-            Node platform = createEntity(j * 50, i * 50, 50, 50, Colours.BLUE1.getHex());
+            Node platform = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.BLUE1.getHex());
             platforms.add(platform);
             break;
         }
       }
     }
 
-    player = new Cube(new Vector2D(100, 1000),  new Vector2D(0,0), new Vector2D(50,50));
-    appRoot.getChildren().add(player.rectangle);
+    player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(20,20));  // creates the player
 
     player.rectangle.translateXProperty().addListener((obs, old, newValue) -> {   // Listens for changes in the player's x position and moves the terrain accordingly
       int offset = newValue.intValue();
@@ -125,31 +143,41 @@ public class  Game extends Application {
       }
     });
 
+    appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
 
   }
 
+  /**
+   * Initializes the contend, sets the scene and starts the game with the animation timer
+   * @param primaryStage the primary stage for this application, onto which
+   * the application scene can be set.
+   * Applications may create other stages, if needed, but they will not be
+   * primary stages.
+   * @throws Exception
+   */
   @Override
   public void start(Stage primaryStage) throws Exception {
-    Rectangle bg = new Rectangle(800, 600);
-    appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
     initializeContent();
-    Scene scene = new Scene(appRoot);
+    Scene scene = new Scene(appRoot);   // Creates the scene
     scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
     scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
 
-    primaryStage.setTitle("Game");
-    primaryStage.setScene(scene);
-    primaryStage.show();
+    primaryStage.setTitle("Game"); // Sets the title of the window
+    primaryStage.setScene(scene); // Sets the scene
+    primaryStage.show(); // Shows the window
 
+    // Start the game loop called 60 times per second
     AnimationTimer timer = new AnimationTimer() {
       @Override
-      public void handle(long now) {
+      public void handle(long now) { // Called every frame
         update();
       }
     };
     timer.start();
   }
-
+  /**
+   * Launches the application
+   */
   public static void main(String[] args) {
     Application.launch(args);
   }
