@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -21,24 +22,22 @@ public class Cube {
   private Vector2D size;
   private double jumpHeight;
   private boolean canJump;
-  private Pane gameRoot;
   public Rectangle rectangle = new Rectangle();
 
-  public Cube(Pane gameRoot, Vector2D position, Vector2D velocity, Vector2D size) {
+  public Cube(Vector2D position, Vector2D velocity, Vector2D size) {
     this.position = position;
     this.velocity = velocity;
     this.size = size;
-    this.gameRoot = gameRoot;
     spawnCube();
   }
 
   public void spawnCube() {
-    rectangle.setX(position.getX());
-    rectangle.setY(position.getY());
-    rectangle.setWidth(size.getX());
-    rectangle.setHeight(size.getX());
-    gameRoot.getChildren().add(rectangle);
+    rectangle = new Rectangle(50,50);
+    rectangle.setTranslateX(100);
+    rectangle.setTranslateY(100);
+    rectangle.setFill(Color.RED);
   }
+
   public void jump() {
 
   }

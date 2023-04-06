@@ -25,7 +25,5 @@ public class ClientMain {
             port = args[1];
             username = args[2];
         }
-
-        Application.launch(Client.class, hostAddress, port, username);
     }
 }
