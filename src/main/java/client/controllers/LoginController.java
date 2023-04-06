@@ -7,11 +7,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.beans.binding.Bindings;
 
 public class LoginController {
 
   // Grid panes
   public GridPane backgroundPane;
+  public GridPane titlePane;
   public HBox hboxPort;
   public HBox hboxLogin;
 
@@ -41,6 +43,9 @@ public class LoginController {
 
     // Set behaviour for the login button
     this.setButtonBehaviour();
+
+    // Automatically change font sizes with window size
+    this.setFontBehaviour();
   }
 
   /**
@@ -89,5 +94,33 @@ public class LoginController {
             textUsername.requestFocus();
           }
         });
+  }
+
+  /**
+   * Binds the font size property of labels and title to the width of the window. This way the font
+   * size will automatically change with the window size. The calculations are purely based on
+   * trial-and-error, they are not based on some meaningful formula.
+   */
+  private void setFontBehaviour() {
+    titleHues.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(5)));
+    titleThe.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(10)));
+    titleIn.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(10)));
+    titleAir.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(5)));
+
+    labelUsername.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+    labelIp.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+    labelPort.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+
+    textUsername.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
+    textIp.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
+    textPort.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
+
+    button.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+
+    // Disable focus on text fields and button
+    textUsername.setFocusTraversable(false);
+    textIp.setFocusTraversable(false);
+    textPort.setFocusTraversable(false);
+    button.setFocusTraversable(false);
   }
 }
