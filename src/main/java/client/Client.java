@@ -1,19 +1,37 @@
 package client;
 
+import client.controllers.LoginController;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import server.ServerProtocol;
 
-public class Client {
+public class Client extends Application {
 
   // Status of client
   boolean connectedToServer = true;
   int noAnswerCounter = 0;
   int receivedNullCounter = 0;
   boolean shuttingDown = false;
+  public static Client instance;
 
   // Server info
   private static int SERVER_PORT;
@@ -29,34 +47,186 @@ public class Client {
 
   // Username
   protected String username = System.getProperty("user.name");
+
+  // GUI
+  // Window
+  private GridPane root = new GridPane();
+  private Stage stage;
+
+  // Sound
+  private MediaPlayer clickPlayer;
+
   /**
-   * Starts the client
-   *
-   * @param args The first argument should be the server IP and port in the following format:
-   *     <code>serverIP:serverPort</code>
+   * Starts the application by creating a scene and setting the stage properties. Then proceeds to
+   * set the scene as the login screen.
    */
-  public void run(String[] args) throws IOException {
-    start(args);
-    this.connectToServer();
+  @Override
+  public void start(Stage primaryStage) {
+    // Set instance, required for other classes to access the client (for example the controllers)
+    instance = this;
 
-    this.inputSocket = new ServerIn(socket, this);
-    this.outputSocket = new ServerOut(socket, this);
+    // Set sound
+    Media clickSound = new Media(Objects.requireNonNull(getClass().getResource("/sounds/click.wav")).toString());
+    this.clickPlayer = new MediaPlayer(clickSound);
 
-    this.inputThread = new Thread(this.inputSocket);
-    this.outputThread = new Thread(this.outputSocket);
-    this.pingSender = new Thread(new ClientPingSender(this));
+    // Get server info from command line arguments
+    String[] args = getParameters().getRaw().toArray(new String[3]);
+    System.out.println(Arrays.toString(args));
 
-    inputThread.start();
-    outputThread.start();
-    this.pingSender.start();
+    // Create a black scene depending on the screen resolution
+    Scene scene = initScene();
+    scene
+        .getStylesheets()
+        .add(
+            Objects.requireNonNull(getClass().getResource("/layout/FontStyle.css"))
+                .toExternalForm());
 
-    System.out.println("[CLIENT] Connection to server established");
-    System.out.print("> ");
+    // Set stage scene
+    this.stage = primaryStage;
+    this.stage.setTitle("Hues in the Air");
+    this.stage.setScene(scene);
+
+    try {
+      this.loadLoginScreen(args);
+    } catch (IOException e) {
+      System.out.println("Could not load login screen. Closing the program.");
+      System.exit(1);
+    }
+
+    // Set stage properties
+    this.stage.setOnCloseRequest(
+        e -> {
+          e.consume();
+          this.handleEscape();
+        });
+
+    // this.stage.setFullScreen(true);
+    this.stage.setResizable(false);
+    this.stage.show();
   }
 
   /**
-   * Sends a CLIENT_PING message to the server
+   * Creates a blank scene depending on the screen resolution. The scene has a width of 16:9 and is
+   * scaled to fit the screen.
+   *
+   * @return scene
    */
+  private Scene initScene() {
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    double width = screenSize.getWidth();
+    double height = screenSize.getHeight();
+
+    double HEIGHT = width / 16 * 9;
+    // Screen resolution
+    double WIDTH = width;
+
+    double scalingFactor = width / 1920;
+    if (scalingFactor > 1) {
+      HEIGHT = height;
+      WIDTH = height / 9 * 16;
+    }
+
+    return new Scene(this.root, WIDTH, HEIGHT);
+  }
+
+  /**
+   * The user has pressed the escape key or clicked the close button. A dialog is shown to confirm
+   * the user's intention to exit the game.
+   */
+  private void handleEscape() {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle("Hues in the Air");
+
+    // Set dialog pane style
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.getStylesheets().add("/layout/Dialog.css");
+
+    // Add logo
+    ImageView logo = new ImageView(new Image("images/logo.jpg"));
+    logo.setFitHeight(50);
+    logo.setFitWidth(50);
+    alert.setGraphic(logo);
+
+    alert.setHeaderText("Are you sure you want to exit the game?");
+    alert.initOwner(this.stage);
+    alert.initStyle(StageStyle.UNIFIED);
+    alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
+
+    Optional<ButtonType> result = alert.showAndWait();
+    if (result.orElse(null) == ButtonType.YES) {
+      stage.close();
+    }
+  }
+
+  /**
+   * Loads the login screen from fxml file. Called upon start of the application.
+   *
+   * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
+   */
+  private void loadLoginScreen(String[] args) throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/LoginPage.fxml"));
+    this.root = loader.load();
+
+    // Set controller
+    LoginController controller = loader.getController();
+    controller.fillFields(args);
+
+    // Set the scene
+    this.stage.getScene().setRoot(this.root);
+  }
+
+  private void loadMenuScreen() throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/MenuPage.fxml"));
+    this.root = loader.load();
+
+    // Set controller
+    loader.getController();
+
+    // Set the scene
+    this.stage.getScene().setRoot(this.root);
+  }
+
+  public void clickSound() {
+    this.clickPlayer.play();
+    this.clickPlayer.seek(this.clickPlayer.getStartTime());
+  }
+
+  public void connect(String username, String serverIP, String serverPort) {
+    try {
+      SERVER_IP = serverIP;
+      SERVER_PORT = Integer.parseInt(serverPort);
+      if (!username.isEmpty()) {
+        this.username = username;
+      }
+      System.out.printf(
+          "Connecting to server %s:%d with username %s%n", SERVER_IP, SERVER_PORT, this.username);
+
+      // Create sockets
+      this.socket = new Socket(SERVER_IP, SERVER_PORT);
+      this.inputSocket = new ServerIn(socket, this);
+      this.outputSocket = new ServerOut(socket, this);
+      this.connectedToServer = true;
+
+      // Create threads for sockets
+      this.inputThread = new Thread(this.inputSocket);
+      this.outputThread = new Thread(this.outputSocket);
+      this.pingSender = new Thread(new ClientPingSender(this));
+
+      // Start threads
+      this.inputThread.start();
+      this.outputThread.start();
+      this.pingSender.start();
+
+      // Load menu screen
+      this.loadMenuScreen();
+
+      System.out.println("Connected to server.");
+    } catch (IOException | NumberFormatException e) {
+      System.out.println("Could not connect to server with the given information.");
+    }
+  }
+
+  /** Sends a CLIENT_PING message to the server */
   protected void ping() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PING.toString();
@@ -64,9 +234,7 @@ public class Client {
     }
   }
 
-  /**
-   * Sends a CLIENT_PONG message to the server (meant as a response to the SERVER_PING message)
-   */
+  /** Sends a CLIENT_PONG message to the server (meant as a response to the SERVER_PING message) */
   protected void pong() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PONG.toString();
@@ -94,27 +262,7 @@ public class Client {
           "Start the client with the following format: java Client <serverIP>:<serverPort>");
     }
   }
-  /** Connects client to the server */
-  private void connectToServer() {
-    this.socket = new Socket();
-    // Try to connect to the server, if connection is refused, retry every 2 seconds
-    while (!this.socket.isConnected()) {
-      try {
-        this.socket = new Socket(SERVER_IP, SERVER_PORT);
-      } catch (IOException e) {
-        System.err.println("[CLIENT] Connection timed out. Retrying...");
-      }
-      try {
-        Thread.sleep(2000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
 
-    if (this.socket.isConnected()) {
-      this.connectedToServer = true;
-    }
-  }
   /** sets the username of the client */
   protected void setUsername(String username) {
     String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
@@ -134,10 +282,10 @@ public class Client {
     }
   }
 
-
   /**
    * This client wants to send a public message to all clients (broadcast)
-   * <p>Protocol format: BROADCAST&#60SEPARATOR&#62message</p>
+   *
+   * <p>Protocol format: BROADCAST&#60SEPARATOR&#62message
    */
   protected void sendMessageServer(String message) {
     String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
@@ -145,8 +293,8 @@ public class Client {
   }
 
   /**
-   * Handles interaction with client in the console when the client wants to send a public
-   * message to all other clients (calls <code>sendMessageServer(String message)</code>)
+   * Handles interaction with client in the console when the client wants to send a public message
+   * to all other clients (calls <code>sendMessageServer(String message)</code>)
    */
   protected void sendMessageServer() {
     try {
@@ -163,7 +311,8 @@ public class Client {
   /**
    * This client wants to send a private message to another client (whisper chat).
    *
-   * <p>Protocol format: SEND_MESSAGE_CLIENT&#60SEPARATOR&#62recipient.username&#60SEPARATOR&#62message</p>
+   * <p>Protocol format:
+   * SEND_MESSAGE_CLIENT&#60SEPARATOR&#62recipient.username&#60SEPARATOR&#62message
    */
   protected void sendMessageClient(String recipient, String message) {
     String command =
@@ -176,8 +325,8 @@ public class Client {
   }
 
   /**
-   * Handles interaction with client in the console when the client wants to send a private
-   * message to another client (calls <code>sendMessageClient(String recipient, String message)</code>)
+   * Handles interaction with client in the console when the client wants to send a private message
+   * to another client (calls <code>sendMessageClient(String recipient, String message)</code>)
    */
   protected void sendMessageClient() {
     try {
@@ -196,7 +345,7 @@ public class Client {
   /**
    * This client wants to send a message to the other clients in the lobby.
    *
-   * <p>Protocol format: SEND_MESSAGE_LOBBY&#60SEPARATOR&#62message</p>
+   * <p>Protocol format: SEND_MESSAGE_LOBBY&#60SEPARATOR&#62message
    */
   protected void sendMessageLobby(String message) {
     String command =
@@ -205,8 +354,8 @@ public class Client {
   }
 
   /**
-   * Handles interaction with client in the console when the client wants to send a message
-   * to the other clients in the lobby (calls <code>sendMessageLobby(String message)</code>)
+   * Handles interaction with client in the console when the client wants to send a message to the
+   * other clients in the lobby (calls <code>sendMessageLobby(String message)</code>)
    */
   protected void sendMessageLobby() {
     try {
@@ -220,9 +369,7 @@ public class Client {
     }
   }
 
-  /**
-   * Notifies server that the client is logging out, closes the socket and stops the threads
-   */
+  /** Notifies server that the client is logging out, closes the socket and stops the threads */
   protected void exit() {
     // Communicate with server that client is logging out
     // TODO: solve SocketException when logging out
@@ -241,9 +388,7 @@ public class Client {
     System.exit(0);
   }
 
-  /**
-   * Notifies the server that the client wants to exit the lobby
-   */
+  /** Notifies the server that the client wants to exit the lobby */
   protected void exitLobby() {
     String command = ClientProtocol.EXIT_LOBBY.toString();
     this.outputSocket.sendToServer(command);
@@ -252,6 +397,7 @@ public class Client {
 
   /**
    * The client creates a new lobby
+   *
    * @param name The name of the lobby
    * @param password The password required to enter the lobby
    */
@@ -285,6 +431,7 @@ public class Client {
 
   /**
    * Notifies the server that the client wants to join a lobby
+   *
    * @param name The name of the lobby which the client wants to join
    * @param password The password of the lobby which the client wants to join
    */
@@ -299,8 +446,8 @@ public class Client {
   }
 
   /**
-   * Handles interaction with client in the console when the client wants to join a lobby
-   * (calls <code>joinLobby(String name, String password)</code>)
+   * Handles interaction with client in the console when the client wants to join a lobby (calls
+   * <code>joinLobby(String name, String password)</code>)
    */
   protected void joinLobby() {
     try {
@@ -316,17 +463,13 @@ public class Client {
     }
   }
 
-  /**
-   * Prints the username of the client to the console
-   */
+  /** Prints the username of the client to the console */
   protected void whoami() {
     System.out.println(this.username);
     System.out.print("> ");
   }
 
-  /**
-   * Sends a request to the server asking for the list of clients in the lobby
-   */
+  /** Sends a request to the server asking for the list of clients in the lobby */
   protected void listClientsLobby() {
     String command = ClientProtocol.LIST_LOBBY.toString();
     this.outputSocket.sendToServer(command);
@@ -342,6 +485,7 @@ public class Client {
 
   /**
    * Prints the list of clients that are passed in to the console
+   *
    * @param clients A String array containing the usernames of clients
    */
   public void printClientList(String[] clients) {
@@ -354,10 +498,16 @@ public class Client {
   }
 
   /**
-   * Prints a confirmation to the console that the client has exited the lobby <code>lobbyName</code>
+   * Prints a confirmation to the console that the client has exited the lobby <code>lobbyName
+   * </code>
+   *
    * @param lobbyName The name of the lobby that was exited
    */
   public void lobbyExited(String lobbyName) {
     System.out.print("> Exiting lobby " + lobbyName + "\n> ");
+  }
+
+  public static Client getInstance() {
+    return instance;
   }
 }

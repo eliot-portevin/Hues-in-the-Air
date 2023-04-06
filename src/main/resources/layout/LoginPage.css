@@ -4,7 +4,7 @@
 }
 
 #backgroundPane{
-    -fx-background-color: #363636;
+    -fx-background-color: linear-gradient(to top left, #464646 0%, #363636 50%, #464646 100%);
 }
 
 #mainPane {
@@ -17,6 +17,8 @@
     -fx-background-color: #464646;
     -fx-border-radius: 50 50 0 0;
     -fx-background-radius: 50 50 0 0;
+    -fx-border-width: 1 1 0 1;
+    -fx-border-color: #1f1f1f;
 }
 
 #hboxIp {
@@ -27,28 +29,16 @@
     -fx-background-color: #464646;
     -fx-border-radius: 0 0 50 50;
     -fx-background-radius: 0 0 50 50;
+    -fx-border-width: 0 1 1 1;
+    -fx-border-color: #1f1f1f;
 }
 
-#labelPort {
+#labelUsername, #labelPort, #labelIp {
     -fx-text-fill: #ffffff;
     -fx-font-size: 30;
 }
 
-#labelIp {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 30;
-}
-
-#textPort {
-    -fx-text-fill: black;
-    -fx-border-color: black;
-    -fx-font-size: 20;
-    -fx-focus-traversable: false;
-    -fx-border-radius: 5 5 5 5;
-    -fx-background-radius: 5 5 5 5;
-}
-
-#textIp {
+#textUsername, #textPort, #textIp {
     -fx-text-fill: black;
     -fx-border-color: black;
     -fx-font-size: 20;
@@ -70,6 +60,35 @@
     -fx-focus-traversable: false;
 }
 
-#button:hover {
+#button:hover, #button:focused {
     -fx-background-color: linear-gradient(to bottom right, #fccf78 10%, #9ae6ae 50%, #b3d5f2 90%);
+}
+
+#titleHues {
+    -fx-font-size: 100;
+    -fx-text-fill: #b3d5f2;
+}
+
+#titleIn {
+    -fx-font-size: 50;
+    -fx-text-fill: #ffffff;
+}
+
+#titleThe {
+    -fx-font-size: 50;
+    -fx-text-fill: #ffffff;
+}
+
+#titleAir {
+    -fx-font-size: 110;
+    -fx-text-fill: #fccf78;
+}
+
+#titleHues, #titleIn, #titleThe, #titleAir {
+    -fx-font-family: 'Raleway';
+}
+
+@font-face {
+    font-family: 'Raleway';
+    src: url('/fonts/Raleway.ttf');
 }

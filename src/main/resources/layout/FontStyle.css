@@ -7,3 +7,7 @@
     font-family: 'Bebas Neue Regular';
     src: url('/fonts/Bebas_Neue_Regular.ttf');
 }
+
+.root {
+    -fx-font-family: "Bebas Neue Regular";
+}
