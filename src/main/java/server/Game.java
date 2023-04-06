@@ -12,17 +12,22 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
 
 public class  Game extends Application {
-  private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
-  private ArrayList<Node> platforms = new ArrayList<Node>(); // Used to store platforms
-  private ArrayList<Node> stars = new ArrayList<Node>(); // Used to store collectable stars
+  private HashMap<KeyCode, Boolean> keys = new HashMap<>();
+  private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
+  private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Pane appRoot = new Pane();
   private Pane gameRoot = new Pane();
   private Pane uiRoot = new Pane();
   private Cube player;
   private int levelWidth;
   private int gridSize = 50;
+  private boolean jumped;
+  private final Vector2D g = new Vector2D(0, 0.01);
+
+  private AnimationTimer timer;
 
 
   public void update(){
@@ -39,7 +44,11 @@ public class  Game extends Application {
     if (isPressed(KeyCode.RIGHT)) {
       movePlayerX(2);
     }
-
+    if (isPressed(KeyCode.SPACE)) {
+      timer.stop();
+      this.jump();
+      timer.start();
+    }
   }
 
   private boolean isPressed(KeyCode keyCode) {
@@ -88,6 +97,24 @@ public class  Game extends Application {
     }
   }
 
+  public void jump() {
+    player.velocity.setY(-1);
+    Vector2D startPosition = new Vector2D(player.position.getX(), player.position.getY());
+
+    AnimationTimer jumpTimer = new AnimationTimer() {
+      @Override
+      public void handle(long now) {
+        player.changePosition();
+        player.velocity.setY(player.velocity.getY() + g.getY());
+        if(player.position.equals(startPosition)) {
+          this.stop();
+        }
+      }
+    };
+    jumpTimer.start();
+  }
+
+
   /**
    * Creates a new rectangle entity
    * @param x - x position
@@ -133,7 +160,7 @@ public class  Game extends Application {
       }
     }
 
-    player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(20,20));  // creates the player
+    player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(0,0), new Vector2D(20,20));  // creates the player
 
     player.rectangle.translateXProperty().addListener((obs, old, newValue) -> {   // Listens for changes in the player's x position and moves the terrain accordingly
       int offset = newValue.intValue();
@@ -148,7 +175,7 @@ public class  Game extends Application {
   }
 
   /**
-   * Initializes the contend, sets the scene and starts the game with the animation timer
+   * Initializes the content, sets the scene and starts the game with the animation timer
    * @param primaryStage the primary stage for this application, onto which
    * the application scene can be set.
    * Applications may create other stages, if needed, but they will not be
@@ -167,13 +194,13 @@ public class  Game extends Application {
     primaryStage.show(); // Shows the window
 
     // Start the game loop called 60 times per second
-    AnimationTimer timer = new AnimationTimer() {
+    this.timer = new AnimationTimer() {
       @Override
       public void handle(long now) { // Called every frame
         update();
       }
     };
-    timer.start();
+    this.timer.start();
   }
   /**
    * Launches the application

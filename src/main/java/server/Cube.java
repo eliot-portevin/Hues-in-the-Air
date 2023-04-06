@@ -5,16 +5,17 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 public class Cube {
-  private Vector2D position;
-  private Vector2D velocity;
+  protected Vector2D position;
+  protected Vector2D velocity;
   public Vector2D size;
   private double jumpHeight;
   private boolean canJump;
   private Pane gameRoot;
   protected Rectangle rectangle = new Rectangle();
 
-  public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
+  public Cube(Pane gameRoot, Vector2D position, Vector2D velocity, Vector2D size) {
     this.position = position;
+    this.velocity = velocity;
     this.size = size;
     this.gameRoot = gameRoot;
     spawnCube();
@@ -32,16 +33,27 @@ public class Cube {
     this.rectangle.setTranslateY(y);
   }
 
+  public void changePosition() {
+    this.setPositionTo(this.position.getX() + this.velocity.getX(), this.position.getY() + this.velocity.getY());
+    this.position.setX(this.position.getX() + this.velocity.getX());
+    this.position.setY(this.position.getY() + this.velocity.getY());
+  }
+
+  public void changePosition(Vector2D velocity) {
+    this.setPositionTo(this.position.getX() + velocity.getX(), this.position.getY() + velocity.getY());
+    this.position.setX(this.position.getX() + velocity.getX());
+    this.position.setY(this.position.getY() + velocity.getY());
+  }
+
+
   public void move1X(boolean movingRight) { // Moves the cube 1 pixel on the x axis
     this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
+    this.position.setX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
   }
 
   public void move1Y(boolean movingDown) { // Moves the cube 1 pixel on the y axis
     this.rectangle.setTranslateY(this.rectangle.getTranslateY() + (movingDown ? 1 : -1));
-  }
-
-  public void jump() {
-
+    this.position.setY(this.rectangle.getTranslateY() + (movingDown ? 1 : -1));
   }
 
   public void resetPosition() {

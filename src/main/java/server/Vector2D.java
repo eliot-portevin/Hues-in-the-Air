@@ -41,4 +41,8 @@ public class Vector2D {
     double newY = vector1.getY() + vector2.getY();
     return new Vector2D(newX, newY);
   }
+
+  public boolean equals(Vector2D other) {
+    return this.xComponent == other.xComponent && this.yComponent == other.yComponent;
+  }
 }
