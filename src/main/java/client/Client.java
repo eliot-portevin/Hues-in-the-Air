@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import javafx.application.Application;
@@ -44,7 +43,7 @@ public class Client extends Application {
   private Thread inputThread;
   private Thread outputThread;
   private Thread pingSender;
-  
+
   // Controllers
   private LoginController loginController;
 
@@ -69,12 +68,12 @@ public class Client extends Application {
     instance = this;
 
     // Set sound
-    Media clickSound = new Media(Objects.requireNonNull(getClass().getResource("/sounds/click.wav")).toString());
+    Media clickSound =
+        new Media(Objects.requireNonNull(getClass().getResource("/sounds/click.wav")).toString());
     this.clickPlayer = new MediaPlayer(clickSound);
 
     // Get server info from command line arguments
     String[] args = getParameters().getRaw().toArray(new String[3]);
-    System.out.println(Arrays.toString(args));
 
     // Create a black scene depending on the screen resolution
     Scene scene = initScene();
@@ -92,7 +91,6 @@ public class Client extends Application {
     try {
       this.loadLoginScreen(args);
     } catch (IOException e) {
-      e.printStackTrace();
       System.out.println("Could not load login screen. Closing the program.");
       System.exit(1);
     }
@@ -179,6 +177,11 @@ public class Client extends Application {
     this.stage.getScene().setRoot(this.root);
   }
 
+  /**
+   * Loads the menu screen from fxml file. Called when the user has successfully logged in.
+   *
+   * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
+   */
   private void loadMenuScreen() throws IOException {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/MenuPage.fxml"));
     this.root = loader.load();
@@ -190,11 +193,21 @@ public class Client extends Application {
     this.stage.getScene().setRoot(this.root);
   }
 
+  /** Plays a clicking sound. Called when the user hovers over a button. */
   public void clickSound() {
     this.clickPlayer.play();
     this.clickPlayer.seek(this.clickPlayer.getStartTime());
   }
 
+  /**
+   * Connects to the server. Called from the login controller when the user has click the connect
+   * button. The method creates the sockets and threads for the input and output streams before
+   * starting the said threads.
+   *
+   * @param username the username of the user
+   * @param serverIP the IP address of the server
+   * @param serverPort the port used by the server
+   */
   public void connect(String username, String serverIP, String serverPort) {
     try {
       SERVER_IP = serverIP;
@@ -509,6 +522,11 @@ public class Client extends Application {
     System.out.print("> Exiting lobby " + lobbyName + "\n> ");
   }
 
+  /**
+   * Returns an instance of the client. Called from controllers to access various methods or variables
+   * of the client.
+   * @return The instance of the client
+   */
   public static Client getInstance() {
     return instance;
   }

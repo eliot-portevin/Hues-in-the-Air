@@ -47,6 +47,10 @@ public class LoginController {
   public Label errorMessage;
   public FadeTransition errorTransition;
 
+  /**
+   * Method that is called when the login screen is loaded. The default behaviours are set for the
+   * login screen, which includes the tab behaviour, button behaviour and font behaviour.
+   */
   @FXML
   public void initialize() {
     // Change text field when <Tab> or <Enter> is clicked
@@ -62,6 +66,10 @@ public class LoginController {
     this.setErrorMessage();
   }
 
+  /**
+   * Creates a fade transition for the error message which is shown when a connection to the server
+   * cannot be established. This error message design is inspired by Clash of Clans.
+   */
   private void setErrorMessage() {
     errorMessage.styleProperty().bind(Bindings.concat("-fx-font-size: ", errorPane.widthProperty().divide(30)));
     errorTransition = new FadeTransition(Duration.millis(5000), errorPane);
