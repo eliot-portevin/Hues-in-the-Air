@@ -88,6 +88,10 @@
     -fx-font-family: 'Raleway';
 }
 
+#errorMessage {
+    -fx-text-fill: #ff0000
+}
+
 @font-face {
     font-family: 'Raleway';
     src: url('/fonts/Raleway.ttf');

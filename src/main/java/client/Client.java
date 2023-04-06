@@ -44,6 +44,9 @@ public class Client extends Application {
   private Thread inputThread;
   private Thread outputThread;
   private Thread pingSender;
+  
+  // Controllers
+  private LoginController loginController;
 
   // Username
   protected String username = System.getProperty("user.name");
@@ -89,6 +92,7 @@ public class Client extends Application {
     try {
       this.loadLoginScreen(args);
     } catch (IOException e) {
+      e.printStackTrace();
       System.out.println("Could not load login screen. Closing the program.");
       System.exit(1);
     }
@@ -168,8 +172,8 @@ public class Client extends Application {
     this.root = loader.load();
 
     // Set controller
-    LoginController controller = loader.getController();
-    controller.fillFields(args);
+    this.loginController = loader.getController();
+    this.loginController.fillFields(args);
 
     // Set the scene
     this.stage.getScene().setRoot(this.root);
@@ -198,8 +202,6 @@ public class Client extends Application {
       if (!username.isEmpty()) {
         this.username = username;
       }
-      System.out.printf(
-          "Connecting to server %s:%d with username %s%n", SERVER_IP, SERVER_PORT, this.username);
 
       // Create sockets
       this.socket = new Socket(SERVER_IP, SERVER_PORT);
@@ -222,7 +224,7 @@ public class Client extends Application {
 
       System.out.println("Connected to server.");
     } catch (IOException | NumberFormatException e) {
-      System.out.println("Could not connect to server with the given information.");
+      this.loginController.displayErrorMessage();
     }
   }
 

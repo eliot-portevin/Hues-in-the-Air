@@ -1,6 +1,7 @@
 package client.controllers;
 
 import client.Client;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,6 +9,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.beans.binding.Bindings;
+import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -17,6 +20,7 @@ public class LoginController {
   // Grid panes
   public GridPane backgroundPane;
   public GridPane titlePane;
+  public Pane errorPane;
   public HBox hboxPort;
   public HBox hboxLogin;
 
@@ -32,12 +36,16 @@ public class LoginController {
   public Label titleAir;
 
   // Connect to server button
-  @FXML private Button button;
+  public Button button;
 
   // Text fields
-  @FXML private TextField textUsername;
-  @FXML private TextField textIp;
-  @FXML private TextField textPort;
+  public TextField textUsername;
+  public TextField textIp;
+  public TextField textPort;
+
+  // Error message
+  public Label errorMessage;
+  public FadeTransition errorTransition;
 
   @FXML
   public void initialize() {
@@ -49,6 +57,18 @@ public class LoginController {
 
     // Automatically change font sizes with window size
     this.setFontBehaviour();
+
+    // Initialise error message
+    this.setErrorMessage();
+  }
+
+  private void setErrorMessage() {
+    errorMessage.styleProperty().bind(Bindings.concat("-fx-font-size: ", errorPane.widthProperty().divide(30)));
+    errorTransition = new FadeTransition(Duration.millis(5000), errorPane);
+    errorTransition.setFromValue(1.0);
+    errorTransition.setToValue(0.0);
+    errorTransition.setCycleCount(1);
+    errorTransition.setAutoReverse(false);
   }
 
   /**
@@ -61,10 +81,8 @@ public class LoginController {
     button.setOnMouseEntered(e -> Client.getInstance().clickSound());
 
     this.button.setOnAction(
-        e -> {
-          Client.getInstance()
-              .connect(textUsername.getText(), textIp.getText(), textPort.getText());
-        });
+        e -> Client.getInstance()
+            .connect(textUsername.getText(), textIp.getText(), textPort.getText()));
   }
 
   /**
@@ -86,14 +104,20 @@ public class LoginController {
         });
     textPort.setOnKeyPressed(
         e -> {
-          if (e.getCode().toString().equals("TAB") || e.getCode().toString().equals("ENTER")) {
+          if (e.getCode().toString().equals("TAB")) {
             button.requestFocus();
+          }
+          else if (e.getCode().toString().equals("ENTER")) {
+            button.fire();
           }
         });
     button.setOnKeyPressed(
         e -> {
-          if (e.getCode().toString().equals("TAB") || e.getCode().toString().equals("ENTER")) {
+          if (e.getCode().toString().equals("TAB")) {
             textUsername.requestFocus();
+          }
+          else if (e.getCode().toString().equals("ENTER")) {
+            button.fire();
           }
         });
   }
@@ -165,5 +189,12 @@ public class LoginController {
     if (Arrays.stream(args).noneMatch(Objects::isNull)) {
       button.fire();
     }
+  }
+
+  /**
+   * Displays an error message on screen which fades out after 5 seconds.
+   */
+  public void displayErrorMessage() {
+    this.errorTransition.play();
   }
 }
