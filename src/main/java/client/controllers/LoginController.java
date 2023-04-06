@@ -1,6 +1,6 @@
 package client.controllers;
 
-import gui.GuiJavaFX;
+import client.Client;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,6 +8,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.beans.binding.Bindings;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class LoginController {
 
@@ -55,13 +58,12 @@ public class LoginController {
    */
   private void setButtonBehaviour() {
     // hover sound for button
-    button.setOnMouseEntered(e -> GuiJavaFX.clickSound());
+    button.setOnMouseEntered(e -> Client.getInstance().clickSound());
 
     this.button.setOnAction(
         e -> {
-          String username = textUsername.getText();
-          String ip = textIp.getText();
-          String port = textPort.getText();
+          Client.getInstance()
+              .connect(textUsername.getText(), textIp.getText(), textPort.getText());
         });
   }
 
@@ -102,25 +104,66 @@ public class LoginController {
    * trial-and-error, they are not based on some meaningful formula.
    */
   private void setFontBehaviour() {
-    titleHues.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(5)));
-    titleThe.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(10)));
-    titleIn.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(10)));
-    titleAir.styleProperty().bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(5)));
+    titleHues
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(5)));
+    titleThe
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(10)));
+    titleIn
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(10)));
+    titleAir
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", titlePane.widthProperty().divide(5)));
 
-    labelUsername.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
-    labelIp.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
-    labelPort.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+    labelUsername
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+    labelIp
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+    labelPort
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
 
-    textUsername.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
-    textIp.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
-    textPort.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
+    textUsername
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
+    textIp
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
+    textPort
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(25)));
 
-    button.styleProperty().bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
+    button
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", hboxLogin.widthProperty().divide(22)));
 
     // Disable focus on text fields and button
     textUsername.setFocusTraversable(false);
     textIp.setFocusTraversable(false);
     textPort.setFocusTraversable(false);
     button.setFocusTraversable(false);
+  }
+
+  /**
+   * Fills the text fields with the given arguments. The arguments are given in the following order:
+   * username, ip, port.
+   *
+   * @param args The arguments to fill the text fields with.
+   */
+  public void fillFields(String[] args) {
+    TextField[] textFields = {textIp, textPort, textUsername};
+
+    for (int i=0; i<args.length; i++) {
+      textFields[i].setText(args[i]);
+    }
+
+    // If all arguments are given, attempt to connect to the server
+    if (Arrays.stream(args).noneMatch(Objects::isNull)) {
+      button.fire();
+    }
   }
 }
