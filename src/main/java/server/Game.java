@@ -1,23 +1,16 @@
 package server;
-import java.util.ArrayList;
 
 import gui.Colours;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.control.Button;
-
-import java.awt.*;
+import javafx.stage.Stage;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class  Game extends Application {
@@ -30,9 +23,6 @@ public class  Game extends Application {
   private Cube player;
   private int levelWidth;
 
-  public static void main(String[] args) {
-    Application.launch(args);
-  }
 
   public void update(){
 
@@ -50,7 +40,6 @@ public class  Game extends Application {
     }
 
   }
-
 
   private boolean isPressed(KeyCode keyCode) {
     return keys.getOrDefault(keyCode, false);
@@ -118,7 +107,7 @@ public class  Game extends Application {
           case '0':
             break;
           case '1':
-            Node platform = createEntity(j * 50, i * 50, 50, 50, Color.BLUE);
+            Node platform = createEntity(j * 50, i * 50, 50, 50, Colours.BLUE1.getHex());
             platforms.add(platform);
             break;
         }
@@ -159,8 +148,10 @@ public class  Game extends Application {
       }
     };
     timer.start();
+  }
 
-
+  public static void main(String[] args) {
+    Application.launch(args);
   }
 
 }
