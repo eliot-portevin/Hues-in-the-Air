@@ -23,30 +23,28 @@ public class  Game extends Application {
   private Pane uiRoot = new Pane();
   private Cube player;
   private int levelWidth;
+  private int levelHeight;
   private int gridSize = 50;
   private boolean jumped;
-
   private AnimationTimer timer;
 
 
   public void update(){
-    player.changePosition();
+    player.move(player.velocity);
     if (isPressed(KeyCode.UP)) {
-      player.moveY(-2);
+      player.move(new Vector2D(0,-2));
     }
     if (isPressed(KeyCode.DOWN)) {
-      player.moveY(2);
+      player.move(new Vector2D(0,2));
     }
     if (isPressed(KeyCode.LEFT)) {
-      player.moveX(-2);
+      player.move(new Vector2D(-2,0));
     }
     if (isPressed(KeyCode.RIGHT)) {
-      player.moveX(2);
+      player.move(new Vector2D(2,0));
     }
     if (isPressed(KeyCode.SPACE)) {
-      timer.stop();
       player.jump();
-      timer.start();
     }
   }
 
@@ -82,7 +80,8 @@ public class  Game extends Application {
    */
   public void initializeContent() {
     levelWidth = LevelData.Level1[0].length() * gridSize;
-    Rectangle bg = new Rectangle(levelWidth, 600); // Creates the background
+    levelHeight = LevelData.Level1.length * gridSize;
+    Rectangle bg = new Rectangle(levelWidth, levelHeight); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
 
     load_platforms(); // Loads the platforms
@@ -102,8 +101,24 @@ public class  Game extends Application {
           case '0':
             break;
           case '1':
-            Node platform = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.BLUE1.getHex());
-            platforms.add(platform);
+            Node platform1 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.WHITE.getHex());
+            platforms.add(platform1);
+            break;
+          case '2':
+            Node platform2 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.PINK.getHex());
+            platforms.add(platform2);
+            break;
+          case '3':
+            Node platform3 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.BLUE1.getHex());
+            platforms.add(platform3);
+            break;
+          case '4':
+            Node platform4 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.GREEN.getHex());
+            platforms.add(platform4);
+            break;
+          case '5':
+            Node platform5 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.YELLOW.getHex());
+            platforms.add(platform5);
             break;
         }
       }
@@ -120,6 +135,13 @@ public class  Game extends Application {
       }
     });
 
+    player.rectangle.translateYProperty().addListener((obs, old, newValue) -> {   // Listens for changes in the player's Y position and moves the terrain accordingly
+      int offset = newValue.intValue();
+
+      if (offset > 400 && offset < levelHeight - 400) {
+        gameRoot.setLayoutX(-(offset - 400));
+      }
+    });
     player.platforms = platforms; // Sets the platforms for the player
     player.gridSize = gridSize; // Sets the grid size for the player
   }
@@ -129,7 +151,6 @@ public class  Game extends Application {
    * the application scene can be set.
    * Applications may create other stages, if needed, but they will not be
    * primary stages.
-   * @throws Exception
    */
   @Override
   public void start(Stage primaryStage) throws Exception {
