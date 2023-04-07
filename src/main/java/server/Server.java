@@ -21,8 +21,11 @@ public class Server implements Runnable {
   private boolean noClientConnected = true;
   private Thread pingSender;
 
+  private static Server instance;
+
   public Server(int PORT) {
     this.PORT = PORT;
+    instance = this;
   }
 
   /**
@@ -74,6 +77,7 @@ public class Server implements Runnable {
     clientThread.start();
 
     System.out.println("[SERVER] Connected to Client!");
+    this.updateLobbyList();
   }
 
   /**
@@ -91,6 +95,7 @@ public class Server implements Runnable {
     this.clientHandlers.remove(client);
 
     System.out.println("[SERVER] Client " + client.getUsername() + " disconnected!");
+    this.updateLobbyList();
   }
 
   /**
@@ -154,7 +159,6 @@ public class Server implements Runnable {
    * @param lobbyName The name of the lobby
    * @param password The password of the lobby
    * @param client The client that wants to join the lobby
-   * @return if the lobby does not exist do nothing
    */
   protected void joinLobby(String lobbyName, String password, ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {
@@ -163,5 +167,40 @@ public class Server implements Runnable {
         return;
       }
     }
+  }
+
+  protected void updateLobbyList() {
+    for (ClientHandler client : this.clientHandlers) {
+      client.updateLobbyList();
+    }
+  }
+
+  protected void updateClientList() {
+    for (ClientHandler client : this.clientHandlers) {
+      client.updateClientList();
+    }
+  }
+
+  /**
+   * Produces an array of all lobbies and their clients. Called from {@link ClientHandler} each time
+   * the client list is updated. This list is then sent to the client.
+   * @return An array of all lobbies and their clients
+   */
+  protected String[][] listLobbies() {
+    ArrayList<String[]> lobbyInfos = new ArrayList<>();
+
+    for (Lobby lobby : this.lobbies.values()) {
+      ArrayList<String> lobbyInfo = new ArrayList<>();
+      lobbyInfo.add(lobby.getName());
+      for (ClientHandler client : lobby.getClientHandlers()) {
+        lobbyInfo.add(client.getUsername());
+      }
+      lobbyInfos.add(lobbyInfo.toArray(new String[0]));
+    }
+    return lobbyInfos.toArray(new String[0][0]);
+  }
+
+  public static Server getInstance() {
+    return instance;
   }
 }

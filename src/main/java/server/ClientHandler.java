@@ -62,16 +62,12 @@ public class ClientHandler implements Runnable {
     }
   }
 
-  /**
-   * Sends ping to client to check if the connection is still alive.
-   */
+  /** Sends ping to client to check if the connection is still alive. */
   protected void ping() {
     String command = ServerProtocol.SERVER_PING.toString();
     this.out.println(command);
   }
-  /**
-   * Sends a Server_PONG message to the client (meant as a response to the CLIENT_PING message)
-   */
+  /** Sends a Server_PONG message to the client (meant as a response to the CLIENT_PING message) */
   protected void pong() {
     String command = ServerProtocol.SERVER_PONG.toString();
     this.out.println(command);
@@ -123,6 +119,7 @@ public class ClientHandler implements Runnable {
    * The client linked to this ClientHandler wants to send a message to all clients in the lobby.
    *
    * <p>See {@link ServerProtocol#SEND_MESSAGE_LOBBY}
+   *
    * @param message The message to send
    */
   private void sendMessageLobby(String message) {
@@ -217,7 +214,8 @@ public class ClientHandler implements Runnable {
     ClientHandler client = this.server.getClientHandler(username);
 
     if (client == null) {
-      System.out.printf("[CLIENT_HANDLER] %s changed their username to %s.\n", this.username, username);
+      System.out.printf(
+          "[CLIENT_HANDLER] %s changed their username to %s.\n", this.username, username);
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
@@ -253,19 +251,39 @@ public class ClientHandler implements Runnable {
    */
   protected void sendClientList(ArrayList<ClientHandler> clients) {
     String command =
-            ServerProtocol.SEND_CLIENT_LIST.toString()
-                    + ServerProtocol.SEPARATOR
-                    + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
+        ServerProtocol.SEND_CLIENT_LIST.toString()
+            + ServerProtocol.SEPARATOR
+            + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
     this.out.println(command);
   }
   /**
    * Called when the client leaves a lobby.
+   *
    * @see Server#removeClient(ClientHandler)
    */
-  protected void exitLobby(){
-    String command = ServerProtocol.LOBBY_EXITED.toString() + ServerProtocol.SEPARATOR + this.lobby.getName();
+  protected void exitLobby() {
+    String command =
+        ServerProtocol.LOBBY_EXITED.toString() + ServerProtocol.SEPARATOR + this.lobby.getName();
     this.out.println(command);
     this.lobby = null;
   }
-}
 
+  public void updateLobbyList() {
+    String[][] lobbyInfo = this.server.listLobbies();
+
+    StringBuilder command =
+        new StringBuilder(ServerProtocol.UPDATE_LOBBY_INFO.toString())
+            .append(ServerProtocol.SEPARATOR);
+
+    for (int i = 0; i < lobbyInfo.length; i++) {
+      command.append(String.join(" ", lobbyInfo[i]));
+      if (i < lobbyInfo.length - 1) {
+        command.append(ServerProtocol.LOBBY_INFO_SEPARATOR);
+      }
+    }
+
+    this.out.println(command);
+  }
+
+  public void updateClientList() {}
+}

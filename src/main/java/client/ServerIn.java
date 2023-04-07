@@ -85,6 +85,7 @@ public class ServerIn implements Runnable {
           case USERNAME_SET_TO -> this.client.username = command[1];
           case SEND_CLIENT_LIST -> this.client.printClientList(command[1].split(" "));
           case LOBBY_EXITED -> this.client.lobbyExited(command[1]);
+          case UPDATE_LOBBY_INFO -> this.client.updateLobbyInfo(command[1]);
         }
       }
     } catch (IllegalArgumentException e) {

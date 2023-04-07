@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -99,8 +101,8 @@ public class Client extends Application {
     this.stage.setScene(scene);
 
     try {
-      //this.loadLoginScreen(args);
-      this.loadMenuScreen();
+      this.loadLoginScreen(args);
+      // this.loadMenuScreen();
     } catch (IOException e) {
       e.printStackTrace();
       System.out.println("Could not load login screen. Closing the program.");
@@ -428,11 +430,15 @@ public class Client extends Application {
    * @param name The name of the lobby
    * @param password The password required to enter the lobby
    */
-  protected void createLobby(String name, String password) {
+  public void createLobby(String name, String password) {
+    if (name.equals("") || password.equals("")) {
+      System.out.println("Invalid lobby name or password");
+      return;
+    }
     String command =
         ClientProtocol.CREATE_LOBBY.toString()
             + ServerProtocol.SEPARATOR
-            + name
+            + name.replaceAll(" ", "_")
             + ServerProtocol.SEPARATOR
             + password;
     this.outputSocket.sendToServer(command);
@@ -462,7 +468,11 @@ public class Client extends Application {
    * @param name The name of the lobby which the client wants to join
    * @param password The password of the lobby which the client wants to join
    */
-  protected void joinLobby(String name, String password) {
+  public void joinLobby(String name, String password) {
+    if (name.equals("") || password.equals("")) {
+      System.out.println("Invalid lobby name or password");
+      return;
+    }
     String command =
         ClientProtocol.JOIN_LOBBY.toString()
             + ServerProtocol.SEPARATOR
@@ -535,8 +545,30 @@ public class Client extends Application {
   }
 
   /**
-   * Returns an instance of the client. Called from controllers to access various methods or variables
-   * of the client.
+   * Updates the list of lobbies and their respective clients in the gui. The list of lobbies is
+   * given in the following format: <code>lobbyName1 client1 client2 client3<&?>lobbyName2</code>
+   *
+   * @param command
+   */
+  public void updateLobbyInfo(String command) {
+    ArrayList<ArrayList<String>> lobbyInfos = new ArrayList<>();
+    for (String lobbyInfo : command.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString())) {
+      // Split the lobby info into the lobby name and the clients
+      String[] split = lobbyInfo.split(" ");
+      System.out.println(Arrays.toString(split));
+      ArrayList<String> lobbyInfoList = new ArrayList<>(Arrays.asList(split));
+
+      lobbyInfos.add(lobbyInfoList);
+    }
+    String[][] asArray =
+        lobbyInfos.stream().map(u -> u.toArray(new String[0])).toArray(String[][]::new);
+    this.menuController.setLobbyList(asArray);
+  }
+
+  /**
+   * Returns an instance of the client. Called from controllers to access various methods or
+   * variables of the client.
+   *
    * @return The instance of the client
    */
   public static Client getInstance() {
