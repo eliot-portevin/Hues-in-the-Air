@@ -1,8 +1,12 @@
 package client;
 
 import gui.Colours;
+import javafx.animation.AnimationTimer;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
 
 public class Cube {
   protected Vector2D position;
@@ -11,7 +15,11 @@ public class Cube {
   private double jumpHeight;
   private boolean canJump;
   private Pane gameRoot;
+  public ArrayList<Node> platforms;
+  public int gridSize;
   protected Rectangle rectangle = new Rectangle();
+  private final Vector2D g = new Vector2D(0, 0.01);
+
 
   public Cube(Pane gameRoot, Vector2D position, Vector2D velocity, Vector2D size) {
     this.position = position;
@@ -45,6 +53,64 @@ public class Cube {
     this.position.setY(this.position.getY() + velocity.getY());
   }
 
+  public void moveX(int value) {
+    boolean movingRight = value > 0;
+
+    for (int i = 0; i < Math.abs(value); i++) {
+      for (Node platform : platforms) {
+        if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+          if (movingRight) {
+            if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) {
+              return;
+            }
+          } else {
+            if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) {
+              return;
+            }
+          }
+        }
+      }
+      move1X(movingRight);
+    }
+  }
+
+  public void moveY(int value) {
+    boolean movingDown = value > 0;
+
+    for (int i = 0; i < Math.abs(value); i++) {
+      for (Node platform : platforms) {
+        if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+          if (movingDown) {
+            if (rectangle.getTranslateY() + size.getY() == platform.getTranslateY()) {
+              return;
+            }
+          } else {
+            if (rectangle.getTranslateY() == platform.getTranslateY() + gridSize) {
+              return;
+            }
+          }
+        }
+      }
+      move1Y(movingDown);
+    }
+  }
+
+  public void jump() {
+    velocity.setY(-1);
+    Vector2D startPosition = new Vector2D(position.getX(), position.getY());
+
+    AnimationTimer jumpTimer = new AnimationTimer() {
+      @Override
+      public void handle(long now) {
+        changePosition();
+        velocity.setY(velocity.getY() + g.getY());
+        if(position.equals(startPosition)) {
+          this.stop();
+        }
+      }
+    };
+    jumpTimer.start();
+  }
 
   public void move1X(boolean movingRight) { // Moves the cube 1 pixel on the x axis
     this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
