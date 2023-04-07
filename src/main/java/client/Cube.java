@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import gui.Colours;
 import javafx.scene.layout.Pane;

@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import gui.Colours;
 import javafx.animation.AnimationTimer;
@@ -10,9 +10,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 
 public class  Game extends Application {
   private HashMap<KeyCode, Boolean> keys = new HashMap<>();

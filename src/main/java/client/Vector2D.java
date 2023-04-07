@@ -1,6 +1,4 @@
-package server;
-
-import java.util.Vector;
+package client;
 
 /**
  * Represents a 2D Vector and various operations performed on 2D Vectors

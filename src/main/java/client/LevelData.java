@@ -1,4 +1,4 @@
-package server;
+package client;
 
 public class LevelData {
     public static final String[] Level1 = new String[] {
