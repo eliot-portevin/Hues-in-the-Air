@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Cube {
   protected Vector2D position;
-  protected Vector2D velocity = new Vector2D(0.01, 0);
+  protected Vector2D velocity = new Vector2D(5, 0);
   public Vector2D size;
   private double jumpHeight;
   private boolean canJump;
@@ -18,7 +18,7 @@ public class Cube {
   public ArrayList<Node> platforms;
   public int gridSize;
   protected Rectangle rectangle = new Rectangle();
-  private final Vector2D g = new Vector2D(0, 0.01);
+  private final Vector2D g = new Vector2D(0, 1);
 
 
   public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
@@ -39,13 +39,6 @@ public class Cube {
   public void setPositionTo(double x, double y) { // Sets the position of the cube to the given x and y
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
-  }
-
-  public void changePosition() {
-    //Todo: Add gravity
-    //Todo: Make jump good xD
-    moveX(1);
-    moveY(velocity.getY());
   }
 
   public void moveX(double value) {
@@ -99,11 +92,17 @@ public class Cube {
     }
   }
 
-  public void jump() {
-    velocity.setY(-1);
-    Vector2D startPosition = new Vector2D(position.getX(), position.getY());
+  public void move(Vector2D velocity) {
+    this.velocity.setY(this.velocity.getY()+this.g.getY());
+    this.moveX(velocity.getX());
+    this.moveY(velocity.getY());
+  }
 
-    AnimationTimer jumpTimer = new AnimationTimer() {
+  public void jump() {
+    velocity.setY(-17);
+    //Vector2D startPosition = new Vector2D(position.getX(), position.getY());
+
+    /*AnimationTimer jumpTimer = new AnimationTimer() {
       @Override
       public void handle(long now) {
         changePosition();
@@ -113,7 +112,7 @@ public class Cube {
         }
       }
     };
-    jumpTimer.start();
+    jumpTimer.start();*/
   }
 
   public void move1X(boolean movingRight) { // Moves the cube 1 pixel on the x axis

@@ -30,23 +30,21 @@ public class  Game extends Application {
 
 
   public void update(){
-    player.changePosition();
+    player.move(player.velocity);
     if (isPressed(KeyCode.UP)) {
-      player.moveY(-2);
+      player.move(new Vector2D(0,-2));
     }
     if (isPressed(KeyCode.DOWN)) {
-      player.moveY(2);
+      player.move(new Vector2D(0,2));
     }
     if (isPressed(KeyCode.LEFT)) {
-      player.moveX(-2);
+      player.move(new Vector2D(-2,0));
     }
     if (isPressed(KeyCode.RIGHT)) {
-      player.moveX(2);
+      player.move(new Vector2D(2,0));
     }
     if (isPressed(KeyCode.SPACE)) {
-      timer.stop();
       player.jump();
-      timer.start();
     }
   }
 
