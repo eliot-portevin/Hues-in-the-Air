@@ -96,7 +96,8 @@ public class Client extends Application {
     this.stage.setScene(scene);
 
     try {
-      this.loadLoginScreen(args);
+      //this.loadLoginScreen(args);
+      this.loadMenuScreen();
     } catch (IOException e) {
       System.out.println("Could not load login screen. Closing the program.");
       System.exit(1);
@@ -110,7 +111,7 @@ public class Client extends Application {
         });
 
     // this.stage.setFullScreen(true);
-    this.stage.setResizable(false);
+    this.stage.setResizable(true);
     this.stage.show();
   }
 
