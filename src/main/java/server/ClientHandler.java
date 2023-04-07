@@ -1,5 +1,6 @@
 package server;
 
+import client.Client;
 import client.ClientProtocol;
 
 import java.io.BufferedReader;
@@ -161,6 +162,10 @@ public class ClientHandler implements Runnable {
         switch (protocol) {
           case EXIT -> this.server.removeClient(this);
           case SET_USERNAME -> this.setUsername(command[1]);
+          case REQUEST_SERVER_STATUS -> {
+            this.updateClientList();
+            this.updateLobbyList();
+          }
           case BROADCAST -> this.sendMessageServer(command[1]);
           case WHISPER -> this.sendMessageClient(command[1], command[2]);
           case SEND_MESSAGE_LOBBY -> this.sendMessageLobby(command[1]);
@@ -272,7 +277,7 @@ public class ClientHandler implements Runnable {
     String[][] lobbyInfo = this.server.listLobbies();
 
     StringBuilder command =
-        new StringBuilder(ServerProtocol.UPDATE_LOBBY_INFO.toString())
+        new StringBuilder(ServerProtocol.UPDATE_LOBBY_LIST.toString())
             .append(ServerProtocol.SEPARATOR);
 
     for (int i = 0; i < lobbyInfo.length; i++) {
@@ -285,5 +290,15 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
-  public void updateClientList() {}
+  public void updateClientList() {
+    ArrayList<ClientHandler> clients = this.server.getClientHandlers();
+
+    StringBuilder command =
+        new StringBuilder(ServerProtocol.UPDATE_CLIENT_LIST.toString())
+            .append(ServerProtocol.SEPARATOR);
+    command.append(
+        clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" ")));
+
+    this.out.println(command);
+  }
 }

@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Arrays;
 
 
@@ -51,12 +52,18 @@ public class ServerIn implements Runnable {
    * @throws IOException
    */
   private String[] receiveFromServer() throws IOException {
-    String input = this.in.readLine();
-    if (input != null) {
-      return input.split(ServerProtocol.SEPARATOR.toString());
-    } else {
-      this.client.receivedNullCounter++;
-      // Received null from server
+    try {
+      String input = this.in.readLine();
+      if (input != null) {
+        return input.split(ServerProtocol.SEPARATOR.toString());
+      } else {
+        this.client.receivedNullCounter++;
+        // Received null from server
+        return null;
+      }
+    } catch (SocketException e) {
+      // Connection to server lost
+      this.client.exit();
       return null;
     }
   }
@@ -85,7 +92,8 @@ public class ServerIn implements Runnable {
           case USERNAME_SET_TO -> this.client.username = command[1];
           case SEND_CLIENT_LIST -> this.client.printClientList(command[1].split(" "));
           case LOBBY_EXITED -> this.client.lobbyExited(command[1]);
-          case UPDATE_LOBBY_INFO -> this.client.updateLobbyInfo(command[1]);
+          case UPDATE_LOBBY_LIST -> this.client.updateLobbyInfo(command[1]);
+          case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
         }
       }
     } catch (IllegalArgumentException e) {

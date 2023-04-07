@@ -78,6 +78,7 @@ public class Server implements Runnable {
 
     System.out.println("[SERVER] Connected to Client!");
     this.updateLobbyList();
+    this.updateClientList();
   }
 
   /**
@@ -96,6 +97,7 @@ public class Server implements Runnable {
 
     System.out.println("[SERVER] Client " + client.getUsername() + " disconnected!");
     this.updateLobbyList();
+    this.updateClientList();
   }
 
   /**

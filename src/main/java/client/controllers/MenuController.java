@@ -44,7 +44,10 @@ public class MenuController {
     // Initialise lobby list
     this.initialiseLobbyList();
 
-    backgroundPane.requestFocus();
+    this.textLobbyName.setFocusTraversable(false);
+    this.textLobbyPassword.setFocusTraversable(false);
+    this.buttonCreateLobby.setFocusTraversable(false);
+    this.buttonJoinLobby.setFocusTraversable(false);
   }
 
   private void initialiseLobbyList() {
@@ -128,6 +131,18 @@ public class MenuController {
           Client.getInstance().joinLobby(textLobbyName.getText(), textLobbyPassword.getText());
           backgroundPane.requestFocus();
         });
+
+    buttonCreateLobby.setOnMouseEntered(e -> Client.getInstance().clickSound());
+    buttonJoinLobby.setOnMouseEntered(e -> Client.getInstance().clickSound());
+
+    for (ToggleButton tab : Arrays.asList(tabHome, tabGames, tabSettings)) {
+      tab.setOnMouseEntered(
+          e -> {
+            if (!tab.isSelected()) {
+              Client.getInstance().clickSound();
+            }
+          });
+    }
   }
 
   /** Binds the font size of the labels to the width of the window. */

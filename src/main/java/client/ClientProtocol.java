@@ -69,6 +69,9 @@ public enum ClientProtocol {
 
   LIST_LOBBY(0),
 
+  /** Client wants a full list of all lobbies and players in the lobby. Called upon startup. */
+  REQUEST_SERVER_STATUS(0),
+
   CLIENT_PING(0),
   CLIENT_PONG(0);
 

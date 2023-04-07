@@ -27,6 +27,7 @@ public class Lobby {
         this.clients.add(client);
         client.enterLobby(this);
         Server.getInstance().updateLobbyList();
+        Server.getInstance().updateClientList();
       }
     }
   }
@@ -39,6 +40,7 @@ public class Lobby {
     System.out.println("[LOBBY] Client " + client.getUsername() + " left lobby!");
     this.clients.remove(client);
     Server.getInstance().updateLobbyList();
+    Server.getInstance().updateClientList();
   }
 
   public String getName() {

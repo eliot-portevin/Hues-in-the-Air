@@ -170,7 +170,7 @@ public class Client extends Application {
 
     Optional<ButtonType> result = alert.showAndWait();
     if (result.orElse(null) == ButtonType.YES) {
-      stage.close();
+      this.exit();
     }
   }
 
@@ -205,6 +205,14 @@ public class Client extends Application {
 
     // Set the scene
     this.stage.getScene().setRoot(this.root);
+
+    // Request list of clients and lobbies from server
+    this.requestServerInfo();
+  }
+
+  private void requestServerInfo() {
+    String command = ClientProtocol.REQUEST_SERVER_STATUS.toString();
+    this.outputSocket.sendToServer(command);
   }
 
   /** Plays a clicking sound. Called when the user hovers over a button. */
@@ -232,24 +240,27 @@ public class Client extends Application {
 
       // Create sockets
       this.socket = new Socket(SERVER_IP, SERVER_PORT);
-      this.inputSocket = new ServerIn(socket, this);
-      this.outputSocket = new ServerOut(socket, this);
-      this.connectedToServer = true;
 
-      // Create threads for sockets
-      this.inputThread = new Thread(this.inputSocket);
-      this.outputThread = new Thread(this.outputSocket);
-      this.pingSender = new Thread(new ClientPingSender(this));
+      if (this.socket.isConnected()) {
+        this.inputSocket = new ServerIn(socket, this);
+        this.outputSocket = new ServerOut(socket, this);
 
-      // Start threads
-      this.inputThread.start();
-      this.outputThread.start();
-      this.pingSender.start();
+        // Create threads for sockets
+        this.inputThread = new Thread(this.inputSocket);
+        this.outputThread = new Thread(this.outputSocket);
+        this.pingSender = new Thread(new ClientPingSender(this));
 
-      // Load menu screen
-      this.loadMenuScreen();
+        // Start threads
+        this.inputThread.start();
+        this.outputThread.start();
+        this.pingSender.start();
 
-      System.out.println("Connected to server.");
+        // Load menu screen
+        this.loadMenuScreen();
+
+        System.out.println("Connected to server.");
+        this.connectedToServer = true;
+      }
     } catch (IOException | NumberFormatException e) {
       this.loginController.displayErrorMessage();
     }
@@ -403,17 +414,22 @@ public class Client extends Application {
     // Communicate with server that client is logging out
     // TODO: solve SocketException when logging out
     String command = ClientProtocol.EXIT.toString();
-    this.outputSocket.sendToServer(command);
-
-    // Close the socket and stop the threads
-    this.inputSocket.running = false;
-    this.outputSocket.running = false;
     try {
-      this.socket.close();
-    } catch (IOException e) {
-      System.err.println("[CLIENT] Failed to close socket: " + e.getMessage());
-      e.printStackTrace();
+      this.outputSocket.sendToServer(command);
+
+      // Close the socket and stop the threads
+      this.inputSocket.running = false;
+      this.outputSocket.running = false;
+      try {
+        this.socket.close();
+      } catch (IOException e) {
+        System.err.println("[CLIENT] Failed to close socket: " + e.getMessage());
+        e.printStackTrace();
+      }
+    } catch (NullPointerException e) {
+      System.out.println("Socket is already closed");
     }
+    this.stage.close();
     System.exit(0);
   }
 
@@ -555,7 +571,6 @@ public class Client extends Application {
     for (String lobbyInfo : command.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString())) {
       // Split the lobby info into the lobby name and the clients
       String[] split = lobbyInfo.split(" ");
-      System.out.println(Arrays.toString(split));
       ArrayList<String> lobbyInfoList = new ArrayList<>(Arrays.asList(split));
 
       lobbyInfos.add(lobbyInfoList);
@@ -563,6 +578,13 @@ public class Client extends Application {
     String[][] asArray =
         lobbyInfos.stream().map(u -> u.toArray(new String[0])).toArray(String[][]::new);
     this.menuController.setLobbyList(asArray);
+  }
+
+  public void updateClientInfo(String command) {
+    if (this.menuController != null) {
+      String[] clients = command.split(" ");
+      this.menuController.setUsersList(clients);
+    }
   }
 
   /**

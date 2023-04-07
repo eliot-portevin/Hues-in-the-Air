@@ -61,7 +61,10 @@ public enum ServerProtocol {
   LOBBY_EXITED(1),
 
   /* Send a list of all lobbies and the clients they contain */
-  UPDATE_LOBBY_INFO(1),
+  UPDATE_LOBBY_LIST(1),
+
+  /** Send a list of all clients in the server. Used for the client list in the menu. */
+  UPDATE_CLIENT_LIST(1),
 
   SERVER_PING(0),
 
