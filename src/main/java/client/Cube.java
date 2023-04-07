@@ -23,7 +23,6 @@ public class Cube {
 
   public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
     this.position = position;
-    this.velocity = velocity;
     this.size = size;
     this.gameRoot = gameRoot;
     spawnCube();
