@@ -1,32 +1,31 @@
 package client.controllers;
 
+import client.Client;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 
 import java.util.Arrays;
 
 public class MenuController {
 
-  @FXML private GridPane backgroundPane;
+  public GridPane backgroundPane;
 
-  @FXML private Button buttonCreateLobby;
+  public Button buttonCreateLobby;
+  public Button buttonJoinLobby;
 
-  @FXML private Button buttonJoinLobby;
+  public ToggleButton tabGames;
+  public ToggleButton tabHome;
+  public ToggleButton tabSettings;
 
-  @FXML private HBox lobbyConnectionPane;
+  public TextField textLobbyName;
+  public PasswordField textLobbyPassword;
 
-  @FXML private ToggleButton tabGames;
-
-  @FXML private ToggleButton tabHome;
-
-  @FXML private ToggleButton tabSettings;
-
-  @FXML private TextField textLobbyName;
-
-  @FXML private PasswordField textLobbyPassword;
+  public TreeView<String> tree;
+  private final TreeItem<String> root = new TreeItem<>("");
+  private final TreeItem<String> lobbiesHeader = new TreeItem<>("Lobbies");
+  private final TreeItem<String> usersHeader = new TreeItem<>("Users");
 
   @FXML
   public void initialize() {
@@ -39,13 +38,97 @@ public class MenuController {
     // Automatically change font sizes with window size
     this.setFontBehaviour();
 
-    // Set the behaviour for the tabpane
-    this.setTabpaneBehaviour();
+    // Set the behaviour for the tab pane
+    this.setTabPaneBehaviour();
+
+    // Initialise lobby list
+    this.initialiseLobbyList();
+
+    backgroundPane.requestFocus();
   }
 
-  private void setTabBehaviour() {}
+  private void initialiseLobbyList() {
+    this.tree.setRoot(this.root);
+    this.tree.setShowRoot(false);
+    this.root.getChildren().add(this.lobbiesHeader);
+    this.root.getChildren().add(this.usersHeader);
+    this.lobbiesHeader.setExpanded(true);
+  }
 
-  private void setButtonBehaviour() {}
+  public void setLobbyList(String[][] lobbyInfo) {
+    if (lobbyInfo.length == 0) {
+      this.lobbiesHeader.setValue("Lobbies (empty)");
+    } else {
+      this.lobbiesHeader.setValue("Lobbies");
+    }
+
+    this.lobbiesHeader.getChildren().clear();
+
+    for (String[] lobby : lobbyInfo) {
+      String lobbyName = lobby[0];
+      String[] users = Arrays.copyOfRange(lobby, 1, lobby.length);
+      TreeItem<String> lobbyItem = new TreeItem<>(lobbyName);
+      this.lobbiesHeader.getChildren().add(lobbyItem);
+      for (String user : users) {
+        lobbyItem.getChildren().add(new TreeItem<>(user));
+      }
+    }
+  }
+
+  public void setUsersList(String[] users) {
+    if (users.length == 0) {
+      this.usersHeader.setValue("Users (empty)");
+    } else {
+      this.usersHeader.setValue("Users");
+    }
+    this.usersHeader.getChildren().clear();
+
+    for (String user : users) {
+      this.usersHeader.getChildren().add(new TreeItem<>(user));
+    }
+  }
+
+  private void setTabBehaviour() {
+    textLobbyName.setOnKeyPressed(
+        e -> {
+          if (e.getCode().toString().equals("TAB")) {
+            textLobbyPassword.requestFocus();
+          }
+        });
+    textLobbyPassword.setOnKeyPressed(
+        e -> {
+          if (e.getCode().toString().equals("TAB")) {
+            buttonCreateLobby.requestFocus();
+          }
+        });
+    buttonCreateLobby.setOnKeyPressed(
+        e -> {
+          switch (e.getCode().toString()) {
+            case "TAB" -> buttonJoinLobby.requestFocus();
+            case "ENTER" -> buttonCreateLobby.fire();
+          }
+        });
+    buttonJoinLobby.setOnKeyPressed(
+        e -> {
+          switch (e.getCode().toString()) {
+            case "TAB" -> textLobbyName.requestFocus();
+            case "ENTER" -> buttonJoinLobby.fire();
+          }
+        });
+  }
+
+  private void setButtonBehaviour() {
+    buttonCreateLobby.setOnAction(
+        e -> {
+          Client.getInstance().createLobby(textLobbyName.getText(), textLobbyPassword.getText());
+          backgroundPane.requestFocus();
+        });
+    buttonJoinLobby.setOnAction(
+        e -> {
+          Client.getInstance().joinLobby(textLobbyName.getText(), textLobbyPassword.getText());
+          backgroundPane.requestFocus();
+        });
+  }
 
   /** Binds the font size of the labels to the width of the window. */
   private void setFontBehaviour() {
@@ -78,16 +161,17 @@ public class MenuController {
    * Selects the home tab for the startup. Also sets the behaviour for the tabs, so that only one
    * tab can be selected at a time.
    */
-  private void setTabpaneBehaviour() {
+  private void setTabPaneBehaviour() {
     for (ToggleButton tab : Arrays.asList(tabHome, tabGames, tabSettings)) {
-      tab.setOnAction(e -> {
-        for (ToggleButton otherTab : Arrays.asList(tabHome, tabGames, tabSettings)) {
-          if (otherTab != tab) {
-            configureTab(otherTab, false);
-          }
-        }
-        configureTab(tab, true);
-      });
+      tab.setOnAction(
+          e -> {
+            for (ToggleButton otherTab : Arrays.asList(tabHome, tabGames, tabSettings)) {
+              if (otherTab != tab) {
+                configureTab(otherTab, false);
+              }
+            }
+            configureTab(tab, true);
+          });
     }
     configureTab(tabHome, true);
   }
@@ -95,12 +179,14 @@ public class MenuController {
   /**
    * Configures a tab, so that it is selected or not selected. Also sets the font size of the tab
    * depending on whether it is selected or not.
+   *
    * @param tab The ToggleButton to configure
    * @param isSelected Whether the tab should be selected or not
    */
   private void configureTab(ToggleButton tab, boolean isSelected) {
     int fontSize = isSelected ? 45 : 50;
-    tab.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(fontSize)));
+    tab.styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(fontSize)));
     tab.setSelected(isSelected);
   }
 }

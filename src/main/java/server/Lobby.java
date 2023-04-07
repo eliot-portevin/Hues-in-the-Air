@@ -14,6 +14,7 @@ public class Lobby {
   public Lobby(String name, String password) {
     this.name = name;
     this.password = password;
+    Server.getInstance().updateLobbyList();
   }
   /**
    * Adds a client to the lobby.
@@ -25,6 +26,7 @@ public class Lobby {
       if (this.getNumPlayers() < 4) {
         this.clients.add(client);
         client.enterLobby(this);
+        Server.getInstance().updateLobbyList();
       }
     }
   }
@@ -36,6 +38,7 @@ public class Lobby {
     client.exitLobby();
     System.out.println("[LOBBY] Client " + client.getUsername() + " left lobby!");
     this.clients.remove(client);
+    Server.getInstance().updateLobbyList();
   }
 
   public String getName() {

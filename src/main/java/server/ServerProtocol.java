@@ -19,6 +19,16 @@ public enum ServerProtocol {
       return "<&!>";
     }
   },
+
+  /**
+   * Separator used for lobby lists
+   */
+  LOBBY_INFO_SEPARATOR(0) {
+    public String toString() {
+      return "<&?>";
+    }
+  },
+
   /** Request client username */
   NO_USERNAME_SET(0),
 
@@ -47,10 +57,11 @@ public enum ServerProtocol {
 
   SEND_CLIENT_LIST(1),
 
-  /*
-  A client has successfully exited the lobby.
-   */
+  /* A client has successfully exited the lobby.*/
   LOBBY_EXITED(1),
+
+  /* Send a list of all lobbies and the clients they contain */
+  UPDATE_LOBBY_INFO(1),
 
   SERVER_PING(0),
 
