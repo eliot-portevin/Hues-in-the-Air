@@ -1,6 +1,5 @@
 package client;
 
-import client.controllers.LoginController;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +20,11 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import server.ServerProtocol;
+import client.controllers.LoginController;
 
 public class Client extends Application {
 
@@ -58,6 +61,9 @@ public class Client extends Application {
   // Sound
   private MediaPlayer clickPlayer;
 
+  // Logger
+  private Logger logger;
+
   /**
    * Starts the application by creating a scene and setting the stage properties. Then proceeds to
    * set the scene as the login screen.
@@ -66,6 +72,7 @@ public class Client extends Application {
   public void start(Stage primaryStage) {
     // Set instance, required for other classes to access the client (for example the controllers)
     instance = this;
+    logger = LogManager.getLogger(Client.class);
 
     // Set sound
     Media clickSound =

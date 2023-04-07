@@ -3,6 +3,7 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,8 +21,8 @@ public class Server implements Runnable {
   private boolean noClientConnected = true;
   private Thread pingSender;
 
-  public Server(String PORT) {
-    this.PORT = Integer.parseInt(PORT);
+  public Server(int PORT) {
+    this.PORT = PORT;
   }
 
   /**
@@ -40,8 +41,15 @@ public class Server implements Runnable {
             this.pingSender.start();
           }
           System.out.println("[SERVER] Waiting for client connection...");
-          Socket client = listener.accept();
-          this.addClient(client);
+          try {
+            Socket client = listener.accept();
+            this.addClient(client);
+          }
+          catch (SocketException e) {
+            if (this.shuttingDown) {
+              break;
+            }
+          }
         } else {
           break;
         }
