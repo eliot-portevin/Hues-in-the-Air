@@ -42,18 +42,14 @@ public class Cube {
   }
 
   public void changePosition() {
-    this.setPositionTo(this.position.getX() + this.velocity.getX(), this.position.getY() + this.velocity.getY());
-    this.position.setX(this.position.getX() + this.velocity.getX());
-    this.position.setY(this.position.getY() + this.velocity.getY());
+    //moveX(velocity.getX());
+    //moveY(velocity.getY());
+    //this.setPositionTo(this.position.getX() + this.velocity.getX(), this.position.getY() + this.velocity.getY());
+    //this.position.setX(this.position.getX() + this.velocity.getX());
+    //this.position.setY(this.position.getY() + this.velocity.getY());
   }
 
-  public void changePosition(Vector2D velocity) {
-    this.setPositionTo(this.position.getX() + velocity.getX(), this.position.getY() + velocity.getY());
-    this.position.setX(this.position.getX() + velocity.getX());
-    this.position.setY(this.position.getY() + velocity.getY());
-  }
-
-  public void moveX(int value) {
+  public void moveX(double value) {
     boolean movingRight = value > 0;
 
     for (int i = 0; i < Math.abs(value); i++) {
@@ -61,11 +57,16 @@ public class Cube {
         if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
           if (movingRight) {
             if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) {
-              return;
+              if(rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                return;
+              }
+
             }
           } else {
             if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) {
-              return;
+              if(rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                return;
+              }
             }
           }
         }
@@ -74,7 +75,7 @@ public class Cube {
     }
   }
 
-  public void moveY(int value) {
+  public void moveY(double value) {
     boolean movingDown = value > 0;
 
     for (int i = 0; i < Math.abs(value); i++) {
