@@ -1,19 +1,27 @@
 package client;
 
 import gui.Colours;
+import javafx.animation.AnimationTimer;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
+import java.util.ArrayList;
+
 public class Cube {
   protected Vector2D position;
-  protected Vector2D velocity;
+  protected Vector2D velocity = new Vector2D(0.01, 0);
   public Vector2D size;
   private double jumpHeight;
   private boolean canJump;
   private Pane gameRoot;
+  public ArrayList<Node> platforms;
+  public int gridSize;
   protected Rectangle rectangle = new Rectangle();
+  private final Vector2D g = new Vector2D(0, 0.01);
 
-  public Cube(Pane gameRoot, Vector2D position, Vector2D velocity, Vector2D size) {
+
+  public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
     this.position = position;
     this.velocity = velocity;
     this.size = size;
@@ -34,17 +42,79 @@ public class Cube {
   }
 
   public void changePosition() {
-    this.setPositionTo(this.position.getX() + this.velocity.getX(), this.position.getY() + this.velocity.getY());
-    this.position.setX(this.position.getX() + this.velocity.getX());
-    this.position.setY(this.position.getY() + this.velocity.getY());
+    //Todo: Add gravity
+    //Todo: Make jump good xD
+    moveX(1);
+    moveY(velocity.getY());
   }
 
-  public void changePosition(Vector2D velocity) {
-    this.setPositionTo(this.position.getX() + velocity.getX(), this.position.getY() + velocity.getY());
-    this.position.setX(this.position.getX() + velocity.getX());
-    this.position.setY(this.position.getY() + velocity.getY());
+  public void moveX(double value) {
+    boolean movingRight = value > 0;
+
+    for (int i = 0; i < Math.abs(value); i++) {
+      for (Node platform : platforms) {
+        if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+          if (movingRight) {
+            if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) {
+              if(rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                return;
+              }
+
+            }
+          } else {
+            if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) {
+              if(rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                return;
+              }
+            }
+          }
+        }
+      }
+      move1X(movingRight);
+    }
   }
 
+  public void moveY(double value) {
+    boolean movingDown = value > 0;
+
+    for (int i = 0; i < Math.abs(value); i++) {
+      for (Node platform : platforms) {
+        if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+          if (movingDown) {
+            if (rectangle.getTranslateY() + size.getY() == platform.getTranslateY()) {
+              if(rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                return;
+              }
+            }
+          } else {
+            if (rectangle.getTranslateY() == platform.getTranslateY() + gridSize) {
+              if(rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                return;
+              }
+            }
+          }
+        }
+      }
+      move1Y(movingDown);
+    }
+  }
+
+  public void jump() {
+    velocity.setY(-1);
+    Vector2D startPosition = new Vector2D(position.getX(), position.getY());
+
+    AnimationTimer jumpTimer = new AnimationTimer() {
+      @Override
+      public void handle(long now) {
+        changePosition();
+        velocity.setY(velocity.getY() + g.getY());
+        if(position.equals(startPosition)) {
+          this.stop();
+        }
+      }
+    };
+    jumpTimer.start();
+  }
 
   public void move1X(boolean movingRight) { // Moves the cube 1 pixel on the x axis
     this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
