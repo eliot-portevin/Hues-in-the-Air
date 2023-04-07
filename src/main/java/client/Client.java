@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Objects;
 import java.util.Optional;
+
+import client.controllers.MenuController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -49,6 +51,7 @@ public class Client extends Application {
 
   // Controllers
   private LoginController loginController;
+  private MenuController menuController;
 
   // Username
   protected String username = System.getProperty("user.name");
@@ -99,6 +102,7 @@ public class Client extends Application {
       //this.loadLoginScreen(args);
       this.loadMenuScreen();
     } catch (IOException e) {
+      e.printStackTrace();
       System.out.println("Could not load login screen. Closing the program.");
       System.exit(1);
     }
@@ -195,7 +199,7 @@ public class Client extends Application {
     this.root = loader.load();
 
     // Set controller
-    loader.getController();
+    this.menuController = loader.getController();
 
     // Set the scene
     this.stage.getScene().setRoot(this.root);
