@@ -1,0 +1,14 @@
+.text-area {
+    text-area-background: #464646 ;
+    -fx-highlight-text-fill: #efc942;
+    -fx-border-color: #273744;
+    -fx-border-width: 0;
+    -fx-prompt-text-fill: #bbbaba;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20;
+}
+
+.text-area .content {
+    -fx-background-color: text-area-background ;
+
+}

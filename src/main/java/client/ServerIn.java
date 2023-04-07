@@ -119,10 +119,8 @@ public class ServerIn implements Runnable {
    * @param privacy
    */
   private void receiveMessage(String[] command, String privacy) {
-    if (command[0].equals(this.client.username)) {
-      System.out.printf("%s [%s]: %s\n> ", privacy, "You", command[1]);
-    } else {
-      System.out.printf("%s [%s]: %s\n> ", privacy, command[0], command[1]);
-    }
+    String sender = command[0];
+    String message = String.join(" ", Arrays.copyOfRange(command, 1, command.length));
+    this.client.receiveMessage(message, sender);
   }
 }

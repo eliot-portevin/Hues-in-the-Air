@@ -327,7 +327,7 @@ public class Client extends Application {
    *
    * <p>Protocol format: BROADCAST&#60SEPARATOR&#62message
    */
-  protected void sendMessageServer(String message) {
+  public void sendMessageServer(String message) {
     String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
   }
@@ -609,5 +609,10 @@ public class Client extends Application {
     this.isInLobby = true;
     this.menuController.textLobbyName.clear();
     this.menuController.textLobbyPassword.clear();
+  }
+
+  protected void receiveMessage(String message, String sender) {
+    if (sender.equals(this.username)) sender = "You";
+    this.menuController.receiveMessage(message, sender);
   }
 }

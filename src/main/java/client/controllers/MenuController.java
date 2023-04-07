@@ -28,6 +28,9 @@ public class MenuController {
   private final TreeItem<String> lobbiesHeader = new TreeItem<>("Lobbies");
   private final TreeItem<String> usersHeader = new TreeItem<>("Users");
 
+  public TextArea chat;
+  public TextField textChat;
+
   @FXML
   public void initialize() {
     // Change text field when <Tab> or <Enter> is clicked
@@ -45,12 +48,28 @@ public class MenuController {
     // Initialise lobby list
     this.initialiseLobbyList();
 
+    // Initialise chat
+    this.initialiseChat();
+
     this.textLobbyName.setFocusTraversable(false);
     this.textLobbyPassword.setFocusTraversable(false);
     this.buttonCreateLobby.setFocusTraversable(false);
     this.buttonJoinLobby.setFocusTraversable(false);
   }
 
+  private void initialiseChat() {
+    this.textChat.setOnKeyPressed(
+        e -> {
+          if (e.getCode().toString().equals("ENTER")) {
+            Client.getInstance().sendMessageServer(this.textChat.getText());
+            this.textChat.clear();
+          }
+        });
+  }
+
+  /**
+   * Adds the lobbies and users headers to the lobby list.
+   */
   private void initialiseLobbyList() {
     this.tree.setRoot(this.root);
     this.tree.setShowRoot(false);
@@ -211,5 +230,9 @@ public class MenuController {
     tab.styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(fontSize)));
     tab.setSelected(isSelected);
+  }
+
+  public void receiveMessage(String message, String sender) {
+    this.chat.appendText(String.format("[%s]: %s%n", sender, message));
   }
 }
