@@ -1,19 +1,17 @@
 package client.controllers;
 
 import client.Client;
+import java.util.Arrays;
 import javafx.animation.FadeTransition;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-
-import java.util.Arrays;
-import java.util.Objects;
 
 public class LoginController {
 
@@ -72,6 +70,7 @@ public class LoginController {
    */
   private void setErrorMessage() {
     errorMessage.styleProperty().bind(Bindings.concat("-fx-font-size: ", errorPane.widthProperty().divide(30)));
+    errorMessage.setOpacity(0.0);
     errorTransition = new FadeTransition(Duration.millis(5000), errorPane);
     errorTransition.setFromValue(1.0);
     errorTransition.setToValue(0.0);
@@ -194,7 +193,7 @@ public class LoginController {
     }
 
     // If all arguments are given, attempt to connect to the server
-    if (Arrays.stream(args).noneMatch(Objects::isNull)) {
+    if (Arrays.stream(args).noneMatch(arg -> arg.equals(""))) {
       button.fire();
     }
   }
@@ -203,6 +202,7 @@ public class LoginController {
    * Displays an error message on screen which fades out after 5 seconds.
    */
   public void displayErrorMessage() {
+    this.errorMessage.setOpacity(1.0);
     this.errorTransition.play();
   }
 }

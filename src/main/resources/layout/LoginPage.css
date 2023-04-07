@@ -62,6 +62,7 @@
 
 #button:hover, #button:focused {
     -fx-background-color: linear-gradient(to bottom right, #fccf78 10%, #9ae6ae 50%, #b3d5f2 90%);
+    -fx-text-fill: #464646;
 }
 
 #titleHues {
@@ -89,7 +90,7 @@
 }
 
 #errorMessage {
-    -fx-text-fill: #ff0000
+    -fx-text-fill: #ff0000;
 }
 
 @font-face {

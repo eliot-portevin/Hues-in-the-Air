@@ -43,11 +43,9 @@ public class Main {
                     + "<client hostAddress:port username>");
           }
         }
-        default -> {
-          LOGGER.error(
-              "First argument not recognised. Please try again in the following format: "
-                  + "<server hostAddress:port> or <client hostAddress:port username>");
-        }
+        default -> LOGGER.error(
+            "First argument not recognised. Please try again in the following format: "
+                + "<server hostAddress:port> or <client hostAddress:port username>");
       }
     } else {
       LOGGER.error(
