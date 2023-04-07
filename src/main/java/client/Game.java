@@ -30,7 +30,7 @@ public class  Game extends Application {
 
 
   public void update(){
-
+    player.changePosition();
     if (isPressed(KeyCode.UP)) {
       player.moveY(-2);
     }
@@ -110,7 +110,7 @@ public class  Game extends Application {
     }
   }
   private void load_player(){
-    player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(0,0), new Vector2D(20,20));  // creates the player
+    player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(20,20));  // creates the player
 
     player.rectangle.translateXProperty().addListener((obs, old, newValue) -> {   // Listens for changes in the player's x position and moves the terrain accordingly
       int offset = newValue.intValue();
@@ -144,12 +144,22 @@ public class  Game extends Application {
 
     // Start the game loop called 60 times per second
     this.timer = new AnimationTimer() {
+      //long delta;
+      //long lastFrameTime;
       @Override
       public void handle(long now) { // Called every frame
+        //delta = now - lastFrameTime;
+        //lastFrameTime = now;
+        //System.out.println(getFrameRateHertz(delta));
         update();
       }
     };
     this.timer.start();
+  }
+
+  public double getFrameRateHertz(long deltaTimeNano) {
+    double frameRate = 1d / deltaTimeNano;
+    return frameRate * 1e9;
   }
   /**
    * Launches the application

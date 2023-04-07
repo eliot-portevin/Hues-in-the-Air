@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Cube {
   protected Vector2D position;
-  protected Vector2D velocity;
+  protected Vector2D velocity = new Vector2D(0.01, 0);
   public Vector2D size;
   private double jumpHeight;
   private boolean canJump;
@@ -21,7 +21,7 @@ public class Cube {
   private final Vector2D g = new Vector2D(0, 0.01);
 
 
-  public Cube(Pane gameRoot, Vector2D position, Vector2D velocity, Vector2D size) {
+  public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
     this.position = position;
     this.velocity = velocity;
     this.size = size;
@@ -42,11 +42,10 @@ public class Cube {
   }
 
   public void changePosition() {
-    //moveX(velocity.getX());
-    //moveY(velocity.getY());
-    //this.setPositionTo(this.position.getX() + this.velocity.getX(), this.position.getY() + this.velocity.getY());
-    //this.position.setX(this.position.getX() + this.velocity.getX());
-    //this.position.setY(this.position.getY() + this.velocity.getY());
+    //Todo: Add gravity
+    //Todo: Make jump good xD
+    moveX(1);
+    moveY(velocity.getY());
   }
 
   public void moveX(double value) {
