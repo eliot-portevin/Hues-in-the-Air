@@ -22,6 +22,7 @@ public class MenuController {
   public TextField textLobbyName;
   public PasswordField textLobbyPassword;
 
+  public Label labelLobbies;
   public TreeView<String> tree;
   private final TreeItem<String> root = new TreeItem<>("");
   private final TreeItem<String> lobbiesHeader = new TreeItem<>("Lobbies");
@@ -170,6 +171,13 @@ public class MenuController {
     tabSettings
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+    labelLobbies
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+    // Bind font size of the lobby list to the width of the window
+    tree
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
   }
 
   /**

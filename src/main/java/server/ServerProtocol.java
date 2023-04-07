@@ -57,6 +57,9 @@ public enum ServerProtocol {
 
   SEND_CLIENT_LIST(1),
 
+  /** Informs the client that they have successfully joined a lobby. */
+  LOBBY_JOINED(0),
+
   /* A client has successfully exited the lobby.*/
   LOBBY_EXITED(1),
 

@@ -38,6 +38,7 @@ public class Client extends Application {
   int receivedNullCounter = 0;
   boolean shuttingDown = false;
   public static Client instance;
+  boolean isInLobby = false;
 
   // Server info
   private static int SERVER_PORT;
@@ -102,7 +103,6 @@ public class Client extends Application {
 
     try {
       this.loadLoginScreen(args);
-      // this.loadMenuScreen();
     } catch (IOException e) {
       e.printStackTrace();
       System.out.println("Could not load login screen. Closing the program.");
@@ -117,7 +117,7 @@ public class Client extends Application {
         });
 
     // this.stage.setFullScreen(true);
-    this.stage.setResizable(true);
+    this.stage.setResizable(false);
     this.stage.show();
   }
 
@@ -429,7 +429,11 @@ public class Client extends Application {
     } catch (NullPointerException e) {
       System.out.println("Socket is already closed");
     }
-    this.stage.close();
+    try {
+      this.stage.close();
+    } catch (IllegalStateException e) {
+      System.out.println("Stage is already closed");
+    }
     System.exit(0);
   }
 
@@ -447,17 +451,19 @@ public class Client extends Application {
    * @param password The password required to enter the lobby
    */
   public void createLobby(String name, String password) {
-    if (name.equals("") || password.equals("")) {
-      System.out.println("Invalid lobby name or password");
-      return;
+    if (!this.isInLobby) {
+      if (name.equals("") || password.equals("")) {
+        System.out.println("Invalid lobby name or password");
+        return;
+      }
+      String command =
+          ClientProtocol.CREATE_LOBBY.toString()
+              + ServerProtocol.SEPARATOR
+              + name.replaceAll(" ", "_")
+              + ServerProtocol.SEPARATOR
+              + password;
+      this.outputSocket.sendToServer(command);
     }
-    String command =
-        ClientProtocol.CREATE_LOBBY.toString()
-            + ServerProtocol.SEPARATOR
-            + name.replaceAll(" ", "_")
-            + ServerProtocol.SEPARATOR
-            + password;
-    this.outputSocket.sendToServer(command);
   }
 
   /**
@@ -485,17 +491,19 @@ public class Client extends Application {
    * @param password The password of the lobby which the client wants to join
    */
   public void joinLobby(String name, String password) {
-    if (name.equals("") || password.equals("")) {
-      System.out.println("Invalid lobby name or password");
-      return;
+    if (!this.isInLobby) {
+      if (name.equals("") || password.equals("")) {
+        System.out.println("Invalid lobby name or password");
+        return;
+      }
+      String command =
+          ClientProtocol.JOIN_LOBBY.toString()
+              + ServerProtocol.SEPARATOR
+              + name
+              + ServerProtocol.SEPARATOR
+              + password;
+      this.outputSocket.sendToServer(command);
     }
-    String command =
-        ClientProtocol.JOIN_LOBBY.toString()
-            + ServerProtocol.SEPARATOR
-            + name
-            + ServerProtocol.SEPARATOR
-            + password;
-    this.outputSocket.sendToServer(command);
   }
 
   /**
@@ -595,5 +603,11 @@ public class Client extends Application {
    */
   public static Client getInstance() {
     return instance;
+  }
+
+  public void enterLobby() {
+    this.isInLobby = true;
+    this.menuController.textLobbyName.clear();
+    this.menuController.textLobbyPassword.clear();
   }
 }

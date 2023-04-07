@@ -243,6 +243,7 @@ public class ClientHandler implements Runnable {
     this.lobby = lobby;
     System.out.println(this.username + " entered lobby " + lobby.getName());
     this.sendMessageLobby(this.username + " entered the lobby " + this.lobby.getName() + ".");
+    this.out.println(ServerProtocol.LOBBY_JOINED);
   }
 
   protected Lobby getLobby() {
