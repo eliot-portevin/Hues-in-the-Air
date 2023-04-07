@@ -83,11 +83,15 @@ public class Cube {
         if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
           if (movingDown) {
             if (rectangle.getTranslateY() + size.getY() == platform.getTranslateY()) {
-              return;
+              if(rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                return;
+              }
             }
           } else {
             if (rectangle.getTranslateY() == platform.getTranslateY() + gridSize) {
-              return;
+              if(rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                return;
+              }
             }
           }
         }
