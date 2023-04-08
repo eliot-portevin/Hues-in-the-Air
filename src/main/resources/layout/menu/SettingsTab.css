@@ -6,6 +6,8 @@
     -fx-background-color: #464646;
     -fx-background-radius: 30;
     -fx-border-radius: 30;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1;
 }
 
 #labelUsername, #labelMusic, #labelSfx {

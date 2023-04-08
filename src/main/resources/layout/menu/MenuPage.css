@@ -40,3 +40,8 @@
 .tab:hover {
     -fx-background-color: #464646;
 }
+
+#footer1 { -fx-background-color: #f57dc6; }
+#footer2 { -fx-background-color: #b3d5f2; }
+#footer3 { -fx-background-color: #9ae6ae; }
+#footer4 { -fx-background-color: #fccf78; }

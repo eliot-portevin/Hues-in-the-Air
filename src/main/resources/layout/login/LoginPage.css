@@ -66,6 +66,11 @@
     -fx-text-fill: #ff0000;
 }
 
+#footer1 { -fx-background-color: #f57dc6; }
+#footer2 { -fx-background-color: #b3d5f2; }
+#footer3 { -fx-background-color: #9ae6ae; }
+#footer4 { -fx-background-color: #fccf78; }
+
 @font-face {
     font-family: 'Raleway';
     src: url('/fonts/Raleway.ttf');

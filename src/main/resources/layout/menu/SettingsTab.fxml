@@ -36,7 +36,7 @@
             <Label fx:id="labelMusic" text="Music" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <Label fx:id="labelUsername" text="Username" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Label fx:id="labelSfx" text="SFX" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-            <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
+            <TextArea mouseTransparent="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
             <ToggleButton fx:id="buttonMusic" mnemonicParsing="false" stylesheets="@../roundButton.css" text="🔊" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <ToggleButton fx:id="buttonSound" mnemonicParsing="false" stylesheets="@../roundButton.css" text="🔊" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Button fx:id="buttonPen" mnemonicParsing="false" stylesheets="@../roundButton.css" text="✎" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />

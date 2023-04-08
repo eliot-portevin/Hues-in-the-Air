@@ -11,3 +11,7 @@
 .tree-cell:odd {
     -fx-background-color: #e6e6e6;
 }
+
+.tree-cell:selected {
+    -fx-text-fill: #363636;
+}
