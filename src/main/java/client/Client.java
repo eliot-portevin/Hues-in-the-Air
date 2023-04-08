@@ -1,5 +1,7 @@
 package client;
 
+import client.controllers.LoginController;
+import client.controllers.MenuController;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-
-import client.controllers.MenuController;
-import client.controllers.MenuHomeController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -25,12 +24,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Callback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import server.ServerProtocol;
-import client.controllers.LoginController;
 
 public class Client extends Application {
 
@@ -186,7 +182,7 @@ public class Client extends Application {
    * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
    */
   private void loadLoginScreen(String[] args) throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/LoginPage.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/login/LoginPage.fxml"));
     this.root = loader.load();
 
     // Set controller
@@ -203,7 +199,7 @@ public class Client extends Application {
    * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
    */
   private void loadMenuScreen() throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/MenuPage.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/menu/MenuPage.fxml"));
     this.root = loader.load();
 
     // Set controller
@@ -313,7 +309,13 @@ public class Client extends Application {
   }
 
   /** sets the username of the client */
-  protected void setUsername(String username) {
+  public void setUsername(String username) {
+    if (username.equals(this.username)) {
+      if (this.menuScreen) {
+        this.menuController.displayAlert("Username already set to " + username + ".", true);
+        return;
+      }
+    }
     String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
     this.username = username;
     this.outputSocket.sendToServer(command);
@@ -621,8 +623,36 @@ public class Client extends Application {
     this.menuController.clearHomeTab();
   }
 
+  /**
+   * Called when the client has received a message from the server. Appends the message to the chat.
+   * @param message The message that was received
+   * @param sender The sender of the message
+   */
   protected void receiveMessage(String message, String sender) {
     if (sender.equals(this.username)) sender = "You";
     this.menuController.receiveMessage(message, sender);
+  }
+
+  /**
+   * Sets the volume of the music according to the slider in the settings menu
+   * @param volume The volume of the music
+   */
+  public void setMusicVolume(double volume) {
+    // no music yet
+  }
+
+  /**
+   * Sets the volume of the sound effects according to the slider in the settings menu
+   * @param volume The volume of the sound effects
+   */
+  public void setSfxVolume(double volume) {
+    this.clickPlayer.setVolume(volume);
+  }
+
+  public void usernameSetTo(String username) {
+    this.username = username;
+    if (this.menuScreen) {
+      this.menuController.displayAlert("Username set to " + username + ".", false);
+    }
   }
 }

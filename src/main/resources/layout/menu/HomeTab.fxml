@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="homeTab" prefHeight="540.0" prefWidth="960.0" stylesheets="@MenuHomePage.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuHomeController">
+<VBox fx:id="homeTab" prefHeight="540.0" prefWidth="960.0" stylesheets="@HomeTab.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuHomeController">
    <children>
       <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
          <children>
@@ -31,10 +31,10 @@
                   <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <TextField fx:id="textLobbyName" alignment="CENTER" promptText="Lobby Name" stylesheets="@TextField.css" GridPane.columnIndex="2" GridPane.columnSpan="2" />
-                  <PasswordField fx:id="textLobbyPassword" alignment="CENTER" promptText="Password" stylesheets="@TextField.css" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1" />
-                  <Button fx:id="buttonCreateLobby" mnemonicParsing="false" stylesheets="@Button.css" text="Create Lobby" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                  <Button fx:id="buttonJoinLobby" mnemonicParsing="false" stylesheets="@Button.css" text="Join Lobby" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <TextField fx:id="textLobbyName" alignment="CENTER" promptText="Lobby Name" stylesheets="@../TextField.css" GridPane.columnIndex="2" GridPane.columnSpan="2" />
+                  <PasswordField fx:id="textLobbyPassword" alignment="CENTER" promptText="Password" stylesheets="@../TextField.css" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                  <Button fx:id="buttonCreateLobby" mnemonicParsing="false" stylesheets="@../Button.css" text="Create Lobby" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <Button fx:id="buttonJoinLobby" mnemonicParsing="false" stylesheets="@../Button.css" text="Join Lobby" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                   <Separator fx:id="separatorTabPane" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="3" />
                </children>
             </GridPane>

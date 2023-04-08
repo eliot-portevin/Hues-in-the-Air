@@ -1,27 +1,42 @@
 package client.controllers;
 
 import client.Client;
+import java.util.Arrays;
+
+import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
-import java.util.Arrays;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class MenuController {
   // Sub-controllers
-  @FXML private VBox homeTab;
   @FXML private MenuHomeController homeTabController;
+  @FXML private MenuGamesController gamesTabController;
+  @FXML private MenuSettingsController settingsTabController;
+
+  // Tab windows
+  @FXML private VBox homeTab;
+  @FXML private VBox settingsTab;
 
   @FXML private GridPane backgroundPane;
 
-  @FXML private ToggleButton tabGames;
-  @FXML private ToggleButton tabHome;
-  @FXML private ToggleButton tabSettings;
+  // Tab buttons
+  @FXML private ToggleButton tabGamesButton;
+  @FXML private ToggleButton tabHomeButton;
+  @FXML private ToggleButton tabSettingsButton;
 
   @FXML private TextArea chat;
   @FXML private TextField textChat;
+  
+  @FXML private HBox alertPane;
+  @FXML private Label alert;
+  private FadeTransition alertTransition;
 
   @FXML
   public void initialize() {
@@ -33,6 +48,7 @@ public class MenuController {
 
     this.initialiseChat();
 
+    this.setAlert();
   }
 
   private void initialiseChat() {
@@ -47,25 +63,29 @@ public class MenuController {
 
   /** Configures the tabs to play a click sound when the mouse enter them */
   private void setButtonBehaviour() {
-    for (ToggleButton tab : Arrays.asList(tabHome, tabGames, tabSettings)) {
+    for (ToggleButton tab : Arrays.asList(tabHomeButton, tabGamesButton, tabSettingsButton)) {
       tab.setOnMouseEntered(
           e -> {
             if (!tab.isSelected()) {
               Client.getInstance().clickSound();
             }
           });
+      tab.setOnAction(
+          e -> {
+            System.out.println("Tab clicked");
+          });
     }
   }
 
   /** Binds the font size of the labels to the width of the window. */
   private void setFontBehaviour() {
-    tabHome
+    tabHomeButton
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    tabGames
+    tabGamesButton
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    tabSettings
+    tabSettingsButton
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
   }
@@ -75,10 +95,11 @@ public class MenuController {
    * tab can be selected at a time.
    */
   private void setTabPaneBehaviour() {
-    for (ToggleButton tab : Arrays.asList(tabHome, tabGames, tabSettings)) {
+    for (ToggleButton tab : Arrays.asList(tabHomeButton, tabGamesButton, tabSettingsButton)) {
       tab.setOnAction(
           e -> {
-            for (ToggleButton otherTab : Arrays.asList(tabHome, tabGames, tabSettings)) {
+            for (ToggleButton otherTab :
+                Arrays.asList(tabHomeButton, tabGamesButton, tabSettingsButton)) {
               if (otherTab != tab) {
                 configureTab(otherTab, false);
               }
@@ -86,7 +107,7 @@ public class MenuController {
             configureTab(tab, true);
           });
     }
-    configureTab(tabHome, true);
+    configureTab(tabHomeButton, true);
   }
 
   /**
@@ -97,6 +118,13 @@ public class MenuController {
    * @param isSelected Whether the tab should be selected or not
    */
   private void configureTab(ToggleButton tab, boolean isSelected) {
+    if (isSelected) {
+      if (tab == tabHomeButton) {
+        Platform.runLater(() -> homeTab.toFront());
+      } else if (tab == tabSettingsButton) {
+        Platform.runLater(() -> settingsTab.toFront());
+      }
+    }
     int fontSize = isSelected ? 45 : 50;
     tab.styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(fontSize)));
@@ -128,5 +156,35 @@ public class MenuController {
   /** Clear the text fields in the home tab. */
   public void clearHomeTab() {
     this.homeTabController.clear();
+  }
+
+  /**
+   * Creates a fade transition for the alert label. This label is used to display messages to the
+   * client, such as confirmation of a successful action or an error.
+   */
+  private void setAlert() {
+    alert.styleProperty().bind(Bindings.concat("-fx-font-size: ", alertPane.widthProperty().divide(30)));
+    alert.setOpacity(0.0);
+    alertTransition = new FadeTransition(Duration.millis(5000), alertPane);
+    alertTransition.setFromValue(1.0);
+    alertTransition.setToValue(0.0);
+    alertTransition.setCycleCount(1);
+    alertTransition.setAutoReverse(false);
+  }
+
+  /**
+   * Displays an alert message to the client.
+   * @param message The message to display
+   * @param isError Whether the message should be red or not
+   */
+  public void displayAlert(String message, Boolean isError) {
+    // move the alert to the front
+    Platform.runLater(() -> {
+      alertPane.toFront();
+      alert.setText(message);
+      alert.setTextFill(isError ? Color.valueOf("#ff0000") : Color.valueOf("#ffffff"));
+      alert.setOpacity(1.0);
+      alertTransition.playFromStart();
+    });
   }
 }

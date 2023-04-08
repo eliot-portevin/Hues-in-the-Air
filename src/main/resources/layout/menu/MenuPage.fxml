@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
@@ -22,22 +23,23 @@
     <RowConstraints percentHeight="5.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <fx:include fx:id="homeTab" source="MenuHomePage.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <fx:include fx:id="settingsTab" source="SettingsTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <fx:include fx:id="homeTab" source="HomeTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ToggleButton fx:id="tabHome" mnemonicParsing="false" stylesheets="@tabButton.css" text="Home" />
+                  <ToggleButton fx:id="tabHomeButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Home" />
                </children>
             </HBox>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ToggleButton fx:id="tabGames" mnemonicParsing="false" stylesheets="@tabButton.css" text="Games" />
+                  <ToggleButton fx:id="tabGamesButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Games" />
                </children>
             </HBox>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ToggleButton fx:id="tabSettings" mnemonicParsing="false" stylesheets="@tabButton.css" text="Settings" />
+                  <ToggleButton fx:id="tabSettingsButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Settings" />
                </children>
             </HBox>
          </children>
@@ -54,9 +56,14 @@
           <RowConstraints minHeight="10.0" percentHeight="15.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextField fx:id="textChat" promptText="Type something..." stylesheets="@TextField.css" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextArea fx:id="chat" prefHeight="200.0" prefWidth="200.0" stylesheets="@Chat.css" GridPane.columnIndex="1" GridPane.rowSpan="2" />
+            <TextField fx:id="textChat" promptText="Type something..." stylesheets="@../TextField.css" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextArea fx:id="chat" prefHeight="200.0" prefWidth="200.0" stylesheets="@../Chat.css" GridPane.columnIndex="1" GridPane.rowSpan="2" />
          </children>
       </GridPane>
+      <HBox fx:id="alertPane" alignment="CENTER" mouseTransparent="true" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
+         <children>
+            <Label fx:id="alert" mouseTransparent="true" text="Comment est votre blanquette?" />
+         </children>
+      </HBox>
    </children>
 </GridPane>

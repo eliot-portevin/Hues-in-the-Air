@@ -89,7 +89,7 @@ public class ServerIn implements Runnable {
               Arrays.copyOfRange(command, 1, command.length), "Lobby");
           case SERVER_PING -> this.client.pong();
           case SERVER_PONG -> this.resetClientStatus();
-          case USERNAME_SET_TO -> this.client.username = command[1];
+          case USERNAME_SET_TO -> this.client.usernameSetTo(command[1]);
           case SEND_CLIENT_LIST -> this.client.printClientList(command[1].split(" "));
           case LOBBY_JOINED -> this.client.enterLobby();
           case LOBBY_EXITED -> this.client.lobbyExited(command[1]);

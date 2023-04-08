@@ -203,6 +203,6 @@ public class LoginController {
    */
   public void displayErrorMessage() {
     this.errorMessage.setOpacity(1.0);
-    this.errorTransition.play();
+    this.errorTransition.playFromStart();
   }
 }

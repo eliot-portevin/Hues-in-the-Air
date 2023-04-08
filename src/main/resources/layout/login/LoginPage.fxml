@@ -38,23 +38,23 @@
       </VBox>
       <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-            <TextField fx:id="textUsername" promptText="Juste_Leblanc" stylesheets="@TextField.css" />
+            <TextField fx:id="textUsername" promptText="Juste_Leblanc" stylesheets="@../TextField.css" />
          </VBox>
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-            <TextField fx:id="textIp" promptText="localhost" stylesheets="@TextField.css">
+            <TextField fx:id="textIp" promptText="localhost" stylesheets="@../TextField.css">
                <VBox.margin>
                   <Insets />
                </VBox.margin>
             </TextField>
          </VBox>
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-            <TextField fx:id="textPort" promptText="9090" stylesheets="@TextField.css" />
+            <TextField fx:id="textPort" promptText="9090" stylesheets="@../TextField.css" />
          </VBox>
       </VBox>
       <VBox prefHeight="200.0" prefWidth="100.0" />
    </HBox>
    <HBox fx:id="hboxLogin" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
-      <Button fx:id="button" mnemonicParsing="false" stylesheets="@Button.css" text="Connect to Server" />
+      <Button fx:id="button" mnemonicParsing="false" stylesheets="@../Button.css" text="Connect to Server" />
    </HBox>
    <GridPane fx:id="titlePane" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
       <columnConstraints>

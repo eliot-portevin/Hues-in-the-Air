@@ -44,7 +44,7 @@ public class MenuHomeController {
     this.labelLobbies
         .styleProperty()
         .bind(
-            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
+            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(20)));
     this.buttonCreateLobby
         .styleProperty()
         .bind(
