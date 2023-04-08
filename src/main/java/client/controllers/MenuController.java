@@ -5,14 +5,14 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
 
 public class MenuController {
   // Sub-controllers
-  @FXML private MenuHomeController homeController;
-  @FXML private MenuGamesController gamesController;
-  @FXML private MenuSettingsController settingsController;
+  @FXML private VBox homeTab;
+  @FXML private MenuHomeController homeTabController;
 
   @FXML private GridPane backgroundPane;
 
@@ -33,9 +33,6 @@ public class MenuController {
 
     this.initialiseChat();
 
-    this.homeController = new MenuHomeController();
-    this.gamesController = new MenuGamesController();
-    this.settingsController = new MenuSettingsController();
   }
 
   private void initialiseChat() {
@@ -116,7 +113,7 @@ public class MenuController {
    * @param lobbyInfo All the information about the lobbies
    */
   public void setLobbyList(String[][] lobbyInfo) {
-    this.homeController.setLobbyList(lobbyInfo);
+    this.homeTabController.setLobbyList(lobbyInfo);
   }
 
   /**
@@ -125,11 +122,11 @@ public class MenuController {
    * @param users A String array containing all the usernames
    */
   public void setUsersList(String[] users) {
-    this.homeController.setUsersList(users);
+    this.homeTabController.setUsersList(users);
   }
 
   /** Clear the text fields in the home tab. */
   public void clearHomeTab() {
-    this.homeController.clear();
+    this.homeTabController.clear();
   }
 }

@@ -22,7 +22,7 @@
     <RowConstraints percentHeight="5.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <fx:include source="MenuHomePage.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <fx:include fx:id="homeTab" source="MenuHomePage.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">

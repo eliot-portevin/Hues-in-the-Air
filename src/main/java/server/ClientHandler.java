@@ -294,11 +294,9 @@ public class ClientHandler implements Runnable {
   public void updateClientList() {
     ArrayList<ClientHandler> clients = this.server.getClientHandlers();
 
-    StringBuilder command =
-        new StringBuilder(ServerProtocol.UPDATE_CLIENT_LIST.toString())
-            .append(ServerProtocol.SEPARATOR);
-    command.append(
-        clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" ")));
+    String command = ServerProtocol.UPDATE_CLIENT_LIST.toString() +
+        ServerProtocol.SEPARATOR +
+        clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
 
     this.out.println(command);
   }

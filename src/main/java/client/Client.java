@@ -40,7 +40,11 @@ public class Client extends Application {
   int receivedNullCounter = 0;
   boolean shuttingDown = false;
   public static Client instance;
+
+  boolean loginScreen = true;
+  boolean menuScreen = false;
   boolean isInLobby = false;
+  boolean isInGame = false;
 
   // Server info
   private static int SERVER_PORT;
@@ -207,6 +211,9 @@ public class Client extends Application {
 
     // Set the scene
     this.stage.getScene().setRoot(this.root);
+
+    this.loginScreen = false;
+    this.menuScreen = true;
 
     // Request list of clients and lobbies from server
     this.requestServerInfo();
@@ -574,24 +581,26 @@ public class Client extends Application {
    * Updates the list of lobbies and their respective clients in the gui. The list of lobbies is
    * given in the following format: <code>lobbyName1 client1 client2 client3<&?>lobbyName2</code>
    *
-   * @param command
+   * @param command The command containing the list of lobbies and their respective clients
    */
   public void updateLobbyInfo(String command) {
-    ArrayList<ArrayList<String>> lobbyInfos = new ArrayList<>();
-    for (String lobbyInfo : command.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString())) {
-      // Split the lobby info into the lobby name and the clients
-      String[] split = lobbyInfo.split(" ");
-      ArrayList<String> lobbyInfoList = new ArrayList<>(Arrays.asList(split));
+    if (this.menuScreen) {
+      ArrayList<ArrayList<String>> lobbyInfos = new ArrayList<>();
+      for (String lobbyInfo : command.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString())) {
+        // Split the lobby info into the lobby name and the clients
+        String[] split = lobbyInfo.split(" ");
+        ArrayList<String> lobbyInfoList = new ArrayList<>(Arrays.asList(split));
 
-      lobbyInfos.add(lobbyInfoList);
+        lobbyInfos.add(lobbyInfoList);
+      }
+      String[][] asArray =
+          lobbyInfos.stream().map(u -> u.toArray(new String[0])).toArray(String[][]::new);
+      this.menuController.setLobbyList(asArray);
     }
-    String[][] asArray =
-        lobbyInfos.stream().map(u -> u.toArray(new String[0])).toArray(String[][]::new);
-    this.menuController.setLobbyList(asArray);
   }
 
   public void updateClientInfo(String command) {
-    if (this.menuController != null) {
+    if (this.menuScreen) {
       String[] clients = command.split(" ");
       this.menuController.setUsersList(clients);
     }

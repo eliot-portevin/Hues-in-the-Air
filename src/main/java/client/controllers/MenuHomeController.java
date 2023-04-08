@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import java.util.Arrays;
 
 public class MenuHomeController {
-  @FXML private VBox tabPaneBackground;
+  @FXML private VBox homeTab;
 
   @FXML private Button buttonCreateLobby;
   @FXML private Button buttonJoinLobby;
@@ -44,25 +44,25 @@ public class MenuHomeController {
     this.labelLobbies
         .styleProperty()
         .bind(
-            Bindings.concat("-fx-font-size: ", this.tabPaneBackground.widthProperty().divide(30)));
+            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     this.buttonCreateLobby
         .styleProperty()
         .bind(
-            Bindings.concat("-fx-font-size: ", this.tabPaneBackground.widthProperty().divide(30)));
+            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     this.buttonJoinLobby
         .styleProperty()
         .bind(
-            Bindings.concat("-fx-font-size: ", this.tabPaneBackground.widthProperty().divide(30)));
+            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     this.textLobbyName
         .styleProperty()
         .bind(
-            Bindings.concat("-fx-font-size: ", this.tabPaneBackground.widthProperty().divide(30)));
+            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     this.textLobbyPassword
         .styleProperty()
         .bind(
-            Bindings.concat("-fx-font-size: ", this.tabPaneBackground.widthProperty().divide(30)));
+            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     tree.styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", tabPaneBackground.widthProperty().divide(40)));
+        .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(40)));
   }
 
   /**
@@ -108,12 +108,12 @@ public class MenuHomeController {
     buttonCreateLobby.setOnAction(
         e -> {
           Client.getInstance().createLobby(textLobbyName.getText(), textLobbyPassword.getText());
-          tabPaneBackground.requestFocus();
+          homeTab.requestFocus();
         });
     buttonJoinLobby.setOnAction(
         e -> {
           Client.getInstance().joinLobby(textLobbyName.getText(), textLobbyPassword.getText());
-          tabPaneBackground.requestFocus();
+          homeTab.requestFocus();
         });
 
     buttonCreateLobby.setOnMouseEntered(e -> Client.getInstance().clickSound());
@@ -160,6 +160,8 @@ public class MenuHomeController {
     for (String user : users) {
       this.usersHeader.getChildren().add(new TreeItem<>(user));
     }
+
+    this.tree.refresh();
   }
 
   public void clear() {
