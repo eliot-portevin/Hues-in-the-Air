@@ -17,6 +17,7 @@ import java.util.HashMap;
 public class  Game extends Application {
   private HashMap<KeyCode, Boolean> keys = new HashMap<>();
   private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
+  private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Pane appRoot = new Pane();
   private Pane gameRoot = new Pane();
@@ -46,6 +47,8 @@ public class  Game extends Application {
     if (isPressed(KeyCode.SPACE)) {
       player.jump();
     }
+
+    player.check_for_white_block_hit();
   }
 
   private boolean isPressed(KeyCode keyCode) {
@@ -103,6 +106,7 @@ public class  Game extends Application {
           case '1':
             Node platform1 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.WHITE.getHex());
             platforms.add(platform1);
+            death_platforms.add(platform1);
             break;
           case '2':
             Node platform2 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.PINK.getHex());
@@ -143,6 +147,7 @@ public class  Game extends Application {
       }
     });
     player.platforms = platforms; // Sets the platforms for the player
+    player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
   }
   /**

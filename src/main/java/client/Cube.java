@@ -10,15 +10,17 @@ import java.util.ArrayList;
 
 public class Cube {
   protected Vector2D position;
-  protected Vector2D velocity = new Vector2D(5, 0);
+  protected Vector2D velocity = new Vector2D(0, 0);
   public Vector2D size;
   private double jumpHeight;
-  private boolean canJump;
+  private boolean canJump = true;
   private Pane gameRoot;
   public ArrayList<Node> platforms;
+  public ArrayList<Node> death_platforms;
   public int gridSize;
   protected Rectangle rectangle = new Rectangle();
-  private final Vector2D g = new Vector2D(0, 1);
+  private final double gravitiy_scalar = 0.4;
+  private Vector2D g = new Vector2D(0, gravitiy_scalar);
 
 
   public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
@@ -35,6 +37,14 @@ public class Cube {
     gameRoot.getChildren().add(rectangle);
   }
 
+  public void check_for_white_block_hit() {
+    for (Node platform : death_platforms) {
+      if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
+        resetPosition();
+      }
+    }
+  }
+
   public void setPositionTo(double x, double y) { // Sets the position of the cube to the given x and y
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
@@ -49,6 +59,10 @@ public class Cube {
           if (movingRight) {
             if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) {
               if(rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                canJump = true;
+                g.setX(gravitiy_scalar);
+                g.setY(0);
+                System.out.println("X: " + g.getX() + " Y: " + g.getY());
                 return;
               }
 
@@ -56,6 +70,9 @@ public class Cube {
           } else {
             if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) {
               if(rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                canJump = true;
+                g.setX(-gravitiy_scalar);
+                g.setY(0);
                 return;
               }
             }
@@ -75,12 +92,18 @@ public class Cube {
           if (movingDown) {
             if (rectangle.getTranslateY() + size.getY() == platform.getTranslateY()) {
               if(rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                canJump = true;
+                g.setX(0);
+                g.setY(gravitiy_scalar);
                 return;
               }
             }
           } else {
             if (rectangle.getTranslateY() == platform.getTranslateY() + gridSize) {
               if(rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                canJump = true;
+                g.setX(0);
+                g.setY(-gravitiy_scalar);
                 return;
               }
             }
@@ -93,12 +116,17 @@ public class Cube {
 
   public void move(Vector2D velocity) {
     this.velocity.setY(this.velocity.getY()+this.g.getY());
+    this.velocity.setX(this.velocity.getX()+this.g.getX());
     this.moveX(velocity.getX());
     this.moveY(velocity.getY());
   }
 
   public void jump() {
-    velocity.setY(-17);
+    if (canJump) {
+      velocity.setY(-40*g.getY());
+      velocity.setX(-40*g.getX());
+      canJump = false;
+    }
     //Vector2D startPosition = new Vector2D(position.getX(), position.getY());
 
     /*AnimationTimer jumpTimer = new AnimationTimer() {
@@ -125,6 +153,6 @@ public class Cube {
   }
 
   public void resetPosition() {
-
+    rectangle.setFill(Colours.DARK_GREY.getHex());
   }
 }
