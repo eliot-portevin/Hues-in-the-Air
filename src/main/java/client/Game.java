@@ -29,7 +29,10 @@ public class  Game extends Application {
   private boolean jumped;
   private AnimationTimer timer;
 
-
+  /**
+   * Called every frame and handles the game logic
+   * @param primaryStage - the stage to display the game on
+   */
   public void update(){
     player.move(player.velocity);
     if (isPressed(KeyCode.UP)) {
@@ -95,6 +98,9 @@ public class  Game extends Application {
     appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
 
   }
+  /**
+   * Loads the platforms from the level data
+   */
 
   private void load_platforms() {
     for (int i=0; i<LevelData.Level1.length; i++) { // Creates the platforms
@@ -128,6 +134,9 @@ public class  Game extends Application {
       }
     }
   }
+  /**
+   * Loads the player
+   */
   private void load_player(){
     player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(20,20));  // creates the player
 

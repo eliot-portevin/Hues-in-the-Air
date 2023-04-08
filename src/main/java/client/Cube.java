@@ -30,13 +30,19 @@ public class Cube {
     spawnCube();
   }
 
-  public void spawnCube() { // Spawns the cube at the given position with given size and adds it to the gameRoot
+  /**
+   * Spawns the cube at the given position with given size and adds it to the gameRoot
+   */
+  public void spawnCube() {
     rectangle = new Rectangle(size.getX(), size.getY());
     this.setPositionTo(position.getX(), position.getY());
     rectangle.setFill(Colours.GREEN.getHex());
     gameRoot.getChildren().add(rectangle);
   }
 
+  /**
+   * Checks for collisions with the white blocks and calls resetsPosition if it collides with one
+   */
   public void check_for_white_block_hit() {
     for (Node platform : death_platforms) {
       if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
@@ -49,7 +55,11 @@ public class Cube {
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
   }
-
+  /**
+   * Checks if the cube is colliding with anything, if not it moves the cube by 1 pixel steps in x direction and checks again
+   * If the cube is colliding with something it stops the cube from clipping into the object and sets the velocity in that direction to 0 and sets canJump to true
+   * On collision the cubes gravity is also set to the opposite of the normal of the surface it is colliding with
+   */
   public void moveX(double value) {
     boolean movingRight = value > 0;
 
@@ -83,6 +93,11 @@ public class Cube {
     }
   }
 
+  /**
+   * Checks if the cube is colliding with anything, if not it moves the cube by 1 pixel steps in y direction and checks again
+   * If the cube is colliding with something it stops the cube from clipping into the object and sets the velocity in that direction to 0 and sets canJump to true
+   * On collision the cubes gravity is also set to the opposite of the normal of the surface it is colliding with
+   */
   public void moveY(double value) {
     boolean movingDown = value > 0;
 
@@ -114,6 +129,9 @@ public class Cube {
     }
   }
 
+  /**
+   * updates the velocity of the cube and moves it by the given velocity
+   */
   public void move(Vector2D velocity) {
     this.velocity.setY(this.velocity.getY()+this.g.getY());
     this.velocity.setX(this.velocity.getX()+this.g.getX());
@@ -121,6 +139,9 @@ public class Cube {
     this.moveY(velocity.getY());
   }
 
+  /**
+   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector
+   */
   public void jump() {
     if (canJump) {
       velocity.setY(-40*g.getY());
@@ -142,16 +163,27 @@ public class Cube {
     jumpTimer.start();*/
   }
 
-  public void move1X(boolean movingRight) { // Moves the cube 1 pixel on the x axis
+  /**
+   * Moves the cube 1 pixel on the x axis
+   * @param movingRight
+   */
+  public void move1X(boolean movingRight) {
     this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
     this.position.setX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
   }
 
-  public void move1Y(boolean movingDown) { // Moves the cube 1 pixel on the y axis
+  /**
+   * Moves the cube 1 pixel on the y axis
+   * @param movingDown
+   */
+  public void move1Y(boolean movingDown) {
     this.rectangle.setTranslateY(this.rectangle.getTranslateY() + (movingDown ? 1 : -1));
     this.position.setY(this.rectangle.getTranslateY() + (movingDown ? 1 : -1));
   }
 
+  /**
+   * Called upon collision with a white block, is responsible for the death effects of the cube.
+   */
   public void resetPosition() {
     rectangle.setFill(Colours.DARK_GREY.getHex());
   }
