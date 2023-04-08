@@ -18,7 +18,7 @@ public class MenuController {
   // Sub-controllers
   @FXML private MenuHomeController homeTabController;
   @FXML private MenuGamesController gamesTabController;
-  @FXML private MenuSettingsController settingsTabController;
+  public MenuSettingsController settingsTabController;
 
   // Tab windows
   @FXML private VBox homeTab;

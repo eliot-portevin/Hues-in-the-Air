@@ -26,17 +26,17 @@
           <RowConstraints vgrow="SOMETIMES" />
           <RowConstraints vgrow="SOMETIMES" />
           <RowConstraints vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextField fx:id="textUsername" promptText="Type something..." stylesheets="@../TextField.css" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="textUsername" mouseTransparent="true" promptText="username" stylesheets="@../TextField.css" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Slider fx:id="sliderMusic" blockIncrement="0.0" max="1.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Slider fx:id="sliderSfx" blockIncrement="0.0" max="1.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <Label fx:id="labelMusic" text="Music" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <Label fx:id="labelUsername" text="Username" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Label fx:id="labelSfx" text="SFX" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-            <TextArea mouseTransparent="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
+            <TextArea fx:id="creditsArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
             <ToggleButton fx:id="buttonMusic" mnemonicParsing="false" stylesheets="@../roundButton.css" text="🔊" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <ToggleButton fx:id="buttonSound" mnemonicParsing="false" stylesheets="@../roundButton.css" text="🔊" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Button fx:id="buttonPen" mnemonicParsing="false" stylesheets="@../roundButton.css" text="✎" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />

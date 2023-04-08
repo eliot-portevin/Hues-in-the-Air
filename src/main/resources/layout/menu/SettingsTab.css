@@ -14,3 +14,43 @@
     -fx-text-fill: #ffffff;
     -fx-font-size: 27;
 }
+
+#creditsArea {
+    -fx-text-fill: #ffffff;
+}
+
+#creditsArea .content {
+    -fx-background-color: #464646;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:vertical .track{
+    -fx-background-color :#464646;
+    -fx-border-width: 0;
+}
+
+.scroll-bar:vertical .thumb{
+    -fx-border-radius: 50em;
+    -fx-background-radius: 50em;
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}

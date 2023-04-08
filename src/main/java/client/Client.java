@@ -653,6 +653,11 @@ public class Client extends Application {
     this.username = username;
     if (this.menuScreen) {
       this.menuController.displayAlert("Username set to " + username + ".", false);
+      this.menuController.settingsTabController.setUsernameField();
     }
+  }
+
+  public String getUsername() {
+    return this.username;
   }
 }
