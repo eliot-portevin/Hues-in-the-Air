@@ -82,21 +82,28 @@ public class MenuSettingsController {
     this.sliderSfx.setValue(1);
     this.sliderMusic.setValue(1);
 
-    this.buttonMusic.selectedProperty().addListener((observable, oldValue, newValue) -> {
-      if (sliderMusic.getValue() == 0) {
-        sliderMusic.setValue(lastMusicVolume);
-      } else {
-        lastMusicVolume = sliderMusic.getValue();
-        sliderMusic.setValue(0);
-      }
-    });
+    this.buttonMusic
+        .selectedProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              if (sliderMusic.getValue() == 0) {
+                sliderMusic.setValue(lastMusicVolume);
+                buttonMusic.setText("\uD83D\uDD0A");
+              } else {
+                lastMusicVolume = sliderMusic.getValue();
+                sliderMusic.setValue(0);
+                buttonMusic.setText("\uD83D\uDD07");
+              }
+            });
 
     this.buttonSound.selectedProperty().addListener((observable, oldValue, newValue) -> {
       if (sliderSfx.getValue() == 0) {
         sliderSfx.setValue(lastSfxVolume);
+        buttonSound.setText("\uD83D\uDD0A");
       } else {
         lastSfxVolume = sliderSfx.getValue();
         sliderSfx.setValue(0);
+        buttonSound.setText("\uD83D\uDD07");
       }
     });
   }
