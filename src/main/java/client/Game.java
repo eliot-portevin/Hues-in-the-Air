@@ -17,6 +17,7 @@ import java.util.HashMap;
 public class  Game extends Application {
   private HashMap<KeyCode, Boolean> keys = new HashMap<>();
   private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
+  private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Pane appRoot = new Pane();
   private Pane gameRoot = new Pane();
@@ -28,7 +29,10 @@ public class  Game extends Application {
   private boolean jumped;
   private AnimationTimer timer;
 
-
+  /**
+   * Called every frame and handles the game logic
+   * @param primaryStage - the stage to display the game on
+   */
   public void update(){
     player.move(player.velocity);
     if (isPressed(KeyCode.UP)) {
@@ -46,6 +50,8 @@ public class  Game extends Application {
     if (isPressed(KeyCode.SPACE)) {
       player.jump();
     }
+
+    player.check_for_white_block_hit();
   }
 
   private boolean isPressed(KeyCode keyCode) {
@@ -92,6 +98,9 @@ public class  Game extends Application {
     appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
 
   }
+  /**
+   * Loads the platforms from the level data
+   */
 
   private void load_platforms() {
     for (int i=0; i<LevelData.Level1.length; i++) { // Creates the platforms
@@ -103,6 +112,7 @@ public class  Game extends Application {
           case '1':
             Node platform1 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.WHITE.getHex());
             platforms.add(platform1);
+            death_platforms.add(platform1);
             break;
           case '2':
             Node platform2 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.PINK.getHex());
@@ -124,6 +134,9 @@ public class  Game extends Application {
       }
     }
   }
+  /**
+   * Loads the player
+   */
   private void load_player(){
     player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(20,20));  // creates the player
 
@@ -143,6 +156,7 @@ public class  Game extends Application {
       }
     });
     player.platforms = platforms; // Sets the platforms for the player
+    player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
   }
   /**
