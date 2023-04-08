@@ -9,52 +9,33 @@ import javafx.scene.layout.GridPane;
 import java.util.Arrays;
 
 public class MenuController {
+  // Sub-controllers
+  @FXML private MenuHomeController homeController;
+  @FXML private MenuGamesController gamesController;
+  @FXML private MenuSettingsController settingsController;
 
-  public GridPane backgroundPane;
+  @FXML private GridPane backgroundPane;
 
-  public Button buttonCreateLobby;
-  public Button buttonJoinLobby;
+  @FXML private ToggleButton tabGames;
+  @FXML private ToggleButton tabHome;
+  @FXML private ToggleButton tabSettings;
 
-  public ToggleButton tabGames;
-  public ToggleButton tabHome;
-  public ToggleButton tabSettings;
-
-  public TextField textLobbyName;
-  public PasswordField textLobbyPassword;
-
-  public Label labelLobbies;
-  public TreeView<String> tree;
-  private final TreeItem<String> root = new TreeItem<>("");
-  private final TreeItem<String> lobbiesHeader = new TreeItem<>("Lobbies");
-  private final TreeItem<String> usersHeader = new TreeItem<>("Users");
-
-  public TextArea chat;
-  public TextField textChat;
+  @FXML private TextArea chat;
+  @FXML private TextField textChat;
 
   @FXML
   public void initialize() {
-    // Change text field when <Tab> or <Enter> is clicked
-    this.setTabBehaviour();
-
-    // Set behaviour for the login button
     this.setButtonBehaviour();
 
-    // Automatically change font sizes with window size
     this.setFontBehaviour();
 
-    // Set the behaviour for the tab pane
     this.setTabPaneBehaviour();
 
-    // Initialise lobby list
-    this.initialiseLobbyList();
-
-    // Initialise chat
     this.initialiseChat();
 
-    this.textLobbyName.setFocusTraversable(false);
-    this.textLobbyPassword.setFocusTraversable(false);
-    this.buttonCreateLobby.setFocusTraversable(false);
-    this.buttonJoinLobby.setFocusTraversable(false);
+    this.homeController = new MenuHomeController();
+    this.gamesController = new MenuGamesController();
+    this.settingsController = new MenuSettingsController();
   }
 
   private void initialiseChat() {
@@ -67,94 +48,8 @@ public class MenuController {
         });
   }
 
-  /**
-   * Adds the lobbies and users headers to the lobby list.
-   */
-  private void initialiseLobbyList() {
-    this.tree.setRoot(this.root);
-    this.tree.setShowRoot(false);
-    this.root.getChildren().add(this.lobbiesHeader);
-    this.root.getChildren().add(this.usersHeader);
-    this.lobbiesHeader.setExpanded(true);
-  }
-
-  public void setLobbyList(String[][] lobbyInfo) {
-    if (lobbyInfo.length == 0) {
-      this.lobbiesHeader.setValue("Lobbies (empty)");
-    } else {
-      this.lobbiesHeader.setValue("Lobbies");
-    }
-
-    this.lobbiesHeader.getChildren().clear();
-
-    for (String[] lobby : lobbyInfo) {
-      String lobbyName = lobby[0];
-      String[] users = Arrays.copyOfRange(lobby, 1, lobby.length);
-      TreeItem<String> lobbyItem = new TreeItem<>(lobbyName);
-      this.lobbiesHeader.getChildren().add(lobbyItem);
-      for (String user : users) {
-        lobbyItem.getChildren().add(new TreeItem<>(user));
-      }
-    }
-  }
-
-  public void setUsersList(String[] users) {
-    if (users.length == 0) {
-      this.usersHeader.setValue("Users (empty)");
-    } else {
-      this.usersHeader.setValue("Users");
-    }
-    this.usersHeader.getChildren().clear();
-
-    for (String user : users) {
-      this.usersHeader.getChildren().add(new TreeItem<>(user));
-    }
-  }
-
-  private void setTabBehaviour() {
-    textLobbyName.setOnKeyPressed(
-        e -> {
-          if (e.getCode().toString().equals("TAB")) {
-            textLobbyPassword.requestFocus();
-          }
-        });
-    textLobbyPassword.setOnKeyPressed(
-        e -> {
-          if (e.getCode().toString().equals("TAB")) {
-            buttonCreateLobby.requestFocus();
-          }
-        });
-    buttonCreateLobby.setOnKeyPressed(
-        e -> {
-          switch (e.getCode().toString()) {
-            case "TAB" -> buttonJoinLobby.requestFocus();
-            case "ENTER" -> buttonCreateLobby.fire();
-          }
-        });
-    buttonJoinLobby.setOnKeyPressed(
-        e -> {
-          switch (e.getCode().toString()) {
-            case "TAB" -> textLobbyName.requestFocus();
-            case "ENTER" -> buttonJoinLobby.fire();
-          }
-        });
-  }
-
+  /** Configures the tabs to play a click sound when the mouse enter them */
   private void setButtonBehaviour() {
-    buttonCreateLobby.setOnAction(
-        e -> {
-          Client.getInstance().createLobby(textLobbyName.getText(), textLobbyPassword.getText());
-          backgroundPane.requestFocus();
-        });
-    buttonJoinLobby.setOnAction(
-        e -> {
-          Client.getInstance().joinLobby(textLobbyName.getText(), textLobbyPassword.getText());
-          backgroundPane.requestFocus();
-        });
-
-    buttonCreateLobby.setOnMouseEntered(e -> Client.getInstance().clickSound());
-    buttonJoinLobby.setOnMouseEntered(e -> Client.getInstance().clickSound());
-
     for (ToggleButton tab : Arrays.asList(tabHome, tabGames, tabSettings)) {
       tab.setOnMouseEntered(
           e -> {
@@ -167,20 +62,6 @@ public class MenuController {
 
   /** Binds the font size of the labels to the width of the window. */
   private void setFontBehaviour() {
-    textLobbyName
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
-    textLobbyPassword
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
-
-    buttonCreateLobby
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    buttonJoinLobby
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-
     tabHome
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
@@ -190,13 +71,6 @@ public class MenuController {
     tabSettings
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    labelLobbies
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    // Bind font size of the lobby list to the width of the window
-    tree
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
   }
 
   /**
@@ -234,5 +108,28 @@ public class MenuController {
 
   public void receiveMessage(String message, String sender) {
     this.chat.appendText(String.format("[%s]: %s%n", sender, message));
+  }
+
+  /**
+   * Sets the lobby list in the home tab.
+   *
+   * @param lobbyInfo All the information about the lobbies
+   */
+  public void setLobbyList(String[][] lobbyInfo) {
+    this.homeController.setLobbyList(lobbyInfo);
+  }
+
+  /**
+   * Updates the list of users in the home tab.
+   *
+   * @param users A String array containing all the usernames
+   */
+  public void setUsersList(String[] users) {
+    this.homeController.setUsersList(users);
+  }
+
+  /** Clear the text fields in the home tab. */
+  public void clearHomeTab() {
+    this.homeController.clear();
   }
 }

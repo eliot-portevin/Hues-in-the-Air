@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
 
 <GridPane fx:id="backgroundPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@MenuPage.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuController">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" percentWidth="5.0" />
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+      <ColumnConstraints hgrow="SOMETIMES" percentWidth="40.0" />
     <ColumnConstraints hgrow="SOMETIMES" percentWidth="5.0" />
   </columnConstraints>
   <rowConstraints>
@@ -28,62 +22,7 @@
     <RowConstraints percentHeight="5.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <VBox prefHeight="200.0" prefWidth="100.0">
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-         </children>
-      </VBox>
-      <VBox fx:id="tabPaneBackground" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-         <children>
-            <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <GridPane alignment="CENTER" VBox.vgrow="ALWAYS">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="15.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" percentWidth="5.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="5.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="15.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints percentHeight="30.0" />
-                      <RowConstraints percentHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints percentHeight="35.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <TextField fx:id="textLobbyName" alignment="CENTER" promptText="Lobby Name" stylesheets="@TextField.css" GridPane.columnIndex="2" GridPane.columnSpan="2" />
-                        <PasswordField fx:id="textLobbyPassword" alignment="CENTER" promptText="Password" stylesheets="@TextField.css" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1" />
-                        <Button fx:id="buttonCreateLobby" mnemonicParsing="false" stylesheets="@Button.css" text="Create Lobby" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                        <Button fx:id="buttonJoinLobby" mnemonicParsing="false" stylesheets="@Button.css" text="Join Lobby" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                        <Separator fx:id="separatorTabPane" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="3" />
-                     </children>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <GridPane VBox.vgrow="ALWAYS">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" percentWidth="10.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints percentHeight="20.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints percentHeight="5.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Label fx:id="labelLobbies" text="Server Information" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                        <TreeView fx:id="tree" editable="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@LobbiesList.css" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                     </children>
-                  </GridPane>
-               </children>
-            </VBox>
-         </children>
-      </VBox>
+      <fx:include source="MenuHomePage.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">

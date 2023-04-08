@@ -1,0 +1,14 @@
+.root {
+    -fx-background-color: transparent;
+}
+
+#tabPaneBackground {
+    -fx-background-color: #464646;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+}
+
+#labelLobbies {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30;
+}

@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import client.controllers.MenuController;
+import client.controllers.MenuHomeController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,6 +25,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -607,8 +609,7 @@ public class Client extends Application {
 
   public void enterLobby() {
     this.isInLobby = true;
-    this.menuController.textLobbyName.clear();
-    this.menuController.textLobbyPassword.clear();
+    this.menuController.clearHomeTab();
   }
 
   protected void receiveMessage(String message, String sender) {

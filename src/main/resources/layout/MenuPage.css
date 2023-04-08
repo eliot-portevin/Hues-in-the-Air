@@ -7,12 +7,6 @@
     -fx-background-color: #363636;
 }
 
-#tabPaneBackground {
-    -fx-background-color: #464646;
-    -fx-background-radius: 30;
-    -fx-border-radius: 30;
-}
-
 #separatorTabPane {
     -fx-background-color: #ffffff;
 }
@@ -45,9 +39,4 @@
 
 .tab:hover {
     -fx-background-color: #464646;
-}
-
-#labelLobbies {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 30;
 }
