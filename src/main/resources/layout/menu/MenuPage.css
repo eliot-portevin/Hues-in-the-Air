@@ -45,3 +45,14 @@
 #footer2 { -fx-background-color: #b3d5f2; }
 #footer3 { -fx-background-color: #9ae6ae; }
 #footer4 { -fx-background-color: #fccf78; }
+
+#title {
+    -fx-font-size: 80;
+    -fx-text-fill: linear-gradient(to right, #b3d5f2 35%, #ffffff 40%, #ffffff 75%, #fccf78 80%, #fccf78 100%);
+    -fx-font-family: Raleway;
+}
+
+@font-face {
+    font-family: 'Raleway';
+    src: url('/fonts/Raleway.ttf');
+}

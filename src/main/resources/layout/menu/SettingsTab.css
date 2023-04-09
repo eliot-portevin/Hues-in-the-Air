@@ -2,11 +2,15 @@
     -fx-focus-traversable: false;
 }
 
-#background {
+#settingsTab {
     -fx-background-color: #464646;
     -fx-background-radius: 30;
     -fx-border-radius: 30;
-    -fx-border-color: #ffffff;
+    -fx-border-color:
+            linear-gradient(to right, #fccf78 0%, #f57dc6 20%)
+            linear-gradient(to bottom, #f57dc6 0%, #b3d5f2 20%)
+            linear-gradient(to left, #b3d5f2 0%, #9ae6ae 20%)
+            linear-gradient(to top, #9ae6ae 0%, #fccf78 20%);
     -fx-border-width: 1;
 }
 

@@ -8,7 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 
 public class MenuSettingsController {
-  @FXML private VBox background;
+  @FXML private VBox settingsTab;
 
   @FXML private ToggleButton buttonMusic;
   @FXML private Button buttonPen;
@@ -63,25 +63,25 @@ public class MenuSettingsController {
   private void setFontBehaviour() {
     this.labelMusic
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", this.background.widthProperty().divide(20)));
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(20)));
     this.labelSfx
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", this.background.widthProperty().divide(20)));
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(20)));
     this.labelUsername
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", this.background.widthProperty().divide(20)));
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(20)));
     this.buttonMusic
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", this.background.widthProperty().divide(30)));
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(30)));
     this.buttonSound
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", this.background.widthProperty().divide(30)));
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(30)));
     this.buttonPen
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", this.background.widthProperty().divide(30)));
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(30)));
     this.creditsArea
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", this.background.widthProperty().divide(40)));
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(40)));
   }
 
   /**
@@ -97,7 +97,7 @@ public class MenuSettingsController {
             if (!this.textUsername.getText().isEmpty()) {
               Client.getInstance().setUsername(this.textUsername.getText().replaceAll(" ", "_"));
               this.setUsernameField();
-              this.background.requestFocus();
+              this.settingsTab.requestFocus();
             }
           }
         });

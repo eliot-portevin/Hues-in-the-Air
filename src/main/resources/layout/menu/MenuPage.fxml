@@ -16,16 +16,19 @@
       <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
   </columnConstraints>
   <rowConstraints>
-    <RowConstraints percentHeight="5.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints percentHeight="10.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints minHeight="10.0" percentHeight="80.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" percentHeight="1.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <fx:include fx:id="settingsTab" source="SettingsTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <fx:include fx:id="homeTab" source="HomeTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <HBox fx:id="alertPane" alignment="CENTER" mouseTransparent="true" GridPane.columnSpan="2147483647" GridPane.rowSpan="2147483647">
+         <children>
+            <Label fx:id="alert" mouseTransparent="true" text="Comment est votre blanquette?" />
+         </children>
+      </HBox>
+      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
          <children>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
@@ -68,10 +71,13 @@
             <HBox fx:id="footer4" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <HBox fx:id="alertPane" alignment="CENTER" mouseTransparent="true" GridPane.columnSpan="2147483647" GridPane.rowSpan="2147483647">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowSpan="2">
          <children>
-            <Label fx:id="alert" mouseTransparent="true" text="Comment est votre blanquette?" />
+            <Label fx:id="title" alignment="CENTER" text="Hues in the Air" />
          </children>
       </HBox>
+      <fx:include fx:id="settingsTab" source="SettingsTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
+      <fx:include fx:id="gamesTab" source="GamesTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
+      <fx:include fx:id="homeTab" source="HomeTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
    </children>
 </GridPane>

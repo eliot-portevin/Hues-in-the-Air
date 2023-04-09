@@ -41,6 +41,9 @@ public class Lobby {
     this.clients.remove(client);
     Server.getInstance().updateLobbyList();
     Server.getInstance().updateClientList();
+    if (this.getNumPlayers() == 0) {
+      Server.getInstance().removeLobby(this);
+    }
   }
 
   public String getName() {

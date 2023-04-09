@@ -21,7 +21,7 @@ public class MenuHomeController {
   @FXML private Label labelLobbies;
   @FXML private TreeView<String> tree;
   private final TreeItem<String> root = new TreeItem<>("");
-  private final TreeItem<String> lobbiesHeader = new TreeItem<>("Lobbies");
+  private final TreeItem<String> lobbiesHeader = new TreeItem<>("Lobbies (empty)");
   private final TreeItem<String> usersHeader = new TreeItem<>("Users");
 
   public void initialize() {
@@ -129,6 +129,10 @@ public class MenuHomeController {
     this.lobbiesHeader.setExpanded(true);
   }
 
+  /**
+   * Sets the lobby list to the given lobby info. Called from the Client class.
+   * @param lobbyInfo Has format [[lobbyName, user1, user2, ...], [lobbyName, user1, user2, ...], ...]
+   */
   public void setLobbyList(String[][] lobbyInfo) {
     if (lobbyInfo.length == 0) {
       this.lobbiesHeader.setValue("Lobbies (empty)");
@@ -139,7 +143,7 @@ public class MenuHomeController {
     this.lobbiesHeader.getChildren().clear();
 
     for (String[] lobby : lobbyInfo) {
-      String lobbyName = lobby[0];
+      String lobbyName = lobby[0] + " (" + (lobby.length - 1) + "/4)";
       String[] users = Arrays.copyOfRange(lobby, 1, lobby.length);
       TreeItem<String> lobbyItem = new TreeItem<>(lobbyName);
       this.lobbiesHeader.getChildren().add(lobbyItem);

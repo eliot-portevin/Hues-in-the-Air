@@ -101,8 +101,17 @@ public class Server implements Runnable {
   }
 
   /**
+   * Called when a lobby is empty and should be removed.
+   * @param lobby The lobby that should be removed
+   */
+  protected void removeLobby(Lobby lobby) {
+    this.lobbies.remove(lobby.getName());
+    this.updateLobbyList();
+  }
+
+  /**
    * Called from {@link ClientHandler} when a client disconnects
-   * @throws IOException
+   * @throws IOException If the socket fails to close
    */
   protected void shutdown() throws IOException {
     this.shuttingDown = true;
@@ -140,7 +149,6 @@ public class Server implements Runnable {
    * @param lobbyName The name of the lobby
    * @param password The password of the lobby
    * @param client The client that wants to create the lobby
-   * @return if the lobby already exists exit early
    */
   protected void createLobby(String lobbyName, String password, ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {

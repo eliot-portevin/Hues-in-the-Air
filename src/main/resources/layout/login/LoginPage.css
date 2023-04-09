@@ -17,8 +17,12 @@
     -fx-background-color: #464646;
     -fx-border-radius: 50 50 0 0;
     -fx-background-radius: 50 50 0 0;
-    -fx-border-width: 1 1 0 1;
-    -fx-border-color: #1f1f1f;
+    -fx-border-width: 1;
+    -fx-border-color:
+            linear-gradient(to right, #f57dc6 80%, #b3d5f2 100%)
+            #b3d5f2
+            transparent
+            linear-gradient(to top, #fccf78 80%, #f57dc6 100%);
 }
 
 #hboxIp {
@@ -29,8 +33,12 @@
     -fx-background-color: #464646;
     -fx-border-radius: 0 0 50 50;
     -fx-background-radius: 0 0 50 50;
-    -fx-border-width: 0 1 1 1;
-    -fx-border-color: #1f1f1f;
+    -fx-border-width: 1;
+    -fx-border-color:
+            transparent
+            linear-gradient(to bottom, #b3d5f2 80%, #9ae6ae 100%)
+            linear-gradient(to left, #9ae6ae 80%, #fccf78 100%)
+            linear-gradient(to top, #fccf78 80%, #f57dc6 100%);
 }
 
 #labelUsername, #labelPort, #labelIp {

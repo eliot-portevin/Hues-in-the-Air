@@ -22,6 +22,7 @@ public class MenuController {
 
   // Tab windows
   @FXML private VBox homeTab;
+  @FXML private VBox gamesTab;
   @FXML private VBox settingsTab;
 
   @FXML private GridPane backgroundPane;
@@ -31,9 +32,11 @@ public class MenuController {
   @FXML private ToggleButton tabHomeButton;
   @FXML private ToggleButton tabSettingsButton;
 
+  // Right pane
+  @FXML private Label title;
   @FXML private TextArea chat;
   @FXML private TextField textChat;
-  
+
   @FXML private HBox alertPane;
   @FXML private Label alert;
   private FadeTransition alertTransition;
@@ -70,10 +73,7 @@ public class MenuController {
               Client.getInstance().clickSound();
             }
           });
-      tab.setOnAction(
-          e -> {
-            System.out.println("Tab clicked");
-          });
+      tab.setOnAction(e -> System.out.println("Tab clicked"));
     }
   }
 
@@ -88,6 +88,14 @@ public class MenuController {
     tabSettingsButton
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+    title
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(24)));
+    textChat
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(30)));
+    chat.styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(30)));
   }
 
   /**
@@ -121,7 +129,11 @@ public class MenuController {
     if (isSelected) {
       if (tab == tabHomeButton) {
         Platform.runLater(() -> homeTab.toFront());
-      } else if (tab == tabSettingsButton) {
+      }
+      else if (tab == tabGamesButton) {
+        Platform.runLater(() -> gamesTab.toFront());
+      }
+      else if (tab == tabSettingsButton) {
         Platform.runLater(() -> settingsTab.toFront());
       }
     }
@@ -163,7 +175,9 @@ public class MenuController {
    * client, such as confirmation of a successful action or an error.
    */
   private void setAlert() {
-    alert.styleProperty().bind(Bindings.concat("-fx-font-size: ", alertPane.widthProperty().divide(30)));
+    alert
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", alertPane.widthProperty().divide(30)));
     alert.setOpacity(0.0);
     alertTransition = new FadeTransition(Duration.millis(5000), alertPane);
     alertTransition.setFromValue(1.0);
@@ -174,17 +188,19 @@ public class MenuController {
 
   /**
    * Displays an alert message to the client.
+   *
    * @param message The message to display
    * @param isError Whether the message should be red or not
    */
   public void displayAlert(String message, Boolean isError) {
     // move the alert to the front
-    Platform.runLater(() -> {
-      alertPane.toFront();
-      alert.setText(message);
-      alert.setTextFill(isError ? Color.valueOf("#ff0000") : Color.valueOf("#ffffff"));
-      alert.setOpacity(1.0);
-      alertTransition.playFromStart();
-    });
+    Platform.runLater(
+        () -> {
+          alertPane.toFront();
+          alert.setText(message);
+          alert.setTextFill(isError ? Color.valueOf("#ff0000") : Color.valueOf("#ffffff"));
+          alert.setOpacity(1.0);
+          alertTransition.playFromStart();
+        });
   }
 }
