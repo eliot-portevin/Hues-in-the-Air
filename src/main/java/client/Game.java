@@ -87,12 +87,12 @@ public class  Game extends Application {
   public void initializeContent() {
     levelWidth = LevelData.Level1[0].length() * gridSize;
     levelHeight = LevelData.Level1.length * gridSize;
-    Rectangle bg = new Rectangle(levelWidth, levelHeight); // Creates the background
+    Rectangle bg = new Rectangle(1600, 900); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
 
     load_platforms(); // Loads the platforms
 
-    load_player(); // Loads the player
+    //load_player(); // Loads the player
 
 
     appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
@@ -130,6 +130,9 @@ public class  Game extends Application {
             Node platform5 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.YELLOW.getHex());
             platforms.add(platform5);
             break;
+          case '7':
+            load_player(new Vector2D(j * gridSize, i * gridSize));
+
         }
       }
     }
@@ -137,8 +140,8 @@ public class  Game extends Application {
   /**
    * Loads the player
    */
-  private void load_player(){
-    player = new Cube(gameRoot, new Vector2D(100, 100), new Vector2D(20,20));  // creates the player
+  private void load_player(Vector2D position){
+    player = new Cube(gameRoot, position, new Vector2D(20,20));  // creates the player
 
     player.rectangle.translateXProperty().addListener((obs, old, newValue) -> {   // Listens for changes in the player's x position and moves the terrain accordingly
       int offset = newValue.intValue();
