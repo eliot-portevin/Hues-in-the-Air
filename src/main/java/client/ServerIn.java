@@ -121,6 +121,6 @@ public class ServerIn implements Runnable {
   private void receiveMessage(String[] command, String privacy) {
     String sender = command[0];
     String message = String.join(" ", Arrays.copyOfRange(command, 1, command.length));
-    this.client.receiveMessage(message, sender);
+    this.client.receiveMessage(message, sender, privacy);
   }
 }

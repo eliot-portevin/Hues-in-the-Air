@@ -43,24 +43,19 @@ public class MenuHomeController {
   private void setFontBehaviour() {
     this.labelLobbies
         .styleProperty()
-        .bind(
-            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(20)));
+        .bind(Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(20)));
     this.buttonCreateLobby
         .styleProperty()
-        .bind(
-            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
+        .bind(Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     this.buttonJoinLobby
         .styleProperty()
-        .bind(
-            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
+        .bind(Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     this.textLobbyName
         .styleProperty()
-        .bind(
-            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
+        .bind(Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     this.textLobbyPassword
         .styleProperty()
-        .bind(
-            Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
+        .bind(Bindings.concat("-fx-font-size: ", this.homeTab.widthProperty().divide(30)));
     tree.styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(40)));
   }
@@ -101,9 +96,7 @@ public class MenuHomeController {
         });
   }
 
-  /**
-   * Makes the buttons call the appropriate methods in the Client class when clicked.
-   */
+  /** Makes the buttons call the appropriate methods in the Client class when clicked. */
   private void setButtonBehaviour() {
     buttonCreateLobby.setOnAction(
         e -> {
@@ -127,11 +120,26 @@ public class MenuHomeController {
     this.root.getChildren().add(this.lobbiesHeader);
     this.root.getChildren().add(this.usersHeader);
     this.lobbiesHeader.setExpanded(true);
+
+    this.tree
+        .getSelectionModel()
+        .selectedItemProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              if (newValue != null) {
+                if (newValue.getParent() == this.usersHeader
+                    || newValue.getParent().getParent() == this.lobbiesHeader) {
+                  MenuController.getInstance().fillChatText("@" + newValue.getValue() + " ");
+                }
+              }
+            });
   }
 
   /**
    * Sets the lobby list to the given lobby info. Called from the Client class.
-   * @param lobbyInfo Has format [[lobbyName, user1, user2, ...], [lobbyName, user1, user2, ...], ...]
+   *
+   * @param lobbyInfo Has format [[lobbyName, user1, user2, ...], [lobbyName, user1, user2, ...],
+   *     ...]
    */
   public void setLobbyList(String[][] lobbyInfo) {
     if (lobbyInfo.length == 0) {

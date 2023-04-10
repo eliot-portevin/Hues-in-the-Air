@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.TextFlow?>
 
 <GridPane fx:id="backgroundPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@MenuPage.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuController">
   <columnConstraints>
@@ -60,7 +61,11 @@
         </rowConstraints>
          <children>
             <TextField fx:id="textChat" promptText="Type something..." stylesheets="@../TextField.css" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-            <TextArea fx:id="chat" editable="false" mouseTransparent="true" prefHeight="200.0" prefWidth="200.0" promptText="Type something to chat..." stylesheets="@../Chat.css" wrapText="true" GridPane.columnIndex="1" GridPane.rowSpan="2" />
+            <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@../Chat.css" GridPane.columnIndex="1" GridPane.rowSpan="2">
+               <content>
+                  <TextFlow fx:id="chat" stylesheets="@../Chat.css" />
+               </content>
+            </ScrollPane>
          </children>
       </GridPane>
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">

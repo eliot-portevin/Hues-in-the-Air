@@ -13,5 +13,9 @@
 }
 
 .tree-cell:selected {
-    -fx-text-fill: #363636;
+    -fx-text-fill: #464646;
+}
+
+.tree-cell:selected .tree-disclosure-node .arrow {
+    -fx-background-color: #464646;
 }

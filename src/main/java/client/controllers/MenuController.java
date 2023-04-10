@@ -2,6 +2,7 @@ package client.controllers;
 
 import client.Client;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -12,6 +13,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 public class MenuController {
@@ -34,12 +38,26 @@ public class MenuController {
 
   // Right pane
   @FXML private Label title;
-  @FXML private TextArea chat;
+  @FXML private ScrollPane scrollPane;
+  @FXML private TextFlow chat;
   @FXML private TextField textChat;
 
   @FXML private HBox alertPane;
   @FXML private Label alert;
   private FadeTransition alertTransition;
+
+  private final Font bebasItalics =
+      Font.loadFont(
+          Objects.requireNonNull(getClass().getResource("/fonts/Bebas_Neue_Italics.otf"))
+              .toExternalForm(),
+          20);
+  private final Font bebasRegular =
+      Font.loadFont(
+          Objects.requireNonNull(getClass().getResource("/fonts/Bebas_Neue_Regular.ttf"))
+              .toExternalForm(),
+          20);
+
+  public static MenuController instance;
 
   @FXML
   public void initialize() {
@@ -52,16 +70,33 @@ public class MenuController {
     this.initialiseChat();
 
     this.setAlert();
+
+    instance = this;
   }
 
+  /**
+   * Returns the instance of the MenuController. Called from other controllers to access the chat
+   *
+   * @return the instance of the MenuController
+   */
+  public static MenuController getInstance() {
+    return instance;
+  }
+
+  /**
+   * If the user presses "Enter" in the chat box, the message is sent to the server and the chat box
+   * is cleared.
+   */
   private void initialiseChat() {
     this.textChat.setOnKeyPressed(
         e -> {
           if (e.getCode().toString().equals("ENTER")) {
             Client.getInstance().sendMessageServer(this.textChat.getText());
             this.textChat.clear();
+            this.scrollPane.setVvalue(1.0);
           }
         });
+
   }
 
   /** Configures the tabs to play a click sound when the mouse enter them */
@@ -93,8 +128,6 @@ public class MenuController {
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(24)));
     textChat
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(30)));
-    chat.styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(30)));
   }
 
@@ -129,11 +162,9 @@ public class MenuController {
     if (isSelected) {
       if (tab == tabHomeButton) {
         Platform.runLater(() -> homeTab.toFront());
-      }
-      else if (tab == tabGamesButton) {
+      } else if (tab == tabGamesButton) {
         Platform.runLater(() -> gamesTab.toFront());
-      }
-      else if (tab == tabSettingsButton) {
+      } else if (tab == tabSettingsButton) {
         Platform.runLater(() -> settingsTab.toFront());
       }
     }
@@ -143,8 +174,29 @@ public class MenuController {
     tab.setSelected(isSelected);
   }
 
-  public void receiveMessage(String message, String sender) {
-    this.chat.appendText(String.format("[%s]: %s%n", sender, message));
+  /**
+   * The client has received a message from the server or from another client. The message is
+   * displayed in the chat box.
+   *
+   * @param message The message to display
+   * @param sender The sender of the message
+   * @param privacy Whether the message is private or not
+   */
+  public void receiveMessage(String message, String sender, String privacy) {
+    Text text = new Text();
+    text.styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(30)));
+
+    switch (privacy) {
+      case "Public" ->
+        text.setText(String.format("[%s] - %s%n", sender, message));
+      case "Private" -> {
+        text.setText(String.format("Private [%s] - %s%n", sender, message));
+        text.setFont(bebasItalics);
+      }
+    }
+
+    Platform.runLater(() -> this.chat.getChildren().add(text));
   }
 
   /**
@@ -201,6 +253,21 @@ public class MenuController {
           alert.setTextFill(isError ? Color.valueOf("#ff0000") : Color.valueOf("#ffffff"));
           alert.setOpacity(1.0);
           alertTransition.playFromStart();
+        });
+  }
+
+  /**
+   * Sets the text in the chat box. Used to fill with username when the client has clicked on a user
+   * in the user list.
+   *
+   * @param text The text to set
+   */
+  public void fillChatText(String text) {
+    Platform.runLater(
+        () -> {
+          this.textChat.setText(text);
+          this.textChat.requestFocus();
+          this.textChat.end();
         });
   }
 }

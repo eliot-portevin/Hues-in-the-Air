@@ -20,13 +20,17 @@
     -fx-text-fill: #363636;
     -fx-font-size: 20;
 }
+.list-view .list-cell {
+    -fx-border-radius: 500;
+    -fx-background-radius: 500;
+}
 
 .list-view .list-cell:odd {
-    -fx-background-color: red;
+    -fx-background-color: #f2f2f2;
 }
 
 .list-view .list-cell:even {
-    -fx-background-color: blue;
+    -fx-background-color: #e6e6e6;
 }
 
 #labelLobbyName, #labelScore, #labelStatus {

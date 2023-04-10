@@ -1,16 +1,26 @@
-.text-area {
-    text-area-background: #464646 ;
-    -fx-highlight-text-fill: #efc942;
-    -fx-border-color: #273744;
-    -fx-border-width: 0;
-    -fx-prompt-text-fill: #bbbaba;
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 20;
+#scrollPane {
+    -fx-background: #464646;
+    -fx-background-color: #464646;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
 }
 
-.text-area .content {
-    -fx-background-color: text-area-background ;
+#scrollPane > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
 
+#chat {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 10;
+}
+
+#chat > Text {
+    -fx-fill: #ffffff;
+    -fx-font-size: 20;
 }
 
 .scroll-bar:vertical .track{

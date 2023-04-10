@@ -333,14 +333,31 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * This client wants to send a public message to all clients (broadcast)
-   *
-   * <p>Protocol format: BROADCAST&#60SEPARATOR&#62message
-   */
+  /** This client wants to send a public message to all clients (broadcast). */
   public void sendMessageServer(String message) {
-    String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
-    this.outputSocket.sendToServer(command);
+    try {
+      String command;
+      if (message.startsWith("@")) {
+        String recipient = message.split(" ")[0].substring(1);
+        if (recipient.equals(this.username)) {
+          this.menuController.displayAlert("You cannot send messages to yourself.", true);
+          return;
+        }
+        String messageContent = message.substring(recipient.length() + 2);
+        command =
+                ClientProtocol.WHISPER.toString()
+                        + ServerProtocol.SEPARATOR
+                        + recipient
+                        + ServerProtocol.SEPARATOR
+                        + messageContent;
+      } else {
+        command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
+      }
+      this.outputSocket.sendToServer(command);
+    } catch (Exception e) {
+      // The message was empty
+      this.menuController.displayAlert(message + "\nis an invalid message.", true);
+    }
   }
 
   /**
@@ -625,16 +642,22 @@ public class Client extends Application {
 
   /**
    * Called when the client has received a message from the server. Appends the message to the chat.
+   *
    * @param message The message that was received
    * @param sender The sender of the message
+   * @param privacy Whether the message was a broadcast or a private message
    */
-  protected void receiveMessage(String message, String sender) {
+  protected void receiveMessage(String message, String sender, String privacy) {
     if (sender.equals(this.username)) sender = "You";
-    this.menuController.receiveMessage(message, sender);
+
+    if (menuScreen) {
+      this.menuController.receiveMessage(message, sender, privacy);
+    }
   }
 
   /**
    * Sets the volume of the music according to the slider in the settings menu
+   *
    * @param volume The volume of the music
    */
   public void setMusicVolume(double volume) {
@@ -643,6 +666,7 @@ public class Client extends Application {
 
   /**
    * Sets the volume of the sound effects according to the slider in the settings menu
+   *
    * @param volume The volume of the sound effects
    */
   public void setSfxVolume(double volume) {
