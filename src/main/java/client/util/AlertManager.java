@@ -1,4 +1,4 @@
-package client.controllers.util;
+package client.util;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;

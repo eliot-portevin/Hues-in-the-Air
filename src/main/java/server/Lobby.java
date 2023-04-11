@@ -1,11 +1,14 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class Lobby {
   private String name;
   private String password;
   private final ArrayList<ClientHandler> clients = new ArrayList<>();
+
+  private static final Logger LOGGER = Logger.getLogger(Lobby.class.getName());
   /**
    * Creates a new lobby.
    * @param name The name of the lobby
@@ -28,6 +31,7 @@ public class Lobby {
         client.enterLobby(this);
         Server.getInstance().updateLobbyList();
         Server.getInstance().updateClientList();
+        LOGGER.info("Client " + client.getUsername() + " joined lobby " + this.name);
       }
     }
   }
@@ -37,13 +41,11 @@ public class Lobby {
    */
   protected void removeClient(ClientHandler client) {
     client.exitLobby();
-    System.out.println("[LOBBY] Client " + client.getUsername() + " left lobby!");
+    System.out.println("Client " + client.getUsername() + " left lobby!");
     this.clients.remove(client);
     Server.getInstance().updateLobbyList();
     Server.getInstance().updateClientList();
-    if (this.getNumPlayers() == 0) {
-      Server.getInstance().removeLobby(this);
-    }
+    LOGGER.info("Client " + client.getUsername() + " left lobby " + this.name);
   }
 
   public String getName() {

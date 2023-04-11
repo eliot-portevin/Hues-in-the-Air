@@ -139,7 +139,6 @@ public class ClientHandler implements Runnable {
   /** Receives commands from the client. */
   private String receiveFromClient() {
     try {
-      // TODO Add Logger
       return this.in.readLine();
     } catch (IOException e) {
       System.err.println(
@@ -196,7 +195,6 @@ public class ClientHandler implements Runnable {
 
   /** Requests the client's username upon connection. */
   private void requestUsernameFromClient() {
-    // TODO Add Logger
     String message = ServerProtocol.NO_USERNAME_SET.toString();
     this.out.println(message);
   }
@@ -244,9 +242,8 @@ public class ClientHandler implements Runnable {
    */
   protected void enterLobby(Lobby lobby) {
     this.lobby = lobby;
-    System.out.println(this.username + " entered lobby " + lobby.getName());
     this.sendMessageLobby(this.username + " entered the lobby " + this.lobby.getName() + ".");
-    this.out.println(ServerProtocol.LOBBY_JOINED);
+    this.out.println(ServerProtocol.LOBBY_JOINED.toString() + ServerProtocol.SEPARATOR + lobby.getName());
   }
 
   protected Lobby getLobby() {
