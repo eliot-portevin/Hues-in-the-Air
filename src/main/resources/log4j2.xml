@@ -2,7 +2,7 @@
 <Configuration name="CoreConfig" status="ERROR">
     <Properties>
         <Property name="loggingPattern">[%d{MM-dd HH:mm:ss.SSS}][%-5level][%t] %C{1} - %msg%n</Property>
-        <Property name="basePath">logs/</Property>
+        <Property name="basePath">.logs/</Property>
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
