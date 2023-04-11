@@ -1,4 +1,4 @@
-#scrollPane {
+.scroll-pane {
     -fx-background: #464646;
     -fx-background-color: #464646;
     -fx-border-color: #ffffff;
@@ -7,18 +7,18 @@
     -fx-background-radius: 10;
 }
 
-#scrollPane > .viewport {
+.scroll-pane > .viewport {
     -fx-background-color: transparent;
     -fx-background: transparent;
 }
 
-#chat {
+TextFlow {
     -fx-background-color: transparent;
     -fx-background: transparent;
     -fx-padding: 10;
 }
 
-#chat > Text {
+TextFlow > Text {
     -fx-fill: #ffffff;
 }
 

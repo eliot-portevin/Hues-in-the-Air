@@ -100,7 +100,7 @@ public class Server implements Runnable {
     this.clientThreads.remove(this.clientHandlers.indexOf(client));
     this.clientHandlers.remove(client);
 
-    LOGGER.info("[Server] Client " + client.getUsername() + " diconnected");
+    LOGGER.info("[Server] Client " + client.getUsername() + " disconnected");
     this.updateLobbyList();
     this.updateClientList();
   }

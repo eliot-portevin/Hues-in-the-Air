@@ -4,8 +4,7 @@ import client.Client;
 import java.util.Arrays;
 import java.util.Objects;
 
-import client.controllers.util.AlertManager;
-import javafx.animation.FadeTransition;
+import client.util.AlertManager;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -14,11 +13,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.util.Duration;
 
 public class MenuController {
   // Sub-controllers
@@ -92,9 +89,17 @@ public class MenuController {
     this.textChat.setOnKeyPressed(
         e -> {
           if (e.getCode().toString().equals("ENTER")) {
-            Client.getInstance().sendMessageServer(this.textChat.getText());
+            String message = this.textChat.getText();
+
+            if (message.startsWith("@")) {
+              String recipient = message.split(" ")[0].substring(1);
+              String messageContent = message.substring(recipient.length() + 2);
+              Client.getInstance().sendMessageClient(recipient, messageContent);
+            }
+            else {
+              Client.getInstance().sendMessageServer(this.textChat.getText());
+            }
             this.textChat.clear();
-            this.scrollPane.setVvalue(1.0);
           }
         });
     Text text1 = new Text("Welcome to the chat!\n");
@@ -204,7 +209,7 @@ public class MenuController {
     Text text =
         new Text(
             String.format(
-                "[%s] %s - %s%n",
+                "[%s] %s- %s%n",
                 sender, Objects.equals(privacy, "Private") ? "@Private " : "", message));
 
     text.setFont(
@@ -212,7 +217,10 @@ public class MenuController {
             privacy.equals("Private") ? "BebasNeuePro-BoldItalic" : "Bebas Neue Regular",
             this.chat.getWidth() / 25));
 
-    Platform.runLater(() -> this.chat.getChildren().add(text));
+    Platform.runLater(() -> {
+      this.chat.getChildren().add(text);
+      this.scrollPane.setVvalue(1.0);
+    });
   }
 
   /**

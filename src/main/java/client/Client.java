@@ -1,5 +1,6 @@
 package client;
 
+import client.controllers.LobbyController;
 import client.controllers.LoginController;
 import client.controllers.MenuController;
 import java.awt.*;
@@ -42,6 +43,8 @@ public class Client extends Application {
   boolean isInLobby = false;
   boolean isInGame = false;
 
+  String lobbyName = "";
+
   // Server info
   private static int SERVER_PORT;
   private static String SERVER_IP;
@@ -57,6 +60,7 @@ public class Client extends Application {
   // Controllers
   private LoginController loginController;
   private MenuController menuController;
+  private LobbyController lobbyController;
 
   // Username
   protected String username = System.getProperty("user.name");
@@ -218,6 +222,20 @@ public class Client extends Application {
     this.requestServerInfo();
   }
 
+  private void loadLobbyScreen() throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
+    this.root = loader.load();
+
+    // Set controller
+    this.lobbyController = loader.getController();
+
+    // Set the scene
+    this.stage.getScene().setRoot(this.root);
+
+    this.menuScreen = false;
+    this.isInLobby = true;
+  }
+
   private void requestServerInfo() {
     String command = ClientProtocol.REQUEST_SERVER_STATUS.toString();
     this.outputSocket.sendToServer(command);
@@ -266,7 +284,7 @@ public class Client extends Application {
         // Load menu screen
         this.loadMenuScreen();
 
-        System.out.println("Connected to server.");
+        LOGGER.info("Connected to server.");
         this.connectedToServer = true;
       }
     } catch (IOException | NumberFormatException e) {
@@ -339,23 +357,7 @@ public class Client extends Application {
   /** This client wants to send a public message to all clients (broadcast). */
   public void sendMessageServer(String message) {
     try {
-      String command;
-      if (message.startsWith("@")) {
-        String recipient = message.split(" ")[0].substring(1);
-        if (recipient.equals(this.username)) {
-          this.menuController.alertManager.displayAlert("You cannot send messages to yourself.", true);
-          return;
-        }
-        String messageContent = message.substring(recipient.length() + 2);
-        command =
-            ClientProtocol.WHISPER.toString()
-                + ServerProtocol.SEPARATOR
-                + recipient
-                + ServerProtocol.SEPARATOR
-                + messageContent;
-      } else {
-        command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
-      }
+      String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
       this.outputSocket.sendToServer(command);
     } catch (Exception e) {
       // The message was empty
@@ -382,10 +384,12 @@ public class Client extends Application {
   /**
    * This client wants to send a private message to another client (whisper chat).
    *
-   * <p>Protocol format:
-   * SEND_MESSAGE_CLIENT&#60SEPARATOR&#62recipient.username&#60SEPARATOR&#62message
    */
-  protected void sendMessageClient(String recipient, String message) {
+  public void sendMessageClient(String recipient, String message) {
+    if (recipient.equals(this.username)) {
+      this.menuController.alertManager.displayAlert("You cannot send messages to yourself.", true);
+      return;
+    }
     String command =
         ServerProtocol.WHISPER.toString()
             + ServerProtocol.SEPARATOR
@@ -418,7 +422,7 @@ public class Client extends Application {
    *
    * <p>Protocol format: SEND_MESSAGE_LOBBY&#60SEPARATOR&#62message
    */
-  protected void sendMessageLobby(String message) {
+  public void sendMessageLobby(String message) {
     String command =
         ClientProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
@@ -465,14 +469,13 @@ public class Client extends Application {
     } catch (IllegalStateException e) {
       System.out.println("Stage is already closed");
     }
-    System.exit(1);
+    System.exit(0);
   }
 
   /** Notifies the server that the client wants to exit the lobby */
-  protected void exitLobby() {
+  public void exitLobby() {
     String command = ClientProtocol.EXIT_LOBBY.toString();
     this.outputSocket.sendToServer(command);
-    System.out.println("exit");
   }
 
   /**
@@ -591,12 +594,21 @@ public class Client extends Application {
 
   /**
    * Prints a confirmation to the console that the client has exited the lobby <code>lobbyName
-   * </code>
+   * </code>. Proceeds to load the menu screen.
    *
    * @param lobbyName The name of the lobby that was exited
    */
   public void lobbyExited(String lobbyName) {
-    System.out.print("> Exiting lobby " + lobbyName + "\n> ");
+    this.isInLobby = false;
+    this.lobbyController = null;
+    try {
+      this.loadMenuScreen();
+      this.menuController.alertManager.displayAlert("Exited lobby " + lobbyName + ".", false);
+
+    } catch (IOException e) {
+      LOGGER.fatal("Failed to load menu screen. Shutting down.");
+      this.exit();
+    }
   }
 
   /**
@@ -638,9 +650,18 @@ public class Client extends Application {
     return instance;
   }
 
-  public void enterLobby() {
-    this.isInLobby = true;
-    this.menuController.clearHomeTab();
+  /**
+   * The client has received confirmation from the server that they have entered a lobby. Proceeds to
+   * load the lobby screen.
+   */
+  public void enterLobby(String lobbyName) {
+    this.lobbyName = lobbyName;
+    try {
+      this.loadLobbyScreen();
+    } catch (IOException e) {
+      LOGGER.fatal("Failed to load lobby screen. Shutting down.");
+      this.exit();
+    }
   }
 
   /**
@@ -655,6 +676,9 @@ public class Client extends Application {
 
     if (menuScreen) {
       this.menuController.receiveMessage(message, sender, privacy);
+    }
+    else if (isInLobby) {
+      this.lobbyController.receiveMessage(message, sender, privacy);
     }
   }
 
@@ -686,5 +710,9 @@ public class Client extends Application {
 
   public String getUsername() {
     return this.username;
+  }
+
+  public String getLobbyName() {
+    return this.lobbyName;
   }
 }
