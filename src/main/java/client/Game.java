@@ -31,7 +31,6 @@ public class  Game extends Application {
 
   /**
    * Called every frame and handles the game logic
-   * @param primaryStage - the stage to display the game on
    */
   public void update(){
     player.move(player.velocity);
@@ -51,7 +50,7 @@ public class  Game extends Application {
       player.jump();
     }
 
-    player.check_for_white_block_hit();
+    player.checkForWhiteBlockHit();
   }
 
   private boolean isPressed(KeyCode keyCode) {
@@ -179,6 +178,8 @@ public class  Game extends Application {
     primaryStage.setTitle("Game"); // Sets the title of the window
     primaryStage.setScene(scene); // Sets the scene
     primaryStage.show(); // Shows the window
+    //final long[] delta = {0};
+    //final long[] lastFrameTime = {0};
 
     // Start the game loop called 60 times per second
     this.timer = new AnimationTimer() {
@@ -186,15 +187,19 @@ public class  Game extends Application {
       //long lastFrameTime;
       @Override
       public void handle(long now) { // Called every frame
-        //delta = now - lastFrameTime;
-        //lastFrameTime = now;
-        //System.out.println(getFrameRateHertz(delta));
+        //delta[0] = now - lastFrameTime[0];
+        //lastFrameTime[0] = now;
+        //System.out.println(getFrameRateHertz(delta[0]));
         update();
       }
     };
     this.timer.start();
   }
-
+/**
+   * Gets the frame rate in hertz
+   * @param deltaTimeNano - the time between frames in nanoseconds
+   * @return - the frame rate in hertz
+   */
   public double getFrameRateHertz(long deltaTimeNano) {
     double frameRate = 1d / deltaTimeNano;
     return frameRate * 1e9;

@@ -19,10 +19,12 @@ public class Cube {
   public int gridSize;
   protected Rectangle rectangle = new Rectangle();
   private final double gravity_scalar = 0.3;
-  private final double speed = 1;
+  private final double speed = 3;
   private Vector2D g = new Vector2D(0, gravity_scalar);
   protected Vector2D velocity = new Vector2D(speed, 0);
   private int onGround = 0;
+  private double y0 = 100000;
+  private boolean y0passed;
 
 
   public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
@@ -45,7 +47,7 @@ public class Cube {
   /**
    * Checks for collisions with the white blocks and calls resetsPosition if it collides with one
    */
-  public void check_for_white_block_hit() {
+  public void checkForWhiteBlockHit() {
     for (Node platform : death_platforms) {
       if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
         resetPosition();
@@ -65,6 +67,21 @@ public class Cube {
   public void moveX(double value) {
     boolean movingRight = value > 0;
     if (!canJump) {
+      if (g.getY() > 0 && !y0passed) {
+        if (y0 < position.getY()) {
+          y0passed = true;
+          g.setY(-gravity_scalar);
+          velocity.setX(-velocity.getX());
+          velocity.setY(-jumpHeight*g.getY());
+        }
+      } else if (g.getY() < 0 && !y0passed) {
+        if (y0 > position.getY()) {
+          y0passed = true;
+          g.setY(gravity_scalar);
+          velocity.setX(-velocity.getX());
+          velocity.setY(-jumpHeight*g.getY());
+        }
+      }
       for (int i = 0; i < Math.abs(value); i++) {
         for (Node platform : platforms) {
           if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
@@ -145,6 +162,21 @@ public class Cube {
   public void moveY(double value) {
     boolean movingDown = value > 0;
     if (!canJump) {
+      if (g.getX() > 0 && !y0passed) {
+        if (y0 < position.getX()) {
+          y0passed = true;
+          g.setX(-gravity_scalar);
+          velocity.setY(-velocity.getY());
+          velocity.setX(-jumpHeight*g.getX());
+        }
+      } else if (g.getX() < 0 && !y0passed) {
+        if (y0 > position.getX()) {
+          y0passed = true;
+          g.setX(gravity_scalar);
+          velocity.setY(-velocity.getY());
+          velocity.setX(-jumpHeight*g.getX());
+        }
+      }
       for (int i = 0; i < Math.abs(value); i++) {
         for (Node platform : platforms) {
           if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
@@ -212,6 +244,7 @@ public class Cube {
       for (int i = 0; i < Math.abs(value); i++) {
         move1Y(movingDown);
       }
+
     }
   }
 
@@ -219,7 +252,6 @@ public class Cube {
    * updates the velocity of the cube and moves it by the given velocity
    */
   public void move(Vector2D velocity) {
-
     if (!canJump) {
       velocity.setY(velocity.getY()+g.getY());
       velocity.setX(velocity.getX()+g.getX());
@@ -234,6 +266,20 @@ public class Cube {
    */
   public void jump() {
     if (canJump) {
+      if(g.getX() > gravity_scalar/2) {
+        y0 = position.getX() + gridSize + size.getX();
+        y0passed = false;
+      } else if(g.getX() < -gravity_scalar/2) {
+        y0 = position.getX() - gridSize;
+        y0passed = false;
+      } else if(g.getY() > gravity_scalar/2) {
+        y0 = position.getY() + gridSize + size.getY();
+        y0passed = false;
+      } else if(g.getY() < -gravity_scalar/2) {
+        y0 = position.getY() - gridSize;
+        y0passed = false;
+      }
+      System.out.println(y0);
       if (velocity.getY() < 1 && velocity.getY() > -1) {
         velocity.setY(-jumpHeight*g.getY());
       } else {
