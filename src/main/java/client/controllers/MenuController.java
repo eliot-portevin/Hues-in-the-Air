@@ -3,6 +3,8 @@ package client.controllers;
 import client.Client;
 import java.util.Arrays;
 import java.util.Objects;
+
+import client.controllers.util.AlertManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -44,7 +46,7 @@ public class MenuController {
 
   @FXML private HBox alertPane;
   @FXML private Label alert;
-  private FadeTransition alertTransition;
+  public AlertManager alertManager;
 
   private final Font bebasItalics =
       Font.loadFont(
@@ -69,9 +71,8 @@ public class MenuController {
 
     this.initialiseChat();
 
-    this.setAlert();
-
     instance = this;
+    this.alertManager = new AlertManager(alertPane, alert);
   }
 
   /**
@@ -235,40 +236,6 @@ public class MenuController {
   /** Clear the text fields in the home tab. */
   public void clearHomeTab() {
     this.homeTabController.clear();
-  }
-
-  /**
-   * Creates a fade transition for the alert label. This label is used to display messages to the
-   * client, such as confirmation of a successful action or an error.
-   */
-  private void setAlert() {
-    alert
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", alertPane.widthProperty().divide(30)));
-    alert.setOpacity(0.0);
-    alertTransition = new FadeTransition(Duration.millis(5000), alertPane);
-    alertTransition.setFromValue(1.0);
-    alertTransition.setToValue(0.0);
-    alertTransition.setCycleCount(1);
-    alertTransition.setAutoReverse(false);
-  }
-
-  /**
-   * Displays an alert message to the client.
-   *
-   * @param message The message to display
-   * @param isError Whether the message should be red or not
-   */
-  public void displayAlert(String message, Boolean isError) {
-    // move the alert to the front
-    Platform.runLater(
-        () -> {
-          alertPane.toFront();
-          alert.setText(message);
-          alert.setTextFill(isError ? Color.valueOf("#ff0000") : Color.valueOf("#ffffff"));
-          alert.setOpacity(1.0);
-          alertTransition.playFromStart();
-        });
   }
 
   /**

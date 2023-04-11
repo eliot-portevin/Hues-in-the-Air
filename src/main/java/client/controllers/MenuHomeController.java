@@ -170,6 +170,10 @@ public class MenuHomeController {
     }
   }
 
+  /**
+   * Sets the user list to the given users. Called from the Client class.
+   * @param users The array of users.
+   */
   public void setUsersList(String[] users) {
     if (users.length == 0) {
       this.usersHeader.setValue("Users (empty)");
@@ -185,6 +189,7 @@ public class MenuHomeController {
     this.tree.refresh();
   }
 
+  /** Clears the lobby name and password fields. */
   public void clear() {
     if (this.textLobbyName != null && this.textLobbyPassword != null) {
       this.textLobbyName.clear();

@@ -269,7 +269,7 @@ public class Client extends Application {
         this.connectedToServer = true;
       }
     } catch (IOException | NumberFormatException e) {
-      this.loginController.displayErrorMessage();
+      this.loginController.alertManager.displayAlert("Could not connect to server.", true);
     }
   }
 
@@ -314,7 +314,7 @@ public class Client extends Application {
   public void setUsername(String username) {
     if (username.equals(this.username)) {
       if (this.menuScreen) {
-        this.menuController.displayAlert("Username already set to " + username + ".", true);
+        this.menuController.alertManager.displayAlert("Username already set to " + username + ".", true);
         return;
       }
     }
@@ -342,23 +342,23 @@ public class Client extends Application {
       if (message.startsWith("@")) {
         String recipient = message.split(" ")[0].substring(1);
         if (recipient.equals(this.username)) {
-          this.menuController.displayAlert("You cannot send messages to yourself.", true);
+          this.menuController.alertManager.displayAlert("You cannot send messages to yourself.", true);
           return;
         }
         String messageContent = message.substring(recipient.length() + 2);
         command =
-                ClientProtocol.WHISPER.toString()
-                        + ServerProtocol.SEPARATOR
-                        + recipient
-                        + ServerProtocol.SEPARATOR
-                        + messageContent;
+            ClientProtocol.WHISPER.toString()
+                + ServerProtocol.SEPARATOR
+                + recipient
+                + ServerProtocol.SEPARATOR
+                + messageContent;
       } else {
         command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
       }
       this.outputSocket.sendToServer(command);
     } catch (Exception e) {
       // The message was empty
-      this.menuController.displayAlert(message + "\nis an invalid message.", true);
+      this.menuController.alertManager.displayAlert(message + "\nis an invalid message.", true);
     }
   }
 
@@ -678,7 +678,7 @@ public class Client extends Application {
   public void usernameSetTo(String username) {
     this.username = username;
     if (this.menuScreen) {
-      this.menuController.displayAlert("Username set to " + username + ".", false);
+      this.menuController.alertManager.displayAlert("Username set to " + username + ".", false);
       this.menuController.settingsTabController.setUsernameField();
     }
   }

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /** The main class of the server. It creates a new server and starts it. */
@@ -44,9 +45,9 @@ public class ServerMain {
           break;
         }
       }
-    } catch (IOException e) {
-      LOGGER.error("IOException while shutting down server: " + e.getMessage());
-      System.out.println("IOException while shutting down server: " + e.getMessage());
+    } catch (NoSuchElementException|IllegalStateException|IOException e) {
+      LOGGER.error("Exception while shutting down server: " + e.getMessage());
+      System.out.println("Exception while shutting down server: " + e.getMessage());
     }
   }
 }

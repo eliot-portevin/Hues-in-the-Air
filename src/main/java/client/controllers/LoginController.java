@@ -2,6 +2,8 @@ package client.controllers;
 
 import client.Client;
 import java.util.Arrays;
+
+import client.controllers.util.AlertManager;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -16,34 +18,34 @@ import javafx.util.Duration;
 public class LoginController {
 
   // Grid panes
-  public GridPane backgroundPane;
-  public GridPane titlePane;
-  public Pane errorPane;
-  public HBox hboxPort;
-  public HBox hboxLogin;
+  @FXML private GridPane backgroundPane;
+  @FXML private GridPane titlePane;
+  @FXML private HBox hboxPort;
+  @FXML private HBox hboxLogin;
 
   // Labels
-  public Label labelUsername;
-  public Label labelIp;
-  public Label labelPort;
+  @FXML private Label labelUsername;
+  @FXML private Label labelIp;
+  @FXML private Label labelPort;
 
   // Title
-  public Label titleHues;
-  public Label titleThe;
-  public Label titleIn;
-  public Label titleAir;
+  @FXML private Label titleHues;
+  @FXML private Label titleThe;
+  @FXML private Label titleIn;
+  @FXML private Label titleAir;
 
   // Connect to server button
-  public Button button;
+  @FXML private Button button;
 
   // Text fields
-  public TextField textUsername;
-  public TextField textIp;
-  public TextField textPort;
+  @FXML private TextField textUsername;
+  @FXML private TextField textIp;
+  @FXML private TextField textPort;
 
   // Error message
-  public Label errorMessage;
-  public FadeTransition errorTransition;
+  @FXML private HBox alertPane;
+  @FXML private Label alert;
+  public AlertManager alertManager;
 
   /**
    * Method that is called when the login screen is loaded. The default behaviours are set for the
@@ -60,22 +62,7 @@ public class LoginController {
     // Automatically change font sizes with window size
     this.setFontBehaviour();
 
-    // Initialise error message
-    this.setErrorMessage();
-  }
-
-  /**
-   * Creates a fade transition for the error message which is shown when a connection to the server
-   * cannot be established. This error message design is inspired by Clash of Clans.
-   */
-  private void setErrorMessage() {
-    errorMessage.styleProperty().bind(Bindings.concat("-fx-font-size: ", errorPane.widthProperty().divide(30)));
-    errorMessage.setOpacity(0.0);
-    errorTransition = new FadeTransition(Duration.millis(5000), errorPane);
-    errorTransition.setFromValue(1.0);
-    errorTransition.setToValue(0.0);
-    errorTransition.setCycleCount(1);
-    errorTransition.setAutoReverse(false);
+    this.alertManager = new AlertManager(alertPane, alert);
   }
 
   /**
@@ -196,13 +183,5 @@ public class LoginController {
     if (Arrays.stream(args).noneMatch(arg -> arg.equals(""))) {
       button.fire();
     }
-  }
-
-  /**
-   * Displays an error message on screen which fades out after 5 seconds.
-   */
-  public void displayErrorMessage() {
-    this.errorMessage.setOpacity(1.0);
-    this.errorTransition.playFromStart();
   }
 }

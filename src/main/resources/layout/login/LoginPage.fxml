@@ -73,9 +73,9 @@
       <Label fx:id="titleThe" text="the" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Label fx:id="titleIn" text="in" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
    </GridPane>
-   <HBox fx:id="errorPane" alignment="CENTER" mouseTransparent="true" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
+   <HBox fx:id="alertPane" alignment="CENTER" mouseTransparent="true" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
       <children>
-         <Label fx:id="errorMessage" text="Could not connect to server." />
+         <Label fx:id="alert" text="Could not connect to server." />
       </children>
    </HBox>
    <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">

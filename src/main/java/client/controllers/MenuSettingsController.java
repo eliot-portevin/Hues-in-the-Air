@@ -36,29 +36,35 @@ public class MenuSettingsController {
     this.setCredits();
 
     this.setUsernameField();
+
+    this.setButtonBehaviour();
   }
 
+  /** Fills the username field with the username of the current user. */
   public void setUsernameField() {
     this.textUsername.setText(Client.getInstance().getUsername());
   }
   /** Sets the text of the credits area to the credits text. */
   private void setCredits() {
     String credits =
-        "The JEJN Team Presents:\n"
-            + "Designed by humans, tested by robots, loved by gamers: Hues in the Air!\n\n"
-            + "Starring:\n"
-            + "Jiri (the Cube Whisperer), Eliot (the Java Magician), "
-            + "Jennifer (the Level Designer Extraordinaire) and Nils (the Block Master).\n\n"
-            + "Special Thanks to:\n"
-            + "The Coffee Beans, for keeping us awake during those all-nighters\n"
-            + "The Pizza Delivery Guy, for always knowing when we needed a break\n"
-            + "The Stack Overflow community, for having all the answers, always, to everything.\n"
-            + "\n"
-            + "And Finally, a Big Shoutout to:\n"
-            + "YOU, for playing Hues in the Air and making our coding dreams come true!\n"
-            + "Thank you for playing!";
+        """
+            The JEJN Team Presents:
+            Designed by humans, tested by robots, loved by gamers: Hues in the Air!
+
+            Starring:
+            Jiri (the Cube Whisperer), Eliot (the Java Magician), Jennifer (the Level Designer Extraordinaire) and Nils (the Block Master).
+
+            Special Thanks to:
+            The Coffee Beans, for keeping us awake during those all-nighters
+            The Pizza Delivery Guy, for always knowing when we needed a break
+            The Stack Overflow community, for having all the answers, always, to everything.
+
+            And Finally, a Big Shoutout to:
+            YOU, for playing Hues in the Air and making our coding dreams come true!
+            Thank you for playing!""";
     this.creditsArea.setText(credits);
   }
+
   /** Binds the font sizes of various elements to the width of the tab pane. */
   private void setFontBehaviour() {
     this.labelMusic
@@ -70,6 +76,9 @@ public class MenuSettingsController {
     this.labelUsername
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(20)));
+    this.textUsername
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(35)));
     this.buttonMusic
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", this.settingsTab.widthProperty().divide(30)));
@@ -106,18 +115,26 @@ public class MenuSettingsController {
     this.sliderMusic
         .valueProperty()
         .addListener(
-            (observable, oldValue, newValue) -> {
-              Client.getInstance().setMusicVolume(newValue.doubleValue());
-            });
+            (observable, oldValue, newValue) ->
+                Client.getInstance().setMusicVolume(newValue.doubleValue()));
     this.sliderSfx
         .valueProperty()
         .addListener(
-            (observable, oldValue, newValue) -> {
-              Client.getInstance().setSfxVolume(newValue.doubleValue());
-            });
+            (observable, oldValue, newValue) ->
+                Client.getInstance().setSfxVolume(newValue.doubleValue()));
 
     this.sliderSfx.setValue(1);
     this.sliderMusic.setValue(1);
+  }
+
+  /**
+   * Sets the behaviour of the buttons in the settings pane. This includes playing a sound when the
+   * mouse hovers over the button and what the buttons do when they are clicked.
+   */
+  private void setButtonBehaviour() {
+    buttonPen.setOnMouseEntered(e -> Client.getInstance().clickSound());
+    buttonMusic.setOnMouseEntered(e -> Client.getInstance().clickSound());
+    buttonSound.setOnMouseEntered(e -> Client.getInstance().clickSound());
 
     this.buttonMusic
         .selectedProperty()
