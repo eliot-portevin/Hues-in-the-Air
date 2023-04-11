@@ -52,9 +52,11 @@ public class Server implements Runnable {
           try {
             Socket client = listener.accept();
             this.addClient(client);
+           // LOGGER.info("Client was added");
           }
           catch (SocketException e) {
             if (this.shuttingDown) {
+              LOGGER.error("Unable to connect with message: " + e.getMessage());
               break;
             }
           }
@@ -81,7 +83,7 @@ public class Server implements Runnable {
     this.clientThreads.add(clientThread);
     clientThread.start();
 
-    LOGGER.info("[Server] Connected to Client");
+    LOGGER.info("[Server] Connected to Client!");
     this.updateLobbyList();
     this.updateClientList();
   }
@@ -112,6 +114,7 @@ public class Server implements Runnable {
   protected void removeLobby(Lobby lobby) {
     this.lobbies.remove(lobby.getName());
     this.updateLobbyList();
+    LOGGER.info("Lobby " + lobby + " removed");
   }
 
   /**
@@ -159,6 +162,7 @@ public class Server implements Runnable {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         // Lobby already exists
+        LOGGER.warn("Lobby does already exist and cannot be created.");
         return;
       }
     }
@@ -179,6 +183,7 @@ public class Server implements Runnable {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         this.lobbies.get(lobbyName).addClient(client, password);
+        LOGGER.info("Client "+ client + " joined Lobby " + lobbyName);
         return;
       }
     }
