@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="CoreConfig" status="ERROR">
+    <Properties>
+        <Property name="loggingPattern">[%d{MM-dd HH:mm:ss.SSS}][%-5level][%t] %C{1} - %msg%n</Property>
+        <Property name="basePath">logs/</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${loggingPattern}"/>
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+        <RollingFile name="Server" fileName="${basePath}server.log" filePattern="${basePath}%d{yyyy-MM-dd-hh}-%.log" append="false">
+            <PatternLayout pattern="${loggingPattern}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="3000 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+        <RollingFile name="Client" fileName="${basePath}client.log" filePattern="${basePath}%d{yyyy-MM-dd-hh}-%.log" append="false">
+            <PatternLayout pattern="${loggingPattern}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="3000 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="Console" level="WARN"/>
+            <AppenderRef ref="Server" level="TRACE"/>
+            <AppenderRef ref="Client" level="TRACE"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -70,7 +70,7 @@ public class Client extends Application {
   private MediaPlayer clickPlayer;
 
   // Logger
-  private Logger logger;
+  private Logger LOGGER;
 
   /**
    * Starts the application by creating a scene and setting the stage properties. Then proceeds to
@@ -80,7 +80,7 @@ public class Client extends Application {
   public void start(Stage primaryStage) {
     // Set instance, required for other classes to access the client (for example the controllers)
     instance = this;
-    logger = LogManager.getLogger(Client.class);
+    LOGGER = LogManager.getLogger(Client.class);
 
     // Set sound
     Media clickSound =
@@ -106,10 +106,11 @@ public class Client extends Application {
     this.stage.setMinHeight(540);
 
     try {
+      LOGGER.info("Loading login screen...");
       this.loadLoginScreen(args);
     } catch (IOException e) {
+      LOGGER.error("Could not load login screen. Closing the program.");
       e.printStackTrace();
-      System.out.println("Could not load login screen. Closing the program.");
       System.exit(1);
     }
 
@@ -464,7 +465,7 @@ public class Client extends Application {
     } catch (IllegalStateException e) {
       System.out.println("Stage is already closed");
     }
-    System.exit(0);
+    System.exit(1);
   }
 
   /** Notifies the server that the client wants to exit the lobby */

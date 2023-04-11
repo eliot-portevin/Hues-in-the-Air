@@ -9,7 +9,6 @@ import java.util.Scanner;
 
 /** The main class of the server. It creates a new server and starts it. */
 public class ServerMain {
-  private static final Logger LOGGER = LogManager.getLogger(ServerMain.class);
 
   /**
    * Starts the server. If the port number is invalid, the default port 9090 is used.
@@ -17,20 +16,19 @@ public class ServerMain {
    * @param args The port number of the server.
    */
   public static void main(String[] args) {
+    Logger LOGGER = LogManager.getLogger(ServerMain.class);
+
     int PORT = 9090;
 
     try {
       LOGGER.info("Trying to start server on port " + args[0]);
-      System.out.println("Trying to start server on port " + args[0]);
       PORT = Integer.parseInt(args[0]);
       if (PORT < 1024 || PORT > 65535) {
         PORT = 9090;
         LOGGER.warn("Port number must be between 1024 and 65535. Using default port " + PORT);
-        System.out.println("Port number must be between 1024 and 65535. Using default port " + PORT);
       }
     } catch (NumberFormatException e) {
       LOGGER.warn("Port number must be an integer. Using default port 9090.");
-      System.out.println("Port number must be an integer. Using default port 9090.");
     }
 
     Server server = new Server(PORT);
@@ -38,16 +36,19 @@ public class ServerMain {
     serverThread.start();
 
     Scanner scanner = new Scanner(System.in);
-    try {
-      while (true) {
+
+    while (true) {
+      try {
         if (scanner.next().equals("exit")) {
           server.shutdown();
           break;
         }
+      } catch (IOException e) {
+        LOGGER.error("Error while shutting down server", e);
+      } catch (NoSuchElementException e) {
+        // Scanner is closed
       }
-    } catch (NoSuchElementException|IllegalStateException|IOException e) {
-      LOGGER.error("Exception while shutting down server: " + e.getMessage());
-      System.out.println("Exception while shutting down server: " + e.getMessage());
     }
+    System.exit(0);
   }
 }

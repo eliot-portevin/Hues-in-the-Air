@@ -6,8 +6,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
-//import java.util.logging.LogManager;
-//import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,10 +25,11 @@ public class Server implements Runnable {
   private Thread pingSender;
 
   private static Server instance;
-  private static final Logger LOGGER = LogManager.getLogger(ServerMain.class);
+  private final Logger LOGGER;
 
   public Server(int PORT) {
     this.PORT = PORT;
+    this.LOGGER = LogManager.getLogger(Server.class);
     instance = this;
   }
 
@@ -50,7 +49,6 @@ public class Server implements Runnable {
             this.pingSender.start();
           }
           LOGGER.info("[Server] Waiting for client connection...");
-          System.out.println("[SERVER] Waiting for client connection...");
           try {
             Socket client = listener.accept();
             this.addClient(client);
@@ -66,7 +64,6 @@ public class Server implements Runnable {
       }
     } catch (IOException e) {
       LOGGER.error("Server exception: " + e.getMessage());
-      System.err.println("Server exception: " + e.getMessage());
       e.printStackTrace();
     }
   }
@@ -85,7 +82,6 @@ public class Server implements Runnable {
     clientThread.start();
 
     LOGGER.info("[Server] Connected to Client");
-    System.out.println("[SERVER] Connected to Client!");
     this.updateLobbyList();
     this.updateClientList();
   }
@@ -105,7 +101,6 @@ public class Server implements Runnable {
     this.clientHandlers.remove(client);
 
     LOGGER.info("[Server] Client " + client.getUsername() + " diconnected");
-    System.out.println("[SERVER] Client " + client.getUsername() + " disconnected!");
     this.updateLobbyList();
     this.updateClientList();
   }
@@ -134,8 +129,7 @@ public class Server implements Runnable {
       removeClient(client);
     }
 
-    LOGGER.info("[Server] Server shutdown!");
-    System.out.println("[SERVER] Server shutdown!");
+    LOGGER.info("Server shutting down.");
     System.exit(0);
   }
 
@@ -170,8 +164,7 @@ public class Server implements Runnable {
     }
 
     this.lobbies.put(lobbyName, new Lobby(lobbyName, password));
-    LOGGER.info("[Server] " + client.getUsername() + " created lobby " + lobbyName + "\n");
-    System.out.printf("[SERVER] %s created lobby %s\n", client.getUsername(), lobbyName);
+    LOGGER.info(client.getUsername() + " created lobby " + lobbyName + "\n");
     this.lobbies.get(lobbyName).addClient(client, password);
   }
 
