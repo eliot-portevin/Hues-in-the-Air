@@ -97,11 +97,12 @@ public class MenuController {
           }
         });
     Text text1 = new Text("Welcome to the chat!\n");
-    text1.setFont(bebasRegular);
     Text text2 = new Text("Type your message and press enter to send it.\n");
-    text2.setFont(bebasItalics);
-    Text text3 = new Text("Start your message with @username to send a private message.\n");
-    text3.setFont(bebasRegular);
+    Text text3 = new Text("Start your message with @username to send a private message.\n\n");
+    for (Text t : Arrays.asList(text1, text2, text3)) {
+      t.styleProperty().set("-fx-fill: #363636");
+      t.setFont(bebasItalics);
+    }
 
     this.chat
         .widthProperty()
@@ -203,7 +204,7 @@ public class MenuController {
         new Text(
             String.format(
                 "[%s] %s - %s%n",
-                sender, Objects.equals(privacy, "Private") ? "Private " : "", message));
+                sender, Objects.equals(privacy, "Private") ? "@Private " : "", message));
 
     text.setFont(
         new Font(

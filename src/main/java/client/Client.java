@@ -102,6 +102,8 @@ public class Client extends Application {
     this.stage = primaryStage;
     this.stage.setTitle("Hues in the Air");
     this.stage.setScene(scene);
+    this.stage.setMinWidth(960);
+    this.stage.setMinHeight(540);
 
     try {
       this.loadLoginScreen(args);

@@ -1,6 +1,7 @@
 package client.controllers;
 
 import client.Client;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -130,6 +131,14 @@ public class MenuHomeController {
                 if (newValue.getParent() == this.usersHeader
                     || newValue.getParent().getParent() == this.lobbiesHeader) {
                   MenuController.getInstance().fillChatText("@" + newValue.getValue() + " ");
+                  Platform.runLater(() -> this.tree.getSelectionModel().select(newValue.getParent()));
+                } else if (newValue.getParent() == this.lobbiesHeader) {
+                  Platform.runLater(() -> {
+                    this.textLobbyName.setText(newValue.getValue().split(" ")[0]);
+                    this.textLobbyPassword.setText("");
+                    this.textLobbyPassword.requestFocus();
+                    this.textLobbyPassword.end();
+                  });
                 }
               }
             });
@@ -165,12 +174,12 @@ public class MenuHomeController {
     if (users.length == 0) {
       this.usersHeader.setValue("Users (empty)");
     } else {
-      this.usersHeader.setValue("Users");
+      this.usersHeader.setValue("Users (" + users.length + ")");
     }
     this.usersHeader.getChildren().clear();
 
     for (String user : users) {
-      this.usersHeader.getChildren().add(new TreeItem<>(user));
+      this.usersHeader.getChildren().add(new TreeItem<>(user.equals(Client.getInstance().getUsername()) ? user + " (you)" : user));
     }
 
     this.tree.refresh();
