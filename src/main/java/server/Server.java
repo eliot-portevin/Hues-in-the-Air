@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +24,6 @@ public class Server implements Runnable {
 
   private boolean shuttingDown = false;
   private boolean noClientConnected = true;
-  private Thread pingSender;
 
   private static Server instance;
   private final Logger LOGGER;
@@ -40,15 +41,15 @@ public class Server implements Runnable {
   public void run() {
     try {
       this.listener = new ServerSocket(this.PORT);
-      this.pingSender = new Thread(new ServerPingSender(this.clientHandlers, this));
+      Thread pingSender = new Thread(new ServerPingSender(this.clientHandlers, this));
 
       while (true) {
         if (!shuttingDown) {
           if(this.noClientConnected) {
             this.noClientConnected = false;
-            this.pingSender.start();
+            pingSender.start();
           }
-          LOGGER.info("[Server] Waiting for client connection...");
+          LOGGER.info("Waiting for client connection...");
           try {
             Socket client = listener.accept();
             this.addClient(client);
@@ -95,14 +96,15 @@ public class Server implements Runnable {
    */
   protected void removeClient(ClientHandler client) {
     client.running = false;
-    if (client.getLobby() != null) {
+    Optional<Lobby> lobby = Optional.ofNullable(client.getLobby());
+    if (lobby.isPresent()) {
       client.getLobby().removeClient(client);
     }
     this.clientThreads.get(this.clientHandlers.indexOf(client)).interrupt();
     this.clientThreads.remove(this.clientHandlers.indexOf(client));
     this.clientHandlers.remove(client);
 
-    LOGGER.info("[Server] Client " + client.getUsername() + " disconnected");
+    LOGGER.info("Client " + client.getUsername() + " disconnected");
     this.updateLobbyList();
     this.updateClientList();
   }
@@ -183,18 +185,30 @@ public class Server implements Runnable {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         this.lobbies.get(lobbyName).addClient(client, password);
-        LOGGER.info("Client "+ client + " joined Lobby " + lobbyName);
         return;
       }
     }
   }
 
+  /**
+   * Sends a message to all clients in the server containing the list of all lobbies and their
+   * clients.
+   */
   protected void updateLobbyList() {
+    for (Lobby lobby : this.lobbies.values()) {
+      if (lobby.getNumPlayers() == 0) {
+        this.removeLobby(lobby);
+        LOGGER.info("Lobby " + lobby + " removed.");
+      }
+    }
     for (ClientHandler client : this.clientHandlers) {
       client.updateLobbyList();
     }
   }
 
+  /**
+   * Sends a message to all clients in the server containing the list of all clients.
+   */
   protected void updateClientList() {
     for (ClientHandler client : this.clientHandlers) {
       client.updateClientList();
