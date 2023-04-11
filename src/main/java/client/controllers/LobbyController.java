@@ -2,6 +2,9 @@ package client.controllers;
 
 import client.Client;
 import client.util.AlertManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -57,23 +60,54 @@ public class LobbyController {
   }
 
   private void initialiseLobbyList() {
-    String player1 = "Player 1";
-    String player2 = "Player 2";
-    String status1 = "Ready";
-    String status2 = "Not ready";
+    for (ListView<String> list : Arrays.asList(nameList, readyList)) {
+      list.setCellFactory(
+          param ->
+              new ListCell<String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                  super.updateItem(item, empty);
+                  if (empty || item == null) {
+                    return;
+                  } else {
+                    // set the width's
+                    setMinWidth(param.getWidth());
+                    setMaxWidth(param.getWidth());
+                    setPrefWidth(param.getWidth());
 
-    nameList.getItems().addAll(player1, player2);
-    readyList.getItems().addAll(status1, status2);
+                    // allow wrapping
+                    setWrapText(true);
+
+                    setText(item.toString());
+                  }
+                }
+              });
+    }
   }
+
   /** Binds the font size of the labels to the size of the window. */
   private void setFontBehaviour() {
-    this.lobbyNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(15)));
-    this.chatText.styleProperty().bind(Bindings.concat("-fx-font-size: ", lobbyChat.widthProperty().divide(25)));
-    this.membersLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(30)));
-    this.toggleReadyButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    this.logoutButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    this.nameList.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
-    this.readyList.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
+    this.lobbyNameLabel
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(15)));
+    this.chatText
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", lobbyChat.widthProperty().divide(25)));
+    this.membersLabel
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(30)));
+    this.toggleReadyButton
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+    this.logoutButton
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+    this.nameList
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
+    this.readyList
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
   }
 
   /**
@@ -82,7 +116,23 @@ public class LobbyController {
    */
   private void setButtonBehaviour() {
     logoutButton.setOnAction(e -> Client.getInstance().exitLobby());
+    toggleReadyButton.setOnAction(
+        e -> Client.getInstance().sendToggleReady(toggleReadyButton.isSelected()));
   }
+
+  /**
+   * The client has received confirmation of their toggle. The toggle button is updated accordingly.
+   *
+   * @param isReady Whether the client is ready or not.
+   */
+  public void setToggleReady(String isReady) {
+    Platform.runLater(
+        () -> {
+          toggleReadyButton.setSelected(isReady.equals("true"));
+          toggleReadyButton.setText(isReady.equals("true") ? "Cancel" : "Toggle Ready");
+        });
+  }
+
   /**
    * Sets the behaviour for the tab buttons on top of the chat. When a button is clicked, the
    * corresponding chat pane is brought to the front.
@@ -132,6 +182,7 @@ public class LobbyController {
 
   /**
    * Receives a message from the server and displays it in the corresponding chat pane.
+   *
    * @param message The message to be displayed.
    * @param sender The sender of the message.
    * @param privacy Whether the message is "Private", "Lobby" or "Server".
@@ -149,14 +200,44 @@ public class LobbyController {
             this.lobbyChatPane.getWidth() / 25));
 
     switch (privacy) {
-      case "Private", "Public" -> Platform.runLater(() -> {
-        this.serverChat.getChildren().add(text);
-        this.serverChatPane.setVvalue(1.0);
-      });
-      case "Lobby" -> Platform.runLater(() -> {
-        this.lobbyChat.getChildren().add(text);
-        this.lobbyChatPane.setVvalue(1.0);
-      });
+      case "Private", "Public" -> Platform.runLater(
+          () -> {
+            this.serverChat.getChildren().add(text);
+            this.serverChatPane.setVvalue(1.0);
+          });
+      case "Lobby" -> Platform.runLater(
+          () -> {
+            this.lobbyChat.getChildren().add(text);
+            this.lobbyChatPane.setVvalue(1.0);
+          });
     }
+  }
+
+  /**
+   * Updates the lobby list with the new list of clients in the lobby and their ready status.
+   *
+   * @param clients The list of clients in the lobby and their status separated by a space.
+   */
+  public void updateLobbyList(String[] clients) {
+    Platform.runLater(
+        () -> {
+          this.nameList.getItems().clear();
+          this.readyList.getItems().clear();
+        });
+
+    ArrayList<String> clientNames = new ArrayList<>();
+    ArrayList<String> clientReady = new ArrayList<>();
+
+    for (String client : clients) {
+      String[] clientInfo = client.split(" ");
+      clientNames.add(clientInfo[0]);
+      clientReady.add(clientInfo[1]);
+    }
+
+    Platform.runLater(
+        () -> {
+          this.nameList.getItems().setAll(clientNames);
+          this.readyList.getItems().setAll(clientReady);
+        });
   }
 }

@@ -43,6 +43,9 @@ public class Client extends Application {
   boolean isInLobby = false;
   boolean isInGame = false;
 
+  private GridPane menuScreenRoot;
+  private GridPane lobbyScreenRoot;
+
   String lobbyName = "";
 
   // Server info
@@ -206,20 +209,24 @@ public class Client extends Application {
    * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
    */
   private void loadMenuScreen() throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/menu/MenuPage.fxml"));
-    this.root = loader.load();
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/menu/MenuPage.fxml"));
+      this.root = loader.load();
 
-    // Set controller
-    this.menuController = loader.getController();
+      // Set controller
+      this.menuController = loader.getController();
 
-    // Set the scene
-    this.stage.getScene().setRoot(this.root);
+      // Set the scene
+      this.stage.getScene().setRoot(this.root);
 
-    this.loginScreen = false;
-    this.menuScreen = true;
+      this.loginScreen = false;
+      this.menuScreen = true;
 
-    // Request list of clients and lobbies from server
-    this.requestServerInfo();
+      // Request list of clients and lobbies from server
+      this.requestServerInfo();
+    } catch (ClassCastException e) {
+      LOGGER.error("ClassCastException: " + e.getMessage());
+    }
   }
 
   private void loadLobbyScreen() throws IOException {
@@ -234,6 +241,8 @@ public class Client extends Application {
 
     this.menuScreen = false;
     this.isInLobby = true;
+
+    this.listClientsLobby();
   }
 
   private void requestServerInfo() {
@@ -309,7 +318,6 @@ public class Client extends Application {
   }
   /** Starts the client */
   public static void start(String[] args) {
-    System.out.println("Starting client...");
     String[] serverInfo = args[0].split(":");
     if (serverInfo.length != 2) {
       System.err.println(
@@ -333,7 +341,8 @@ public class Client extends Application {
   public void setUsername(String username) {
     if (username.equals(this.username)) {
       if (this.menuScreen) {
-        this.menuController.alertManager.displayAlert("Username already set to " + username + ".", true);
+        this.menuController.alertManager.displayAlert(
+            "Username already set to " + username + ".", true);
         return;
       }
     }
@@ -381,10 +390,7 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * This client wants to send a private message to another client (whisper chat).
-   *
-   */
+  /** This client wants to send a private message to another client (whisper chat). */
   public void sendMessageClient(String recipient, String message) {
     if (recipient.equals(this.username)) {
       this.menuController.alertManager.displayAlert("You cannot send messages to yourself.", true);
@@ -462,12 +468,12 @@ public class Client extends Application {
         e.printStackTrace();
       }
     } catch (NullPointerException e) {
-      System.out.println("Socket is already closed");
+      LOGGER.info("Socket is already closed");
     }
     try {
       this.stage.close();
     } catch (IllegalStateException e) {
-      System.out.println("Stage is already closed");
+      LOGGER.info("Stage is already closed");
     }
     System.exit(0);
   }
@@ -487,7 +493,6 @@ public class Client extends Application {
   public void createLobby(String name, String password) {
     if (!this.isInLobby) {
       if (name.equals("") || password.equals("")) {
-        System.out.println("Invalid lobby name or password");
         return;
       }
       String command =
@@ -565,7 +570,7 @@ public class Client extends Application {
   }
 
   /** Sends a request to the server asking for the list of clients in the lobby */
-  protected void listClientsLobby() {
+  public void listClientsLobby() {
     String command = ClientProtocol.LIST_LOBBY.toString();
     this.outputSocket.sendToServer(command);
   }
@@ -578,18 +583,20 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
-  /**
-   * Prints the list of clients that are passed in to the console
-   *
-   * @param clients A String array containing the usernames of clients
-   */
-  public void printClientList(String[] clients) {
-    System.out.println("###############");
-    for (String client : clients) {
-      System.out.println("> " + client);
+  /** If the client is in a lobby, their list of clients in the lobby is updated. */
+  protected void updateLobbyList(String clientList) {
+    if (this.isInLobby) {
+      this.lobbyController.updateLobbyList(clientList.split("<&\\?>"));
     }
-    System.out.println("> ###############");
-    System.out.print("> ");
+  }
+
+  public void sendToggleReady(Boolean isReady) {
+    String command = ClientProtocol.TOGGLE_READY.toString() + ServerProtocol.SEPARATOR + isReady;
+    this.outputSocket.sendToServer(command);
+  }
+
+  public void setToggleReady(String isReady) {
+    this.lobbyController.setToggleReady(isReady);
   }
 
   /**
@@ -651,8 +658,8 @@ public class Client extends Application {
   }
 
   /**
-   * The client has received confirmation from the server that they have entered a lobby. Proceeds to
-   * load the lobby screen.
+   * The client has received confirmation from the server that they have entered a lobby. Proceeds
+   * to load the lobby screen.
    */
   public void enterLobby(String lobbyName) {
     this.lobbyName = lobbyName;
@@ -676,8 +683,7 @@ public class Client extends Application {
 
     if (menuScreen) {
       this.menuController.receiveMessage(message, sender, privacy);
-    }
-    else if (isInLobby) {
+    } else if (isInLobby) {
       this.lobbyController.receiveMessage(message, sender, privacy);
     }
   }

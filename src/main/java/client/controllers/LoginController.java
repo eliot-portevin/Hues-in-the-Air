@@ -15,9 +15,7 @@ import javafx.scene.layout.HBox;
 public class LoginController {
 
   // Grid panes
-  @FXML private GridPane backgroundPane;
   @FXML private GridPane titlePane;
-  @FXML private HBox hboxPort;
   @FXML private HBox hboxLogin;
 
   // Labels
@@ -60,6 +58,8 @@ public class LoginController {
     this.setFontBehaviour();
 
     this.alertManager = new AlertManager(alertPane, alert);
+
+    this.textUsername.setPromptText(System.getProperty("user.name"));
   }
 
   /**

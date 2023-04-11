@@ -31,6 +31,7 @@ public class ClientHandler implements Runnable {
   // Client values
   private String username;
   private Lobby lobby;
+  private boolean hasToggledReady = false;
 
   /** Is in charge of a single client. */
   public ClientHandler(Socket clientSocket, Server server) throws IOException {
@@ -111,9 +112,14 @@ public class ClientHandler implements Runnable {
       recipientHandler.out.println(output);
       this.out.println(output);
     } else {
-      System.out.println("Didn't find the user");
-      this.out.println(
-          ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient);
+      Server.getInstance()
+          .LOGGER
+          .error(
+              "ClientHandler "
+                  + this.username
+                  + " tried to send a message to "
+                  + recipient
+                  + ", but the recipient doesn't exist.");
     }
   }
   /**
@@ -141,9 +147,9 @@ public class ClientHandler implements Runnable {
     try {
       return this.in.readLine();
     } catch (IOException e) {
-      System.err.println(
-          "[CLIENT_HANDLER] " + this.username + " failed to receive message from client");
-      System.out.println(Arrays.toString(e.getStackTrace()));
+      Server.getInstance()
+          .LOGGER
+          .error("ClientHandler " + this.username + " couldn't receive message from client.");
       return null;
     }
   }
@@ -173,9 +179,10 @@ public class ClientHandler implements Runnable {
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
           case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
           case LIST_LOBBY -> {
-            if (this.lobby != null) this.sendClientList(this.lobby.getClientHandlers());
+            if (this.lobby != null) this.listLobby();
           }
           case LIST_SERVER -> this.sendClientList(this.server.getClientHandlers());
+          case TOGGLE_READY -> this.setToggleReady(command[1]);
           case EXIT_LOBBY -> {
             if (this.lobby != null) this.lobby.removeClient(this);
           }
@@ -203,6 +210,26 @@ public class ClientHandler implements Runnable {
     return this.username;
   }
 
+  /** The client has clicked the ready button. */
+  private void setToggleReady(String isReady) {
+    // If the entered value is not a boolean, the value is set to false.
+    this.hasToggledReady = Boolean.parseBoolean(isReady);
+    String command = ServerProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + hasToggledReady;
+    this.out.println(command);
+    // Update the lobby list to show the new ready status.
+    System.out.println(command);
+    this.listLobby();
+  }
+
+  /**
+   * Returns whether the client has toggled ready. Used to display in the client's list and to start
+   * the game.
+   * @return True if the client has toggled ready, false otherwise.
+   */
+  public boolean hasToggledReady() {
+    return this.hasToggledReady;
+  }
+
   /**
    * Called when the client has sent a new username in. If the username is already taken, a random
    * suffix is added to the username and the method is called recursively.
@@ -217,8 +244,9 @@ public class ClientHandler implements Runnable {
     ClientHandler client = this.server.getClientHandler(username);
 
     if (client == null) {
-      System.out.printf(
-          "[CLIENT_HANDLER] %s changed their username to %s.\n", this.username, username);
+      Server.getInstance()
+          .LOGGER
+          .info("ClientHandler " + this.username + " changed username to " + username);
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
@@ -242,8 +270,27 @@ public class ClientHandler implements Runnable {
    */
   protected void enterLobby(Lobby lobby) {
     this.lobby = lobby;
-    this.sendMessageLobby(this.username + " entered the lobby " + this.lobby.getName() + ".");
-    this.out.println(ServerProtocol.LOBBY_JOINED.toString() + ServerProtocol.SEPARATOR + lobby.getName());
+    this.out.println(
+        ServerProtocol.LOBBY_JOINED.toString() + ServerProtocol.SEPARATOR + lobby.getName());
+    this.listLobby();
+  }
+
+  /**
+   * Sends a list of clients in the lobby to the client. This includes whether the client has toggled
+   * ready or not.
+   */
+  protected void listLobby() {
+    String command = ServerProtocol.SEND_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
+
+    command += this.lobby.getClientHandlers().stream()
+        .map(
+            client ->
+                client.getUsername()
+                    + " "
+                    + client.hasToggledReady())
+        .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+
+    this.out.println(command);
   }
 
   protected Lobby getLobby() {
@@ -257,9 +304,10 @@ public class ClientHandler implements Runnable {
    */
   protected void sendClientList(ArrayList<ClientHandler> clients) {
     String command =
-        ServerProtocol.SEND_CLIENT_LIST.toString()
+        ServerProtocol.SEND_LOBBY_LIST.toString()
             + ServerProtocol.SEPARATOR
             + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
+    System.out.println(command);
     this.out.println(command);
   }
   /**
@@ -294,9 +342,10 @@ public class ClientHandler implements Runnable {
   public void updateClientList() {
     ArrayList<ClientHandler> clients = this.server.getClientHandlers();
 
-    String command = ServerProtocol.UPDATE_CLIENT_LIST.toString() +
-        ServerProtocol.SEPARATOR +
-        clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
+    String command =
+        ServerProtocol.UPDATE_CLIENT_LIST.toString()
+            + ServerProtocol.SEPARATOR
+            + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
 
     this.out.println(command);
   }

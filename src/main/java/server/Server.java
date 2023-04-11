@@ -26,7 +26,7 @@ public class Server implements Runnable {
   private boolean noClientConnected = true;
 
   private static Server instance;
-  private final Logger LOGGER;
+  protected final Logger LOGGER;
 
   public Server(int PORT) {
     this.PORT = PORT;

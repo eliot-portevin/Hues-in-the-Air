@@ -20,9 +20,7 @@ public enum ServerProtocol {
     }
   },
 
-  /**
-   * Separator used for lobby lists
-   */
+  /** Separator used for lobby lists */
   LOBBY_INFO_SEPARATOR(0) {
     public String toString() {
       return "<&?>";
@@ -55,7 +53,8 @@ public enum ServerProtocol {
   /** A message is being sent to the lobby. */
   SEND_MESSAGE_LOBBY(2),
 
-  SEND_CLIENT_LIST(1),
+  /** Sends the list of clients in the lobby. */
+  SEND_LOBBY_LIST(1),
 
   /** Informs the client that they have successfully joined a lobby. */
   LOBBY_JOINED(1),
@@ -68,6 +67,8 @@ public enum ServerProtocol {
 
   /** Send a list of all clients in the server. Used for the client list in the menu. */
   UPDATE_CLIENT_LIST(1),
+
+  TOGGLE_READY_STATUS(1),
 
   SERVER_PING(0),
 

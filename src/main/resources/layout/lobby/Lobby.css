@@ -1,5 +1,7 @@
 .root {
     -fx-background-color: linear-gradient(to top right, #363636 0%, #464646 50%, #363636 100%);
+    -fx-focus-traversable: false;
+    -fx-focus-color: transparent;
 }
 
 #rightPane {
@@ -21,18 +23,29 @@
 
 #nameList, #readyList {
     -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
 }
 
-.list-cell {
-    -fx-text-fill: #ffffff;
+#readyList > .list-cell {
+    -fx-text-alignment: right;
 }
 
-.list-cell:even {
+.list-cell:filled {
+    -fx-text-fill: #363636;
+}
+
+.list-cell:filled:even {
     -fx-background-color: #f2f2f2;
 }
 
-.list-cell:odd {
+.list-cell:filled:odd {
     -fx-background-color: #e6e6e6;
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
 }
 
 #lobbyNameLabel {
