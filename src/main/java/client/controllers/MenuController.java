@@ -3,11 +3,11 @@ package client.controllers;
 import client.Client;
 import java.util.Arrays;
 import java.util.Objects;
-
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -96,7 +96,23 @@ public class MenuController {
             this.scrollPane.setVvalue(1.0);
           }
         });
+    Text text1 = new Text("Welcome to the chat!\n");
+    text1.setFont(bebasRegular);
+    Text text2 = new Text("Type your message and press enter to send it.\n");
+    text2.setFont(bebasItalics);
+    Text text3 = new Text("Start your message with @username to send a private message.\n");
+    text3.setFont(bebasRegular);
 
+    this.chat
+        .widthProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              for (Node node : this.chat.getChildren()) {
+                Text text = (Text) node;
+                text.setFont(new Font(text.getFont().getName(), newValue.doubleValue() / 25));
+              }
+            });
+    this.chat.getChildren().addAll(text1, text2, text3);
   }
 
   /** Configures the tabs to play a click sound when the mouse enter them */
@@ -183,18 +199,16 @@ public class MenuController {
    * @param privacy Whether the message is private or not
    */
   public void receiveMessage(String message, String sender, String privacy) {
-    Text text = new Text();
-    text.styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(30)));
+    Text text =
+        new Text(
+            String.format(
+                "[%s] %s - %s%n",
+                sender, Objects.equals(privacy, "Private") ? "Private " : "", message));
 
-    switch (privacy) {
-      case "Public" ->
-        text.setText(String.format("[%s] - %s%n", sender, message));
-      case "Private" -> {
-        text.setText(String.format("Private [%s] - %s%n", sender, message));
-        text.setFont(bebasItalics);
-      }
-    }
+    text.setFont(
+        new Font(
+            privacy.equals("Private") ? "BebasNeuePro-BoldItalic" : "Bebas Neue Regular",
+            this.chat.getWidth() / 25));
 
     Platform.runLater(() -> this.chat.getChildren().add(text));
   }

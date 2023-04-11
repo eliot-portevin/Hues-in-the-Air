@@ -119,7 +119,7 @@ public class Client extends Application {
         });
 
     // this.stage.setFullScreen(true);
-    this.stage.setResizable(false);
+    this.stage.setResizable(true);
     this.stage.show();
   }
 
