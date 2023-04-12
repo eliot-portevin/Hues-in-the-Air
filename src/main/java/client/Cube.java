@@ -5,13 +5,12 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
-import java.security.SecurityPermission;
 import java.util.ArrayList;
 
 public class Cube {
   protected Vector2D position;
   public Vector2D size;
-  private double jumpHeight = 30;
+  private final double jumpHeight = 30;
   private boolean canJump = true;
   private Pane gameRoot;
   public ArrayList<Node> platforms;
@@ -22,7 +21,6 @@ public class Cube {
   private final double speed = 3;
   private Vector2D g = new Vector2D(0, gravity_scalar);
   protected Vector2D velocity = new Vector2D(speed, 0);
-  private int onGround = 0;
   private double y0 = 100000;
   private boolean y0passed;
 
@@ -55,9 +53,150 @@ public class Cube {
     }
   }
 
+  /**
+   * Sets position of the cube to the given x and y
+   */
   public void setPositionTo(double x, double y) { // Sets the position of the cube to the given x and y
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
+  }
+  /**
+   * Sets Gravity and velocity correctly when gravitation pulls the cube to the right
+   */
+  public void setGravityAndVelocityRight() {
+    canJump = true;
+    velocity.setX(0);
+    if (g.getX() == gravity_scalar) {
+      velocity.setX(0);
+      if (velocity.getY() > 0) {
+        velocity.setY(speed);
+      } else {
+        velocity.setY(-speed);
+      }
+    } else if (g.getX() == -gravity_scalar) {
+      g.setX(gravity_scalar);
+    } else if (g.getY() == gravity_scalar) {
+      g.setY(0);
+      g.setX(gravity_scalar);
+      velocity.setY(-speed);
+    } else if (g.getY() == -gravity_scalar) {
+      g.setY(0);
+      g.setX(gravity_scalar);
+      velocity.setY(speed);
+    }
+  }
+  /**
+   * Sets Gravity and velocity correctly when gravitation pulls the cube to the left
+   */
+  public void setGravityAndVelocityLeft() {
+    canJump = true;
+    velocity.setX(0);
+    if (g.getX() == -gravity_scalar) {
+      if (velocity.getY() > 0) {
+        velocity.setY(speed);
+      } else {
+        velocity.setY(-speed);
+      }
+    } else if (g.getX() == gravity_scalar) {
+      g.setX(-gravity_scalar);
+    } else if (g.getY() == gravity_scalar) {
+      g.setY(0);
+      g.setX(-gravity_scalar);
+      velocity.setY(-speed);
+    } else if (g.getY() == -gravity_scalar) {
+      g.setY(0);
+      g.setX(-gravity_scalar);
+      velocity.setY(speed);
+    }
+  }
+  /**
+   * Sets Gravity and velocity correctly when gravitation pulls the cube up
+   */
+  public void setGravityAndVelocityUp() {
+    canJump = true;
+    velocity.setY(0);
+    if (g.getY() == -gravity_scalar) {
+      if (velocity.getX() > 0) {
+        velocity.setX(speed);
+      } else {
+        velocity.setX(-speed);
+      }
+    } else if (g.getY() == gravity_scalar) {
+      g.setY(-gravity_scalar);
+    } else if (g.getX() == gravity_scalar) {
+      g.setX(0);
+      g.setY(-gravity_scalar);
+      velocity.setX(-speed);
+    } else if (g.getX() == -gravity_scalar) {
+      g.setX(0);
+      g.setY(-gravity_scalar);
+      velocity.setX(speed);
+    }
+  }
+  /**
+   * Sets Gravity and velocity correctly when gravitation pulls the cube down
+   */
+  public void setGravityAndVelocityDown() {
+    canJump = true;
+    velocity.setY(0);
+    if (g.getY() == gravity_scalar) {
+      if (velocity.getX() > 0) {
+        velocity.setX(speed);
+      } else {
+        velocity.setX(-speed);
+      }
+    } else if (g.getY() == -gravity_scalar) {
+      g.setY(gravity_scalar);
+    } else if (g.getX() == gravity_scalar) {
+      g.setX(0);
+      g.setY(gravity_scalar);
+      velocity.setX(-speed);
+    } else if (g.getX() == -gravity_scalar) {
+      g.setX(0);
+      g.setY(gravity_scalar);
+      velocity.setX(speed);
+    }
+  }
+  /**
+   * Rotates Gravitation if cube goes out of bounds if cube is moving in x direction
+   */
+  public void gravityRotationX(){
+    if (g.getY() > 0 && !y0passed) {
+      if (y0 < position.getY()) {
+        y0passed = true;
+        g.setY(-gravity_scalar);
+        velocity.setX(-velocity.getX());
+        velocity.setY(-jumpHeight*g.getY());
+      }
+    } else if (g.getY() < 0 && !y0passed) {
+      if (y0 > position.getY()) {
+        y0passed = true;
+        g.setY(gravity_scalar);
+        velocity.setX(-velocity.getX());
+        velocity.setY(-jumpHeight*g.getY());
+      }
+    }
+  }
+
+  /**
+   * Rotates Gravitation if cube goes out of bounds if cube is moving in y direction
+   */
+  public void gravityRotationY(){
+    if (g.getX() > 0 && !y0passed) {
+      if (y0 < position.getX()) {
+        y0passed = true;
+        g.setX(-gravity_scalar);
+        velocity.setY(-velocity.getY());
+        velocity.setX(-jumpHeight*g.getX());
+      }
+    } else if (g.getX() < 0 && !y0passed) {
+      if (y0 > position.getX()) {
+        y0passed = true;
+        g.setX(gravity_scalar);
+        velocity.setY(-velocity.getY());
+        velocity.setX(-jumpHeight*g.getX());
+      }
+    }
   }
   /**
    * Checks if the cube is colliding with anything, if not it moves the cube by 1 pixel steps in x direction and checks again
@@ -67,79 +206,22 @@ public class Cube {
   public void moveX(double value) {
     boolean movingRight = value > 0;
     if (!canJump) {
-      if (g.getY() > 0 && !y0passed) {
-        if (y0 < position.getY()) {
-          y0passed = true;
-          g.setY(-gravity_scalar);
-          velocity.setX(-velocity.getX());
-          velocity.setY(-jumpHeight*g.getY());
-        }
-      } else if (g.getY() < 0 && !y0passed) {
-        if (y0 > position.getY()) {
-          y0passed = true;
-          g.setY(gravity_scalar);
-          velocity.setX(-velocity.getX());
-          velocity.setY(-jumpHeight*g.getY());
-        }
-      }
+      gravityRotationX();
       for (int i = 0; i < Math.abs(value); i++) {
         for (Node platform : platforms) {
           if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-            onGround += 1;
             if (movingRight) {
               if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) { // Checks if the cube is colliding with a platform on the right side
                 if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                  canJump = true;
-                  velocity.setX(0);
-                  if (g.getX() == gravity_scalar) {
-                    velocity.setX(0);
-                    if (velocity.getY() > 0) {
-                      velocity.setY(speed);
-                    } else {
-                      velocity.setY(-speed);
-                    }
-                    return;
-                  } else if (g.getX() == -gravity_scalar) {
-                    g.setX(gravity_scalar);
-                    return;
-                  } else if (g.getY() == gravity_scalar) {
-                    g.setY(0);
-                    g.setX(gravity_scalar);
-                    velocity.setY(-speed);
-                    return;
-                  } else if (g.getY() == -gravity_scalar) {
-                    g.setY(0);
-                    g.setX(gravity_scalar);
-                    velocity.setY(speed);
-                    return;
-                  }
+                  setGravityAndVelocityRight();
+                  return;
                 }
-
               }
             } else {
               if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) { // Checks if the cube is colliding with a platform on the left side
                 if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
-                  canJump = true;
-                  velocity.setX(0);
-                  if (g.getX() == -gravity_scalar) {
-                    if (velocity.getY() > 0) {
-                      velocity.setY(speed);
-                    } else {
-                      velocity.setY(-speed);
-                    }
+                    setGravityAndVelocityLeft();
                     return;
-                  } else if (g.getX() == gravity_scalar) {
-                    g.setX(-gravity_scalar);
-                    return;
-                  } else if (g.getY() == gravity_scalar) {
-                    g.setY(0);
-                    g.setX(-gravity_scalar);
-                    velocity.setY(-speed);
-                  } else if (g.getY() == -gravity_scalar) {
-                    g.setY(0);
-                    g.setX(-gravity_scalar);
-                    velocity.setY(speed);
-                  }
                 }
               }
             }
@@ -162,77 +244,22 @@ public class Cube {
   public void moveY(double value) {
     boolean movingDown = value > 0;
     if (!canJump) {
-      if (g.getX() > 0 && !y0passed) {
-        if (y0 < position.getX()) {
-          y0passed = true;
-          g.setX(-gravity_scalar);
-          velocity.setY(-velocity.getY());
-          velocity.setX(-jumpHeight*g.getX());
-        }
-      } else if (g.getX() < 0 && !y0passed) {
-        if (y0 > position.getX()) {
-          y0passed = true;
-          g.setX(gravity_scalar);
-          velocity.setY(-velocity.getY());
-          velocity.setX(-jumpHeight*g.getX());
-        }
-      }
+        gravityRotationY();
       for (int i = 0; i < Math.abs(value); i++) {
         for (Node platform : platforms) {
           if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-            onGround += 1;
             if (movingDown) {
               if (rectangle.getTranslateY() + size.getY() == platform.getTranslateY()) { // Checks if the cube is colliding with a platform on the bottom side
                 if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                  canJump = true;
-                  velocity.setY(0);
-                  if (g.getY() == gravity_scalar) {
-                    if (velocity.getX() > 0) {
-                      velocity.setX(speed);
-                    } else {
-                      velocity.setX(-speed);
-                    }
+                    setGravityAndVelocityDown();
                     return;
-                  } else if (g.getY() == -gravity_scalar) {
-                    g.setY(gravity_scalar);
-                    return;
-                  } else if (g.getX() == gravity_scalar) {
-                    g.setX(0);
-                    g.setY(gravity_scalar);
-                    velocity.setX(-speed);
-                    return;
-                  } else if (g.getX() == -gravity_scalar) {
-                    g.setX(0);
-                    g.setY(gravity_scalar);
-                    velocity.setX(speed);
-                    return;
-                  }
                 }
               }
             } else {
               if (rectangle.getTranslateY() == platform.getTranslateY() + gridSize) { // Checks if the cube is colliding with a platform on the top side
                 if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                  canJump = true;
-                  velocity.setY(0);
-                  if (g.getY() == -gravity_scalar) {
-                    if (velocity.getX() > 0) {
-                      velocity.setX(speed);
-                    } else {
-                      velocity.setX(-speed);
-                    }
+                    setGravityAndVelocityUp();
                     return;
-                  } else if (g.getY() == gravity_scalar) {
-                    g.setY(-gravity_scalar);
-                    return;
-                  } else if (g.getX() == gravity_scalar) {
-                    g.setX(0);
-                    g.setY(-gravity_scalar);
-                    velocity.setX(-speed);
-                  } else if (g.getX() == -gravity_scalar) {
-                    g.setX(0);
-                    g.setY(-gravity_scalar);
-                    velocity.setX(speed);
-                  }
                 }
               }
             }
@@ -244,7 +271,6 @@ public class Cube {
       for (int i = 0; i < Math.abs(value); i++) {
         move1Y(movingDown);
       }
-
     }
   }
 
@@ -258,7 +284,6 @@ public class Cube {
     }
     moveX(velocity.getX());
     moveY(velocity.getY());
-    onGround = 0;
   }
 
   /**
@@ -279,33 +304,17 @@ public class Cube {
         y0 = position.getY() - gridSize;
         y0passed = false;
       }
-      System.out.println(y0);
       if (velocity.getY() < 1 && velocity.getY() > -1) {
         velocity.setY(-jumpHeight*g.getY());
       } else {
         velocity.setX(-jumpHeight*g.getX());
       }
-
       canJump = false;
     }
-    //Vector2D startPosition = new Vector2D(position.getX(), position.getY());
-
-    /*AnimationTimer jumpTimer = new AnimationTimer() {
-      @Override
-      public void handle(long now) {
-        changePosition();
-        velocity.setY(velocity.getY() + g.getY());
-        if(position.equals(startPosition)) {
-          this.stop();
-        }
-      }
-    };
-    jumpTimer.start();*/
   }
 
   /**
    * Moves the cube 1 pixel on the x axis
-   * @param movingRight
    */
   public void move1X(boolean movingRight) {
     this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
@@ -314,7 +323,6 @@ public class Cube {
 
   /**
    * Moves the cube 1 pixel on the y axis
-   * @param movingDown
    */
   public void move1Y(boolean movingDown) {
     this.rectangle.setTranslateY(this.rectangle.getTranslateY() + (movingDown ? 1 : -1));
