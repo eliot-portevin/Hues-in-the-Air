@@ -79,7 +79,7 @@ public class Client extends Application {
   private MediaPlayer clickPlayer;
 
   // Logger
-  private Logger LOGGER;
+  public Logger LOGGER;
 
   /**
    * Starts the application by creating a scene and setting the stage properties. Then proceeds to
@@ -117,6 +117,7 @@ public class Client extends Application {
     try {
       LOGGER.info("Loading login screen...");
       this.loadLoginScreen(args);
+      //this.loadGameScreen();
     } catch (IOException e) {
       LOGGER.error("Could not load login screen. Closing the program.");
       e.printStackTrace();
@@ -222,9 +223,6 @@ public class Client extends Application {
 
       this.loginScreen = false;
       this.menuScreen = true;
-
-      // Request list of clients and lobbies from server
-      this.requestServerInfo();
     } catch (ClassCastException e) {
       LOGGER.error("ClassCastException: " + e.getMessage());
     }
@@ -240,29 +238,21 @@ public class Client extends Application {
 
     this.menuScreen = false;
     this.isInLobby = true;
-
-    this.listClientsLobby();
   }
 
   /**
    * Loads the game screen from the fxml file.
    */
-  public void loadGameScreen() {
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
-      this.root = loader.load();
-      this.stage.getScene().setRoot(this.root);
+  public void loadGameScreen() throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
+    this.root = loader.load();
+    this.stage.getScene().setRoot(this.root);
 
-      // Set controller
-      this.gameController = loader.getController();
-
-    } catch (IOException e) {
-      LOGGER.error("Couldn't load game screen. Exiting the program.");
-      this.exit();
-    }
+    // Set controller
+    this.gameController = loader.getController();
   }
 
-  private void requestServerInfo() {
+  public void requestServerInfo() {
     String command = ClientProtocol.REQUEST_SERVER_STATUS.toString();
     this.outputSocket.sendToServer(command);
   }
