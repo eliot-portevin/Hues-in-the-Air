@@ -1,11 +1,7 @@
 package client.controllers;
 
 import client.Game;
-import client.GameMain;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 
 public class GameController {
@@ -14,12 +10,15 @@ public class GameController {
   private Game game;
 
   public void initialize() {
-    System.out.println("started 1");
     this.game = new Game();
-    game.run(gamePane);
+    game.run(this.gamePane);
   }
 
-  public Pane getPane() {
-    return gamePane;
+  private void initialiseKeyboard() {
+    this.gamePane.setOnKeyPressed(e -> {
+      if (e.getCode().toString().equals("SPACE")) {
+        this.game.jump();
+      }
+    });
   }
 }

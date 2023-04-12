@@ -5,6 +5,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -28,10 +29,6 @@ public class  Game extends Application {
   private int gridSize = 50;
   private boolean jumped;
   private AnimationTimer timer;
-
-  public Game () {
-    this.gameRoot = Client.getInstance().gameController.getPane();
-  }
 
   /**
    * Called every frame and handles the game logic
@@ -87,19 +84,16 @@ public class  Game extends Application {
    * Creates the stars
    * Will create the coin to finish the game
    */
-  public void initializeContent() {
+  public void initializeContent(Pane backgroundPane) {
+    this.gameRoot = backgroundPane;
+
     levelWidth = LevelData.Level1[0].length() * gridSize;
     levelHeight = LevelData.Level1.length * gridSize;
+
     Rectangle bg = new Rectangle(this.gameRoot.getWidth(), this.gameRoot.getHeight()); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
 
     load_platforms(); // Loads the platforms
-
-    //load_player(); // Loads the player
-
-
-    //appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
-
   }
   /**
    * Loads the platforms from the level data
@@ -135,7 +129,6 @@ public class  Game extends Application {
             break;
           case '7':
             load_player(new Vector2D(10, 10));
-
         }
       }
     }
@@ -164,6 +157,7 @@ public class  Game extends Application {
     player.platforms = platforms; // Sets the platforms for the player
     player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
+    gameRoot.getChildren().add(new Label("HI there"));
   }
   /**
    * Initializes the content, sets the scene and starts the game with the animation timer
@@ -174,7 +168,7 @@ public class  Game extends Application {
    */
   @Override
   public void start(Stage primaryStage) throws Exception {
-    initializeContent();
+    initializeContent(new Pane());
     Scene scene = new Scene(appRoot);   // Creates the scene
     scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
     scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
@@ -199,6 +193,10 @@ public class  Game extends Application {
     };
     this.timer.start();
   }
+
+  public void jump() {
+    this.player.jump();
+  }
 /**
    * Gets the frame rate in hertz
    * @param deltaTimeNano - the time between frames in nanoseconds
@@ -211,11 +209,8 @@ public class  Game extends Application {
   /**
    * Launches the application
    */
-  public void run(Pane backgroundPane) {
-    System.out.println("started 2");
-    this.gameRoot = backgroundPane;
-
-    this.initializeContent();
+  public void run(Pane pane) {
+    this.initializeContent(pane);
 
     this.timer = new AnimationTimer() {
       @Override
