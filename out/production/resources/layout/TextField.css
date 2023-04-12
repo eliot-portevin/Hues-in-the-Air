@@ -1,0 +1,10 @@
+.text-field {
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-font-size: 20;
+    -fx-focus-traversable: false;
+    -fx-border-radius: 5 5 5 5;
+    -fx-background-radius: 5 5 5 5;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}

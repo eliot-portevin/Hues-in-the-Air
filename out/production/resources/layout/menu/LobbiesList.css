@@ -1,0 +1,21 @@
+.tree-view {
+    -fx-background-color: transparent;
+    -fx-text-fill: #363636;
+    -fx-font-size: 20;
+}
+
+.tree-cell:even {
+    -fx-background-color: #f2f2f2;
+}
+
+.tree-cell:odd {
+    -fx-background-color: #e6e6e6;
+}
+
+.tree-cell:selected {
+    -fx-text-fill: #464646;
+}
+
+.tree-cell:selected .tree-disclosure-node .arrow {
+    -fx-background-color: #464646;
+}

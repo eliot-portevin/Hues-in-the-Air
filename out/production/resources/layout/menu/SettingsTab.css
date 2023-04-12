@@ -1,0 +1,60 @@
+.root {
+    -fx-focus-traversable: false;
+}
+
+#settingsTab {
+    -fx-background-color: #464646;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color:
+            linear-gradient(to right, #fccf78 0%, #f57dc6 20%)
+            linear-gradient(to bottom, #f57dc6 0%, #b3d5f2 20%)
+            linear-gradient(to left, #b3d5f2 0%, #9ae6ae 20%)
+            linear-gradient(to top, #9ae6ae 0%, #fccf78 20%);
+    -fx-border-width: 1;
+}
+
+#labelUsername, #labelMusic, #labelSfx {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 27;
+}
+
+#creditsArea {
+    -fx-text-fill: #ffffff;
+}
+
+#creditsArea .content {
+    -fx-background-color: #464646;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:vertical .track{
+    -fx-background-color :#464646;
+    -fx-border-width: 0;
+}
+
+.scroll-bar:vertical .thumb{
+    -fx-border-radius: 50em;
+    -fx-background-radius: 50em;
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}

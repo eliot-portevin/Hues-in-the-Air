@@ -1,0 +1,17 @@
+.button, .toggle-button {
+    -fx-background-color: linear-gradient(to bottom right, #fccf78 10%, #9ae6ae 50%, #b3d5f2 90%), #363636;
+    -fx-background-insets: 0, 3;
+    -fx-padding: 6 10 6 10;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 500;
+    -fx-background-radius: 500;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 27;
+    -fx-focus-traversable: false;
+}
+
+.button:hover, .button:focused, .toggle-button:hover, .toggle-button:focused {
+    -fx-background-color: linear-gradient(to bottom right, #fccf78 10%, #9ae6ae 50%, #b3d5f2 90%);
+    -fx-text-fill: #464646;
+}
