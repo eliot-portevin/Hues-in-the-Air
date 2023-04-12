@@ -44,15 +44,15 @@ public class LobbyController {
   private AlertManager alertManager;
 
   public void initialize() {
-    this.setButtonBehaviour();
+    Platform.runLater(this::setButtonBehaviour);
 
-    this.setFontBehaviour();
+    Platform.runLater(this::setFontBehaviour);
 
-    this.setTabPaneBehaviour();
+    Platform.runLater(this::setTabPaneBehaviour);
 
-    this.initialiseChats();
+    Platform.runLater(this::initialiseChats);
 
-    this.initialiseLobbyList();
+    Platform.runLater(this::initialiseLobbyList);
 
     this.alertManager = new AlertManager(alertPane, alert);
 

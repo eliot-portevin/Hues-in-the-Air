@@ -20,7 +20,7 @@ import javafx.scene.text.TextFlow;
 public class MenuController {
   // Sub-controllers
   @FXML private MenuHomeController homeTabController;
-  @FXML private MenuGamesController gamesTabController;
+  @FXML private MenuGameController gamesTabController;
   public MenuSettingsController settingsTabController;
 
   // Tab windows
@@ -66,7 +66,7 @@ public class MenuController {
 
     Platform.runLater(this::setTabPaneBehaviour);
 
-    this.initialiseChat();
+    Platform.runLater(this::initialiseChat);
 
     instance = this;
     this.alertManager = new AlertManager(alertPane, alert);

@@ -70,6 +70,8 @@ public enum ServerProtocol {
 
   TOGGLE_READY_STATUS(1),
 
+  START_GAME(0),
+
   SERVER_PING(0),
 
   SERVER_PONG(0);

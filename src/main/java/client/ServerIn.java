@@ -96,6 +96,7 @@ public class ServerIn implements Runnable {
           case UPDATE_LOBBY_LIST -> this.client.updateLobbyInfo(command[1]);
           case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
           case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
+          case START_GAME -> this.client.loadGameScreen();
         }
       }
     } catch (IllegalArgumentException e) {

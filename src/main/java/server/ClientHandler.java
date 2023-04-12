@@ -217,8 +217,15 @@ public class ClientHandler implements Runnable {
     String command = ServerProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + hasToggledReady;
     this.out.println(command);
     // Update the lobby list to show the new ready status.
-    System.out.println(command);
     this.listLobby();
+
+    // If all clients are ready, start the game
+    for (ClientHandler client : this.lobby.getClientHandlers()) {
+      if (!client.hasToggledReady) {
+        return;
+      }
+    }
+    this.out.println(ServerProtocol.START_GAME);
   }
 
   /**
