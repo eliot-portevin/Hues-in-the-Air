@@ -314,7 +314,7 @@ public class Cube {
   }
 
   /**
-   * Moves the cube 1 pixel on the x axis
+   * Moves the cube 1 pixel on the x-axis
    */
   public void move1X(boolean movingRight) {
     this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));

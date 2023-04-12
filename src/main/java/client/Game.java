@@ -20,7 +20,7 @@ public class  Game extends Application {
   private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Pane appRoot = new Pane();
-  private Pane gameRoot = new Pane();
+  private Pane gameRoot;
   private Pane uiRoot = new Pane();
   private Cube player;
   private int levelWidth;
@@ -28,6 +28,10 @@ public class  Game extends Application {
   private int gridSize = 50;
   private boolean jumped;
   private AnimationTimer timer;
+
+  public Game () {
+    this.gameRoot = Client.getInstance().gameController.getPane();
+  }
 
   /**
    * Called every frame and handles the game logic

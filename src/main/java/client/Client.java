@@ -65,7 +65,7 @@ public class Client extends Application {
   private LoginController loginController;
   private MenuController menuController;
   private LobbyController lobbyController;
-  private GameController gameController;
+  public GameController gameController;
 
   // Username
   protected String username = System.getProperty("user.name");

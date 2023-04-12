@@ -11,4 +11,8 @@ public class GameController {
     Label label = new Label("this is the game pane");
     gamePane.getChildren().add(label);
   }
+
+  public Pane getPane() {
+    return gamePane;
+  }
 }
