@@ -60,11 +60,11 @@ public class MenuController {
 
   @FXML
   public void initialize() {
-    this.setButtonBehaviour();
+    Platform.runLater(this::setButtonBehaviour);
 
-    this.setFontBehaviour();
+    Platform.runLater(this::setFontBehaviour);
 
-    this.setTabPaneBehaviour();
+    Platform.runLater(this::setTabPaneBehaviour);
 
     this.initialiseChat();
 
