@@ -3,12 +3,12 @@ package client.controllers;
 import client.Client;
 import client.util.AlertManager;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
+
+import client.util.Chat;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -23,7 +23,10 @@ public class LobbyController {
   @FXML private ScrollPane serverChatPane;
   @FXML private TextFlow lobbyChat;
   @FXML private TextFlow serverChat;
-  @FXML private TextField chatText;
+  @FXML private TextField lobbyChatText;
+  @FXML private TextField serverChatText;
+  private Chat lobbyChatManager;
+  private Chat serverChatManager;
 
   @FXML private ToggleButton lobbyTabButton;
   @FXML private ToggleButton serverTabButton;
@@ -37,20 +40,17 @@ public class LobbyController {
   @FXML private ListView<String> readyList;
   @FXML private ToggleButton toggleReadyButton;
 
-  private Boolean lobbyChatInFront = true;
-
   @FXML private HBox alertPane;
   @FXML private Label alert;
   public AlertManager alertManager;
 
   public void initialize() {
+    this.initialiseChats();
+    this.setChatTabsBehaviour();
+
     this.setButtonBehaviour();
 
     this.setFontBehaviour();
-
-    this.setTabPaneBehaviour();
-
-    this.initialiseChats();
 
     this.initialiseLobbyList();
 
@@ -68,9 +68,6 @@ public class LobbyController {
     this.lobbyNameLabel
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(15)));
-    this.chatText
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", lobbyChat.widthProperty().divide(25)));
     this.membersLabel
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(30)));
@@ -102,6 +99,9 @@ public class LobbyController {
     logoutButton.setOnAction(e -> Client.getInstance().exitLobby());
     toggleReadyButton.setOnAction(
         e -> Client.getInstance().sendToggleReady(toggleReadyButton.isSelected()));
+
+    // Set the lobby tab to be selected by default.
+    lobbyTabButton.fire();
   }
 
   /**
@@ -118,72 +118,40 @@ public class LobbyController {
    * Sets the behaviour for the tab buttons on top of the chat. When a button is clicked, the
    * corresponding chat pane is brought to the front.
    */
-  private void setTabPaneBehaviour() {
+  private void setChatTabsBehaviour() {
     lobbyTabButton.setOnAction(
         event -> {
           lobbyTabButton.setSelected(true);
           serverTabButton.setSelected(false);
-          lobbyChatPane.toFront();
-          lobbyChatInFront = true;
-          lobbyTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(45)));
-          serverTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-
+          lobbyChatManager.inFront(true);
+          serverChatManager.inFront(false);
+          lobbyTabButton
+              .styleProperty()
+              .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(45)));
+          serverTabButton
+              .styleProperty()
+              .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
         });
 
     serverTabButton.setOnAction(
         event -> {
           serverTabButton.setSelected(true);
           lobbyTabButton.setSelected(false);
-          serverChatPane.toFront();
-          lobbyChatInFront = false;
-          lobbyTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-          serverTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(45)));
-
+          serverChatManager.inFront(true);
+          lobbyChatManager.inFront(false);
+          lobbyTabButton
+              .styleProperty()
+              .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+          serverTabButton
+              .styleProperty()
+              .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(45)));
         });
-
-    lobbyTabButton.fire();
   }
 
   private void initialiseChats() {
-    this.chatText.setOnKeyPressed(
-        e -> {
-          if (e.getCode().toString().equals("ENTER")) {
-            String message = chatText.getText();
-
-            if (message.startsWith("@")) {
-              Client.getInstance().sendMessageClient(message);
-            } else {
-              if (lobbyChatInFront) {
-                Client.getInstance().sendMessageLobby(message);
-              } else {
-                Client.getInstance().sendMessageServer(message);
-              }
-            }
-            this.chatText.clear();
-          }
-        });
-    this.lobbyChatPane.toFront();
-
-    for (TextFlow chat : new TextFlow[] {this.lobbyChat, this.serverChat}) {
-      Text text1 = new Text("Welcome to the chat!\n");
-      Text text2 = new Text("Type your message and press enter to send it.\n");
-      Text text3 = new Text("Start your message with @username to send a private message.\n\n");
-      for (Text t : Arrays.asList(text1, text2, text3)) {
-        t.styleProperty().set("-fx-fill: #363636");
-        t.setFont(Client.bebasItalics);
-      }
-
-      chat
-          .widthProperty()
-          .addListener(
-              (observable, oldValue, newValue) -> {
-                for (Node node : chat.getChildren()) {
-                  Text text = (Text) node;
-                  text.setFont(new Font(text.getFont().getName(), newValue.doubleValue() / 25));
-                }
-              });
-      chat.getChildren().addAll(text1, text2, text3);
-    }
+    this.lobbyChatManager = new Chat("lobby", lobbyChatText, lobbyChat, lobbyChatPane);
+    this.serverChatManager = new Chat("server", serverChatText, serverChat, serverChatPane);
+    lobbyChatManager.inFront(true);
   }
 
   /**
@@ -194,31 +162,19 @@ public class LobbyController {
    * @param privacy Whether the message is "Private", "Lobby" or "Server".
    */
   public void receiveMessage(String message, String sender, String privacy) {
-    Text text =
-        new Text(
-            String.format(
-                "[%s] %s- %s%n",
-                sender, Objects.equals(privacy, "Private") ? "@Private " : "", message));
-
-    text.setFont(
-        new Font(
-            privacy.equals("Private") ? "BebasNeuePro-BoldItalic" : "Bebas Neue Regular",
-            this.lobbyChatPane.getWidth() / 25));
-
     switch (privacy) {
       case "Public" -> {
-        this.serverChat.getChildren().add(text);
-        this.serverChatPane.setVvalue(1.0);
+        this.serverChatManager.addMessage(message, sender, false);
       }
       case "Lobby" -> {
-        this.lobbyChat.getChildren().add(text);
-        this.lobbyChatPane.setVvalue(1.0);
+        this.lobbyChatManager.addMessage(message, sender, false);
       }
       case "Private" -> {
-        TextFlow chat = this.lobbyChatInFront ? this.lobbyChat : this.serverChat;
-        ScrollPane pane = this.lobbyChatInFront ? this.lobbyChatPane : this.serverChatPane;
-        chat.getChildren().add(text);
-        pane.setVvalue(1.0);
+        if (this.serverChatManager.isInFront) {
+          this.serverChatManager.addMessage(message, sender, true);
+        } else {
+          this.lobbyChatManager.addMessage(message, sender, true);
+        }
       }
     }
   }
@@ -237,7 +193,8 @@ public class LobbyController {
 
     for (String client : clients) {
       String[] clientInfo = client.split(" ");
-      clientNames.add(clientInfo[0]);
+      clientNames.add(
+          clientInfo[0].equals(Client.getInstance().getUsername()) ? "You" : clientInfo[0]);
       clientReady.add(clientInfo[1].equals("true") ? "Ready" : "");
     }
 
@@ -246,9 +203,7 @@ public class LobbyController {
   }
 }
 
-/**
- * A class to align cells in nameList to the right
- */
+/** A class to align cells in nameList to the right */
 final class ListViewCellAlignedRight extends ListCell<String> {
   @Override
   protected void updateItem(String item, boolean empty) {
