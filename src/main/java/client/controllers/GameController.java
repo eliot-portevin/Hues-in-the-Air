@@ -14,6 +14,7 @@ public class GameController {
   private Game game;
 
   public void initialize() {
+    System.out.println("started 1");
     this.game = new Game();
     game.run(gamePane);
   }

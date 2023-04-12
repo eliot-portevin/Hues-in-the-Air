@@ -212,6 +212,7 @@ public class  Game extends Application {
    * Launches the application
    */
   public void run(Pane backgroundPane) {
+    System.out.println("started 2");
     this.gameRoot = backgroundPane;
 
     this.initializeContent();

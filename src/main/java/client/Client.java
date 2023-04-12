@@ -196,6 +196,7 @@ public class Client extends Application {
   private void loadLoginScreen(String[] args) throws IOException {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/login/LoginPage.fxml"));
     this.root = loader.load();
+    this.stage.getScene().setRoot(this.root);
 
     // Set controller
     this.loginController = loader.getController();
@@ -214,12 +215,10 @@ public class Client extends Application {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/menu/MenuPage.fxml"));
       this.root = loader.load();
+      this.stage.getScene().setRoot(this.root);
 
       // Set controller
       this.menuController = loader.getController();
-
-      // Set the scene
-      this.stage.getScene().setRoot(this.root);
 
       this.loginScreen = false;
       this.menuScreen = true;
@@ -234,12 +233,10 @@ public class Client extends Application {
   private void loadLobbyScreen() throws IOException {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
     this.root = loader.load();
+    this.stage.getScene().setRoot(this.root);
 
     // Set controller
     this.lobbyController = loader.getController();
-
-    // Set the scene
-    this.stage.getScene().setRoot(this.root);
 
     this.menuScreen = false;
     this.isInLobby = true;
@@ -254,11 +251,10 @@ public class Client extends Application {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
       this.root = loader.load();
+      this.stage.getScene().setRoot(this.root);
 
       // Set controller
       this.gameController = loader.getController();
-
-      this.stage.getScene().setRoot(this.root);
 
     } catch (IOException e) {
       LOGGER.error("Couldn't load game screen. Exiting the program.");
