@@ -247,15 +247,23 @@ public class Client extends Application {
     this.listClientsLobby();
   }
 
-  private void loadGameScreen() throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
-    this.root = loader.load();
+  /**
+   * Loads the game screen from the fxml file.
+   */
+  public void loadGameScreen() {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
+      this.root = loader.load();
 
-    // Set controller
-    this.gameController = loader.getController();
+      // Set controller
+      this.gameController = loader.getController();
 
-    this.stage.getScene().setRoot(this.root);
-    this.menuScreen = false;
+      this.stage.getScene().setRoot(this.root);
+
+    } catch (IOException e) {
+      LOGGER.error("Couldn't load game screen. Exiting the program.");
+      this.exit();
+    }
   }
 
   private void requestServerInfo() {
