@@ -231,22 +231,17 @@ public class ClientHandler implements Runnable {
    * suffix is added to the username and the method is called recursively.
    */
   private void setUsername(String username) {
-    if (this.username != null) {
-      if (this.username.equals(username)) {
-        return;
-      }
-    }
-
     ClientHandler client = this.server.getClientHandler(username);
 
-    if (client == null) {
-      Server.getInstance()
-          .LOGGER
-          .info("ClientHandler " + this.username + " changed username to " + username);
+    if (client == null || client == this) {
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
       this.out.println(message);
+
+      Server.getInstance()
+          .LOGGER
+          .info("ClientHandler " + this.username + " changed username to " + username);
 
       this.server.updateClientList();
       this.server.updateLobbyList();

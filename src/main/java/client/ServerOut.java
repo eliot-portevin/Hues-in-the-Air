@@ -34,8 +34,9 @@ public class ServerOut implements Runnable {
         String command = this.keyboard.readLine();
 
         if (command != null) {
-          System.out.print("> ");
-          this.handleCommand(command);
+          if (command.equals("exit")) {
+            this.client.exit();
+          }
         }
       }
       try {
@@ -88,63 +89,5 @@ public class ServerOut implements Runnable {
       }
     }
     return true;
-  }
-  /** Handles the command from the user. Called by {@link #run()}
-   * @param command The command to handle
-   * */
-  private void handleCommand(String command) {
-    String commandSymbol = ClientProtocol.COMMAND_SYMBOL.toString();
-
-    if (command.startsWith(commandSymbol)) {
-      int firstSpace = command.indexOf(" ");
-      if (firstSpace == -1) {
-        firstSpace = command.length();
-      }
-
-      try {
-        ClientProtocol protocol =
-            ClientProtocol.valueOf(
-                command.substring(0, firstSpace).replace(commandSymbol, "").toUpperCase());
-
-        // If the command has no arguments
-        if (firstSpace == command.length()) {
-          switch (protocol) {
-            case EXIT -> this.client.exit();
-            case WHOAMI -> this.client.whoami();
-            case LIST_LOBBY -> this.client.listClientsLobby();
-            case LIST_SERVER -> this.client.listClientsServer();
-            case EXIT_LOBBY -> this.client.exitLobby();
-
-              /*
-               Methods requiring further inputs from user. These can also be called directly with the
-               required arguments.
-              */
-            case SET_USERNAME -> this.client.setUsername();
-            case BROADCAST -> this.client.sendMessageServer();
-            case WHISPER -> this.client.sendMessageClient();
-            case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby();
-            case CREATE_LOBBY -> this.client.createLobby();
-            case JOIN_LOBBY -> this.client.joinLobby();
-          }
-        } else {
-          String[] args = command.substring(firstSpace + 1).split(" ");
-
-          switch (protocol) {
-            case BROADCAST -> this.client.sendMessageServer(String.join(" ", args));
-            case WHISPER -> this.client.sendMessageClient(
-                args[0], String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-            case SEND_MESSAGE_LOBBY -> this.client.sendMessageLobby(String.join(" ", args));
-            case SET_USERNAME -> this.client.setUsername(args[0].replaceAll(" ", "_"));
-            case CREATE_LOBBY -> this.client.createLobby(args[0], args[1]);
-            case JOIN_LOBBY -> this.client.joinLobby(args[0], args[1]);
-          }
-        }
-      } catch (IllegalArgumentException e) {
-        System.out.print("[SERVER_OUT] Command '" + command.substring(1) + "' not recognized.\n> ");
-      }
-
-    } else {
-      System.out.print("[SERVER_OUT] Command does not start with command symbol.\n> ");
-    }
   }
 }

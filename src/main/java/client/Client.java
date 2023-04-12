@@ -68,7 +68,7 @@ public class Client extends Application {
   public GameController gameController;
 
   // Username
-  protected String username = System.getProperty("user.name");
+  protected String username = null;
 
   // GUI
   // Window
@@ -117,7 +117,7 @@ public class Client extends Application {
     try {
       LOGGER.info("Loading login screen...");
       this.loadLoginScreen(args);
-      //this.loadGameScreen();
+      // this.loadGameScreen();
     } catch (IOException e) {
       LOGGER.error("Could not load login screen. Closing the program.");
       e.printStackTrace();
@@ -240,9 +240,7 @@ public class Client extends Application {
     this.isInLobby = true;
   }
 
-  /**
-   * Loads the game screen from the fxml file.
-   */
+  /** Loads the game screen from the fxml file. */
   public void loadGameScreen() throws IOException {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
     this.root = loader.load();
@@ -276,8 +274,8 @@ public class Client extends Application {
     try {
       SERVER_IP = serverIP;
       SERVER_PORT = Integer.parseInt(serverPort);
-      if (!username.isEmpty()) {
-        this.username = username;
+      if (username.isEmpty()) {
+        username = System.getProperty("user.name");
       }
 
       // Create sockets
@@ -296,6 +294,8 @@ public class Client extends Application {
         this.inputThread.start();
         this.outputThread.start();
         this.pingSender.start();
+
+        this.setUsername(username);
 
         // Load menu screen
         this.loadMenuScreen();
@@ -353,21 +353,11 @@ public class Client extends Application {
         return;
       }
     }
-    String command = ClientProtocol.SET_USERNAME.toString() + ServerProtocol.SEPARATOR + username;
-    this.username = username;
+    String command =
+        ClientProtocol.SET_USERNAME.toString()
+            + ServerProtocol.SEPARATOR
+            + username.replace(" ", "_");
     this.outputSocket.sendToServer(command);
-  }
-  /** Handles interaction with client when the client wants to set a username */
-  protected void setUsername() {
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print("Enter username: \n> ");
-      String username = reader.readLine();
-      this.setUsername(username);
-    } catch (IOException e) {
-      System.err.println("[CLIENT] Failed to read username: " + e.getMessage());
-      e.printStackTrace();
-    }
   }
 
   /** This client wants to send a public message to all clients (broadcast). */
@@ -714,11 +704,14 @@ public class Client extends Application {
   }
 
   public void usernameSetTo(String username) {
-    this.username = username;
-    if (this.menuScreen) {
-      this.menuController.alertManager.displayAlert("Username set to " + username + ".", false);
-      this.menuController.settingsTabController.setUsernameField();
+    if (this.username != null) {
+      if (this.menuScreen) {
+        this.menuController.alertManager.displayAlert("Username set to " + username + ".", false);
+        this.menuController.settingsTabController.setUsernameField();
+      }
     }
+    this.username = username;
+    this.menuController.settingsTabController.setUsernameField();
   }
 
   public String getUsername() {

@@ -140,8 +140,6 @@ public class MenuHomeController {
                 }
               }
             });
-
-    Client.getInstance().requestServerInfo();
   }
 
   /**
