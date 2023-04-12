@@ -1,5 +1,6 @@
 package client;
 
+import javafx.application.Platform;
 import server.ServerProtocol;
 
 import java.io.BufferedReader;
@@ -76,29 +77,31 @@ public class ServerIn implements Runnable {
    */
   private void protocolSwitch(String[] command) {
     try {
-      ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
+      Platform.runLater(() -> {
+        ServerProtocol protocol = ServerProtocol.valueOf(command[0]);
 
-      if (protocol.getNumArgs() == command.length - 1) {
-        switch (protocol) {
-          case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
-          case BROADCAST -> this.receiveMessage(
-              Arrays.copyOfRange(command, 1, command.length), "Public");
-          case WHISPER -> this.receiveMessage(
-              Arrays.copyOfRange(command, 1, command.length), "Private");
-          case SEND_MESSAGE_LOBBY -> this.receiveMessage(
-              Arrays.copyOfRange(command, 1, command.length), "Lobby");
-          case SERVER_PING -> this.client.pong();
-          case SERVER_PONG -> this.resetClientStatus();
-          case USERNAME_SET_TO -> this.client.usernameSetTo(command[1]);
-          case SEND_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
-          case LOBBY_JOINED -> this.client.enterLobby(command[1]);
-          case LOBBY_EXITED -> this.client.lobbyExited(command[1]);
-          case UPDATE_LOBBY_LIST -> this.client.updateLobbyInfo(command[1]);
-          case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
-          case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
-          case START_GAME -> this.client.loadGameScreen();
+        if (protocol.getNumArgs() == command.length - 1) {
+          switch (protocol) {
+            case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
+            case BROADCAST -> this.receiveMessage(
+                Arrays.copyOfRange(command, 1, command.length), "Public");
+            case WHISPER -> this.receiveMessage(
+                Arrays.copyOfRange(command, 1, command.length), "Private");
+            case SEND_MESSAGE_LOBBY -> this.receiveMessage(
+                Arrays.copyOfRange(command, 1, command.length), "Lobby");
+            case SERVER_PING -> this.client.pong();
+            case SERVER_PONG -> this.resetClientStatus();
+            case USERNAME_SET_TO -> this.client.usernameSetTo(command[1]);
+            case SEND_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
+            case LOBBY_JOINED -> this.client.enterLobby(command[1]);
+            case LOBBY_EXITED -> this.client.lobbyExited(command[1]);
+            case UPDATE_LOBBY_LIST -> this.client.updateLobbyInfo(command[1]);
+            case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
+            case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
+            case START_GAME -> this.client.loadGameScreen();
+          }
         }
-      }
+      });
     } catch (IllegalArgumentException e) {
       System.out.println("ServerIn: Unknown protocol: " + command[0]);
     }

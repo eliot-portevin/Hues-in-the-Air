@@ -131,14 +131,12 @@ public class MenuHomeController {
                 if (newValue.getParent() == this.usersHeader
                     || newValue.getParent().getParent() == this.lobbiesHeader) {
                   MenuController.getInstance().fillChatText("@" + newValue.getValue() + " ");
-                  Platform.runLater(() -> this.tree.getSelectionModel().select(newValue.getParent()));
+                  this.tree.getSelectionModel().select(newValue.getParent());
                 } else if (newValue.getParent() == this.lobbiesHeader) {
-                  Platform.runLater(() -> {
-                    this.textLobbyName.setText(newValue.getValue().split(" ")[0]);
-                    this.textLobbyPassword.setText("");
-                    this.textLobbyPassword.requestFocus();
-                    this.textLobbyPassword.end();
-                  });
+                  this.textLobbyName.setText(newValue.getValue().split(" ")[0]);
+                  this.textLobbyPassword.setText("");
+                  this.textLobbyPassword.requestFocus();
+                  this.textLobbyPassword.end();
                 }
               }
             });

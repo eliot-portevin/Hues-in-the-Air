@@ -14,10 +14,8 @@ public class GameController {
   private Game game;
 
   public void initialize() {
-    Platform.runLater(() -> {
-      this.game = new Game();
-      game.run(gamePane);
-    });
+    this.game = new Game();
+    game.run(gamePane);
   }
 
   public Pane getPane() {

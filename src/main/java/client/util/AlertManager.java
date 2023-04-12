@@ -19,7 +19,7 @@ public class AlertManager {
     this.alertPane = alertPane;
     this.alert = alert;
 
-    Platform.runLater(this::setAlert);
+    this.setAlert();
   }
 
   /**
@@ -46,13 +46,10 @@ public class AlertManager {
    */
   public void displayAlert(String message, Boolean isError) {
     // move the alert to the front
-    Platform.runLater(
-        () -> {
-          alertPane.toFront();
-          alert.setText(message);
-          alert.setTextFill(isError ? Color.valueOf("#ff0000") : Color.valueOf("#ffffff"));
-          alert.setOpacity(1.0);
-          alertTransition.playFromStart();
-        });
+    alertPane.toFront();
+    alert.setText(message);
+    alert.setTextFill(isError ? Color.valueOf("#ff0000") : Color.valueOf("#ffffff"));
+    alert.setOpacity(1.0);
+    alertTransition.playFromStart();
   }
 }

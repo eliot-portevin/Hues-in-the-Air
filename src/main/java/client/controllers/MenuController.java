@@ -60,13 +60,13 @@ public class MenuController {
 
   @FXML
   public void initialize() {
-    Platform.runLater(this::setButtonBehaviour);
+    this.setButtonBehaviour();
 
-    Platform.runLater(this::setFontBehaviour);
+    this.setFontBehaviour();
 
-    Platform.runLater(this::setTabPaneBehaviour);
+    this.setTabPaneBehaviour();
 
-    Platform.runLater(this::initialiseChat);
+    this.initialiseChat();
 
     instance = this;
     this.alertManager = new AlertManager(alertPane, alert);
@@ -184,11 +184,11 @@ public class MenuController {
   private void configureTab(ToggleButton tab, boolean isSelected) {
     if (isSelected) {
       if (tab == tabHomeButton) {
-        Platform.runLater(() -> homeTab.toFront());
+        homeTab.toFront();
       } else if (tab == tabGamesButton) {
-        Platform.runLater(() -> gamesTab.toFront());
+        gamesTab.toFront();
       } else if (tab == tabSettingsButton) {
-        Platform.runLater(() -> settingsTab.toFront());
+        settingsTab.toFront();
       }
     }
     int fontSize = isSelected ? 45 : 50;
@@ -217,10 +217,8 @@ public class MenuController {
             privacy.equals("Private") ? "BebasNeuePro-BoldItalic" : "Bebas Neue Regular",
             this.chat.getWidth() / 25));
 
-    Platform.runLater(() -> {
-      this.chat.getChildren().add(text);
-      this.scrollPane.setVvalue(1.0);
-    });
+    this.chat.getChildren().add(text);
+    this.scrollPane.setVvalue(1.0);
   }
 
   /**
@@ -253,11 +251,8 @@ public class MenuController {
    * @param text The text to set
    */
   public void fillChatText(String text) {
-    Platform.runLater(
-        () -> {
-          this.textChat.setText(text);
-          this.textChat.requestFocus();
-          this.textChat.end();
-        });
+    this.textChat.setText(text);
+    this.textChat.requestFocus();
+    this.textChat.end();
   }
 }
