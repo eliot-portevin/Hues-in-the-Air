@@ -1,5 +1,6 @@
 package client;
 
+import client.controllers.GameController;
 import client.controllers.LobbyController;
 import client.controllers.LoginController;
 import client.controllers.MenuController;
@@ -64,6 +65,7 @@ public class Client extends Application {
   private LoginController loginController;
   private MenuController menuController;
   private LobbyController lobbyController;
+  private GameController gameController;
 
   // Username
   protected String username = System.getProperty("user.name");
@@ -243,6 +245,17 @@ public class Client extends Application {
     this.isInLobby = true;
 
     this.listClientsLobby();
+  }
+
+  private void loadGameScreen() throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
+    this.root = loader.load();
+
+    // Set controller
+    this.gameController = loader.getController();
+
+    this.stage.getScene().setRoot(this.root);
+    this.menuScreen = false;
   }
 
   private void requestServerInfo() {
