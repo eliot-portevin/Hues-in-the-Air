@@ -1,0 +1,39 @@
+.root {
+    -fx-focus-traversable: false;
+    -fx-background-color: transparent;
+}
+
+#gamesTab {
+    -fx-background-color: #464646;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color:
+            linear-gradient(to right, #fccf78 0%, #f57dc6 10%)
+            linear-gradient(to bottom, #f57dc6 0%, #b3d5f2 10%)
+            linear-gradient(to left, #b3d5f2 0%, #9ae6ae 10%)
+            linear-gradient(to top, #9ae6ae 0%, #fccf78 10%);
+    -fx-border-width: 1;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+    -fx-text-fill: #363636;
+    -fx-font-size: 20;
+}
+.list-view .list-cell {
+    -fx-border-radius: 500;
+    -fx-background-radius: 500;
+}
+
+.list-view .list-cell:odd {
+    -fx-background-color: #f2f2f2;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: #e6e6e6;
+}
+
+#labelLobbyName, #labelScore, #labelStatus {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30;
+}
