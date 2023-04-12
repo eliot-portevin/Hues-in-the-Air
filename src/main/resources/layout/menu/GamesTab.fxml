@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="gamesTab" prefHeight="540.0" prefWidth="960.0" stylesheets="@GamesTab.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuGamesController">
+<VBox fx:id="gamesTab" prefHeight="540.0" prefWidth="960.0" stylesheets="@GamesTab.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuGameController">
    <children>
       <GridPane VBox.vgrow="ALWAYS">
         <columnConstraints>

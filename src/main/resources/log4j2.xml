@@ -9,7 +9,7 @@
             <PatternLayout pattern="${loggingPattern}"/>
             <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
         </Console>
-        <RollingFile name="Server" fileName="${basePath}server.log" filePattern="${basePath}%d{yyyy-MM-dd-hh}-%.log" append="false">
+        <RollingFile name="Server" fileName="${basePath}server.log" filePattern="${basePath}%d{yyyy-MM-dd-hh} - " append="false">
             <PatternLayout pattern="${loggingPattern}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="3000 KB"/>
@@ -17,7 +17,7 @@
             <DefaultRolloverStrategy max="5" />
             <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
         </RollingFile>
-        <RollingFile name="Lobby" fileName="${basePath}server.log" filePattern="${basePath}%d{yyyy-MM-dd-hh}-%.log" append="false">
+        <RollingFile name="Lobby" fileName="${basePath}server.log" filePattern="${basePath}%d{yyyy-MM-dd-hh} - " append="false">
             <PatternLayout pattern="${loggingPattern}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="3000 KB"/>
@@ -25,7 +25,7 @@
             <DefaultRolloverStrategy max="5" />
             <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
         </RollingFile>
-        <RollingFile name="Client" fileName="${basePath}client.log" filePattern="${basePath}%d{yyyy-MM-dd-hh}-%.log" append="false">
+        <RollingFile name="Client" fileName="${basePath}client.log" filePattern="${basePath}%d{yyyy-MM-dd-hh} - " append="false">
             <PatternLayout pattern="${loggingPattern}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="3000 KB"/>

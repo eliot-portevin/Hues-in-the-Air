@@ -20,7 +20,7 @@ public class  Game extends Application {
   private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Pane appRoot = new Pane();
-  private Pane gameRoot = new Pane();
+  private Pane gameRoot;
   private Pane uiRoot = new Pane();
   private Cube player;
   private int levelWidth;
@@ -28,6 +28,10 @@ public class  Game extends Application {
   private int gridSize = 50;
   private boolean jumped;
   private AnimationTimer timer;
+
+  public Game () {
+    this.gameRoot = Client.getInstance().gameController.getPane();
+  }
 
   /**
    * Called every frame and handles the game logic
@@ -86,7 +90,7 @@ public class  Game extends Application {
   public void initializeContent() {
     levelWidth = LevelData.Level1[0].length() * gridSize;
     levelHeight = LevelData.Level1.length * gridSize;
-    Rectangle bg = new Rectangle(1600, 900); // Creates the background
+    Rectangle bg = new Rectangle(this.gameRoot.getWidth(), this.gameRoot.getHeight()); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
 
     load_platforms(); // Loads the platforms
@@ -94,7 +98,7 @@ public class  Game extends Application {
     //load_player(); // Loads the player
 
 
-    appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
+    //appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
 
   }
   /**
@@ -130,7 +134,7 @@ public class  Game extends Application {
             platforms.add(platform5);
             break;
           case '7':
-            load_player(new Vector2D(j * gridSize, i * gridSize));
+            load_player(new Vector2D(10, 10));
 
         }
       }
@@ -207,8 +211,19 @@ public class  Game extends Application {
   /**
    * Launches the application
    */
-  public static void main(String[] args) {
-    Application.launch(args);
+  public void run(Pane backgroundPane) {
+    System.out.println("started 2");
+    this.gameRoot = backgroundPane;
+
+    this.initializeContent();
+
+    this.timer = new AnimationTimer() {
+      @Override
+      public void handle(long now) { // Called every frame
+        update();
+      }
+    };
+    this.timer.start();
   }
 
 }

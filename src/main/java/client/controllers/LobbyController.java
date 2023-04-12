@@ -126,11 +126,8 @@ public class LobbyController {
    * @param isReady Whether the client is ready or not.
    */
   public void setToggleReady(String isReady) {
-    Platform.runLater(
-        () -> {
-          toggleReadyButton.setSelected(isReady.equals("true"));
-          toggleReadyButton.setText(isReady.equals("true") ? "Cancel" : "Toggle Ready");
-        });
+    toggleReadyButton.setSelected(isReady.equals("true"));
+    toggleReadyButton.setText(isReady.equals("true") ? "Cancel" : "Toggle Ready");
   }
 
   /**
@@ -200,16 +197,14 @@ public class LobbyController {
             this.lobbyChatPane.getWidth() / 25));
 
     switch (privacy) {
-      case "Private", "Public" -> Platform.runLater(
-          () -> {
-            this.serverChat.getChildren().add(text);
-            this.serverChatPane.setVvalue(1.0);
-          });
-      case "Lobby" -> Platform.runLater(
-          () -> {
-            this.lobbyChat.getChildren().add(text);
-            this.lobbyChatPane.setVvalue(1.0);
-          });
+      case "Private", "Public" -> {
+        this.serverChat.getChildren().add(text);
+        this.serverChatPane.setVvalue(1.0);
+      }
+      case "Lobby" -> {
+        this.lobbyChat.getChildren().add(text);
+        this.lobbyChatPane.setVvalue(1.0);
+      }
     }
   }
 
@@ -219,11 +214,8 @@ public class LobbyController {
    * @param clients The list of clients in the lobby and their status separated by a space.
    */
   public void updateLobbyList(String[] clients) {
-    Platform.runLater(
-        () -> {
-          this.nameList.getItems().clear();
-          this.readyList.getItems().clear();
-        });
+    this.nameList.getItems().clear();
+    this.readyList.getItems().clear();
 
     ArrayList<String> clientNames = new ArrayList<>();
     ArrayList<String> clientReady = new ArrayList<>();
@@ -234,10 +226,7 @@ public class LobbyController {
       clientReady.add(clientInfo[1]);
     }
 
-    Platform.runLater(
-        () -> {
-          this.nameList.getItems().setAll(clientNames);
-          this.readyList.getItems().setAll(clientReady);
-        });
+    this.nameList.getItems().setAll(clientNames);
+    this.readyList.getItems().setAll(clientReady);
   }
 }

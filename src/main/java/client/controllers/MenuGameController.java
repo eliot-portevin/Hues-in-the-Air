@@ -4,9 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import java.util.Arrays;
-
-public class MenuGamesController {
+public class MenuGameController {
 
   @FXML private VBox gamesTab;
 
@@ -17,7 +15,6 @@ public class MenuGamesController {
   @FXML private ListView<String> list;
 
   public void initialize() {
-    list.getItems().add("Hello");
-    list.getItems().add("World");
+
   }
 }
