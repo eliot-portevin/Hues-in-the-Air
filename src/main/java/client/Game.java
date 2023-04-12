@@ -90,7 +90,7 @@ public class  Game extends Application {
   public void initializeContent() {
     levelWidth = LevelData.Level1[0].length() * gridSize;
     levelHeight = LevelData.Level1.length * gridSize;
-    Rectangle bg = new Rectangle(1600, 900); // Creates the background
+    Rectangle bg = new Rectangle(this.gameRoot.getWidth(), this.gameRoot.getHeight()); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
 
     load_platforms(); // Loads the platforms
@@ -98,7 +98,7 @@ public class  Game extends Application {
     //load_player(); // Loads the player
 
 
-    appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
+    //appRoot.getChildren().addAll(bg, gameRoot, uiRoot);
 
   }
   /**
@@ -134,7 +134,7 @@ public class  Game extends Application {
             platforms.add(platform5);
             break;
           case '7':
-            load_player(new Vector2D(j * gridSize, i * gridSize));
+            load_player(new Vector2D(10, 10));
 
         }
       }
@@ -211,8 +211,18 @@ public class  Game extends Application {
   /**
    * Launches the application
    */
-  public static void main(String[] args) {
-    Application.launch(args);
+  public void run(Pane backgroundPane) {
+    this.gameRoot = backgroundPane;
+
+    this.initializeContent();
+
+    this.timer = new AnimationTimer() {
+      @Override
+      public void handle(long now) { // Called every frame
+        update();
+      }
+    };
+    this.timer.start();
   }
 
 }
