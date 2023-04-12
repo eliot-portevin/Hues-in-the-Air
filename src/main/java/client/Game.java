@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class  Game extends Application {
-  private HashMap<KeyCode, Boolean> keys = new HashMap<>();
+  public HashMap<KeyCode, Boolean> keys = new HashMap<>();
   private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
   private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
@@ -30,28 +30,69 @@ public class  Game extends Application {
   private boolean jumped;
   private AnimationTimer timer;
 
+  public boolean pause = false;
+
   /**
    * Called every frame and handles the game logic
    */
   public void update(){
-    player.move(player.velocity);
-    if (isPressed(KeyCode.UP)) {
-      player.move(new Vector2D(0,-2));
+    if (!pause) {
+      this.gameUpdate();
     }
-    if (isPressed(KeyCode.DOWN)) {
-      player.move(new Vector2D(0,2));
+    else {
+      this.pauseUpdate();
     }
-    if (isPressed(KeyCode.LEFT)) {
-      player.move(new Vector2D(-2,0));
-    }
-    if (isPressed(KeyCode.RIGHT)) {
-      player.move(new Vector2D(2,0));
-    }
-    if (isPressed(KeyCode.SPACE)) {
-      player.jump();
-    }
+  }
 
+  /**
+   * The update method that is called if the game is not paused. Handles the game logic.
+   */
+  private void gameUpdate() {
+    player.move(player.velocity);
+    this.analyseKeys();
     player.checkForWhiteBlockHit();
+  }
+
+  /**
+   * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic is handled.
+   */
+  private void analyseKeys() {
+    System.out.println(isPressed(KeyCode.ESCAPE));
+    if (isPressed(KeyCode.ESCAPE)) {
+      System.out.println("pressed escape");
+      pause = !pause;
+    }
+    if (!this.pause) {
+      if (isPressed(KeyCode.UP)) {
+        player.move(new Vector2D(0,-2));
+      }
+      if (isPressed(KeyCode.DOWN)) {
+        player.move(new Vector2D(0,2));
+      }
+      if (isPressed(KeyCode.LEFT)) {
+        player.move(new Vector2D(-2,0));
+      }
+      if (isPressed(KeyCode.RIGHT)) {
+        player.move(new Vector2D(2,0));
+      }
+      if (isPressed(KeyCode.SPACE)) {
+        player.jump();
+      }
+    }
+  }
+
+  /**
+   * The update method that is called if the game is paused.
+   */
+  private void pauseUpdate() {
+    analyseKeys();
+  }
+
+  /**
+   * Sets whether the game is paused or not.
+   */
+  public void setPause(boolean pause) {
+    this.pause = pause;
   }
 
   private boolean isPressed(KeyCode keyCode) {

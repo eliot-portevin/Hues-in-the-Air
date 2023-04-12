@@ -1,21 +1,16 @@
 package client.controllers;
 
-import client.Client;
 import client.Game;
 import client.util.Chat;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-
-import java.util.Arrays;
 
 public class GameController {
   @FXML private GridPane backgroundPane;
@@ -48,12 +43,21 @@ public class GameController {
 
   /** Sets the behaviour for detected key presses. */
   private void initialiseKeyboard() {
-    this.gamePane.setOnKeyPressed(
-        e -> {
-          if (e.getCode().toString().equals("SPACE")) {
-            this.game.jump();
-          }
-        });
+    backgroundPane.setOnKeyPressed(e -> {
+      if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {
+        if (e.getCode() != KeyCode.ESCAPE) {
+          game.keys.put(e.getCode(), true);
+        }
+      }
+    });
+    backgroundPane.setOnKeyReleased(e -> {
+      if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {
+        if (e.getCode() == KeyCode.ESCAPE) {
+          game.pause = !game.pause;
+        }
+        game.keys.put(e.getCode(), false);
+      }
+    });
   }
 
   /** Creates the chat objects for the right pane. */

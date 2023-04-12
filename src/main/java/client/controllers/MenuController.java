@@ -1,23 +1,17 @@
 package client.controllers;
 
 import client.Client;
-import java.util.Arrays;
-import java.util.Objects;
-
 import client.util.AlertManager;
+import client.util.Chat;
+import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-
-import static client.Client.bebasItalics;
 
 public class MenuController {
   // Sub-controllers
@@ -42,6 +36,7 @@ public class MenuController {
   @FXML private ScrollPane scrollPane;
   @FXML private TextFlow chat;
   @FXML private TextField textChat;
+  private Chat chatManager;
 
   @FXML private HBox alertPane;
   @FXML private Label alert;
@@ -51,13 +46,13 @@ public class MenuController {
 
   @FXML
   public void initialize() {
+    this.initialiseChat();
+
     this.setButtonBehaviour();
 
     this.setFontBehaviour();
 
-    this.setTabPaneBehaviour();
-
-    this.initialiseChat();
+    this.setTabButtonsBehaviour();
 
     instance = this;
     this.alertManager = new AlertManager(alertPane, alert);
@@ -77,38 +72,8 @@ public class MenuController {
    * is cleared.
    */
   private void initialiseChat() {
-    this.textChat.setOnKeyPressed(
-        e -> {
-          if (e.getCode().toString().equals("ENTER")) {
-            String message = this.textChat.getText();
-
-            if (message.startsWith("@")) {
-              Client.getInstance().sendMessageClient(message);
-            }
-            else {
-              Client.getInstance().sendMessageServer(this.textChat.getText());
-            }
-            this.textChat.clear();
-          }
-        });
-    Text text1 = new Text("Welcome to the chat!\n");
-    Text text2 = new Text("Type your message and press enter to send it.\n");
-    Text text3 = new Text("Start your message with @username to send a private message.\n\n");
-    for (Text t : Arrays.asList(text1, text2, text3)) {
-      t.styleProperty().set("-fx-fill: #363636");
-      t.setFont(bebasItalics);
-    }
-
-    this.chat
-        .widthProperty()
-        .addListener(
-            (observable, oldValue, newValue) -> {
-              for (Node node : this.chat.getChildren()) {
-                Text text = (Text) node;
-                text.setFont(new Font(text.getFont().getName(), newValue.doubleValue() / 25));
-              }
-            });
-    this.chat.getChildren().addAll(text1, text2, text3);
+    this.chatManager = new Chat("server", textChat, chat, scrollPane);
+    this.chatManager.inFront(true);
   }
 
   /** Configures the tabs to play a click sound when the mouse enter them */
@@ -120,7 +85,6 @@ public class MenuController {
               Client.getInstance().clickSound();
             }
           });
-      tab.setOnAction(e -> System.out.println("Tab clicked"));
     }
   }
 
@@ -138,16 +102,13 @@ public class MenuController {
     title
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(24)));
-    textChat
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", homeTab.widthProperty().divide(30)));
   }
 
   /**
    * Selects the home tab for the startup. Also sets the behaviour for the tabs, so that only one
    * tab can be selected at a time.
    */
-  private void setTabPaneBehaviour() {
+  private void setTabButtonsBehaviour() {
     for (ToggleButton tab : Arrays.asList(tabHomeButton, tabGamesButton, tabSettingsButton)) {
       tab.setOnAction(
           e -> {
@@ -195,19 +156,7 @@ public class MenuController {
    * @param privacy Whether the message is private or not
    */
   public void receiveMessage(String message, String sender, String privacy) {
-    Text text =
-        new Text(
-            String.format(
-                "[%s] %s- %s%n",
-                sender, Objects.equals(privacy, "Private") ? "@Private " : "", message));
-
-    text.setFont(
-        new Font(
-            privacy.equals("Private") ? "BebasNeuePro-BoldItalic" : "Bebas Neue Regular",
-            this.chat.getWidth() / 25));
-
-    this.chat.getChildren().add(text);
-    this.scrollPane.setVvalue(1.0);
+    chatManager.addMessage(message, sender, privacy.equals("Private"));
   }
 
   /**
@@ -240,8 +189,10 @@ public class MenuController {
    * @param text The text to set
    */
   public void fillChatText(String text) {
-    this.textChat.setText(text);
-    this.textChat.requestFocus();
-    this.textChat.end();
+    Platform.runLater(() -> {
+      this.textChat.setText(text);
+      this.textChat.requestFocus();
+      this.textChat.end();
+    });
   }
 }

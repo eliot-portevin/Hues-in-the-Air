@@ -64,6 +64,9 @@ public class Chat {
             }
             chatText.clear();
           }
+          else if (e.getCode().toString().equals("ESCAPE")) {
+            chatText.getParent().requestFocus();
+          }
         });
 
     // Adding the welcome message
