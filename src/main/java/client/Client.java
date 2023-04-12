@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
@@ -80,6 +81,17 @@ public class Client extends Application {
 
   // Logger
   public Logger LOGGER;
+
+  public static final javafx.scene.text.Font bebasItalics =
+      javafx.scene.text.Font.loadFont(
+          Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Italics.otf"))
+              .toExternalForm(),
+          20);
+  public final javafx.scene.text.Font bebasRegular =
+      Font.loadFont(
+          Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Regular.ttf"))
+              .toExternalForm(),
+          20);
 
   /**
    * Starts the application by creating a scene and setting the stage properties. Then proceeds to
@@ -388,11 +400,30 @@ public class Client extends Application {
   }
 
   /** This client wants to send a private message to another client (whisper chat). */
-  public void sendMessageClient(String recipient, String message) {
-    if (recipient.equals(this.username)) {
-      this.menuController.alertManager.displayAlert("You cannot send messages to yourself.", true);
+  public void sendMessageClient(String message) {
+    String[] split = message.split(" ", 2);
+    if (split.length <= 1) {
+      if (this.isInLobby) {
+        this.lobbyController.alertManager.displayAlert("Tried sending empty message.", true);
+      }
+      else if (this.menuScreen) {
+        this.menuController.alertManager.displayAlert("Tried sending empty message.", true);
+      }
       return;
     }
+    String recipient = split[0].substring(1);
+    String messageContent = split[1];
+
+    if (recipient.equals(this.username)) {
+      if (this.isInLobby) {
+        this.lobbyController.alertManager.displayAlert("You cannot send messages to yourself.", true);
+      }
+      else if (this.menuScreen) {
+        this.menuController.alertManager.displayAlert("You cannot send messages to yourself.", true);
+      }
+      return;
+    }
+
     String command =
         ServerProtocol.WHISPER.toString()
             + ServerProtocol.SEPARATOR
@@ -400,24 +431,6 @@ public class Client extends Application {
             + ServerProtocol.SEPARATOR
             + message;
     this.outputSocket.sendToServer(command);
-  }
-
-  /**
-   * Handles interaction with client in the console when the client wants to send a private message
-   * to another client (calls <code>sendMessageClient(String recipient, String message)</code>)
-   */
-  protected void sendMessageClient() {
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print("Enter recipient name: \n> ");
-      String recipient = reader.readLine();
-      System.out.print("Enter message: \n> ");
-      String message = reader.readLine();
-      this.sendMessageClient(recipient, message);
-    } catch (IOException e) {
-      System.err.println("[CLIENT] Failed to read message: " + e.getMessage());
-      e.printStackTrace();
-    }
   }
 
   /**

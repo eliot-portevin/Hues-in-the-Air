@@ -28,10 +28,6 @@
     -fx-padding: 0;
 }
 
-#readyList > .list-cell {
-    -fx-text-alignment: right;
-}
-
 .list-cell:filled {
     -fx-text-fill: #363636;
 }
@@ -51,4 +47,9 @@
 #lobbyNameLabel {
     -fx-text-fill: #ffffff;
     -fx-font-size: 70;
+}
+
+.list-view .scroll-bar {
+    -fx-scale-x: 0;
+    -fx-scale-y: 0;
 }

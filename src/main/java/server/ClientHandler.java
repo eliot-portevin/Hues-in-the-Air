@@ -206,7 +206,7 @@ public class ClientHandler implements Runnable {
     String command = ServerProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + hasToggledReady;
     this.out.println(command);
     // Update the lobby list to show the new ready status.
-    this.listLobby();
+    this.lobby.updateLobbyList();
 
     // If all clients are ready, start the game
     for (ClientHandler client : this.lobby.getClientHandlers()) {
@@ -214,7 +214,10 @@ public class ClientHandler implements Runnable {
         return;
       }
     }
-    this.out.println(ServerProtocol.START_GAME);
+
+    for (ClientHandler client : this.lobby.getClientHandlers()) {
+      client.out.println(ServerProtocol.START_GAME);
+    }
   }
 
   /**
@@ -233,7 +236,7 @@ public class ClientHandler implements Runnable {
   private void setUsername(String username) {
     ClientHandler client = this.server.getClientHandler(username);
 
-    if (client == null || client == this) {
+    if (client == null) {
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
@@ -271,17 +274,19 @@ public class ClientHandler implements Runnable {
    * ready or not.
    */
   protected void listLobby() {
-    String command = ServerProtocol.SEND_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
+    if (this.lobby != null) {
+      String command = ServerProtocol.SEND_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
 
-    command += this.lobby.getClientHandlers().stream()
-        .map(
-            client ->
-                client.getUsername()
-                    + " "
-                    + client.hasToggledReady())
-        .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+      command += this.lobby.getClientHandlers().stream()
+          .map(
+              client ->
+                  client.getUsername()
+                      + " "
+                      + client.hasToggledReady())
+          .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
 
-    this.out.println(command);
+      this.out.println(command);
+    }
   }
 
   protected Lobby getLobby() {

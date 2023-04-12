@@ -97,9 +97,7 @@ public class Server implements Runnable {
   protected void removeClient(ClientHandler client) {
     client.running = false;
     Optional<Lobby> lobby = Optional.ofNullable(client.getLobby());
-    if (lobby.isPresent()) {
-      client.getLobby().removeClient(client);
-    }
+    lobby.ifPresent(value -> value.removeClient(client));
     this.clientThreads.get(this.clientHandlers.indexOf(client)).interrupt();
     this.clientThreads.remove(this.clientHandlers.indexOf(client));
     this.clientHandlers.remove(client);
@@ -185,6 +183,7 @@ public class Server implements Runnable {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         this.lobbies.get(lobbyName).addClient(client, password);
+        this.lobbies.get(lobbyName).updateLobbyList();
         return;
       }
     }

@@ -17,6 +17,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import static client.Client.bebasItalics;
+
 public class MenuController {
   // Sub-controllers
   @FXML private MenuHomeController homeTabController;
@@ -44,17 +46,6 @@ public class MenuController {
   @FXML private HBox alertPane;
   @FXML private Label alert;
   public AlertManager alertManager;
-
-  private final Font bebasItalics =
-      Font.loadFont(
-          Objects.requireNonNull(getClass().getResource("/fonts/Bebas_Neue_Italics.otf"))
-              .toExternalForm(),
-          20);
-  private final Font bebasRegular =
-      Font.loadFont(
-          Objects.requireNonNull(getClass().getResource("/fonts/Bebas_Neue_Regular.ttf"))
-              .toExternalForm(),
-          20);
 
   public static MenuController instance;
 
@@ -92,9 +83,7 @@ public class MenuController {
             String message = this.textChat.getText();
 
             if (message.startsWith("@")) {
-              String recipient = message.split(" ")[0].substring(1);
-              String messageContent = message.substring(recipient.length() + 2);
-              Client.getInstance().sendMessageClient(recipient, messageContent);
+              Client.getInstance().sendMessageClient(message);
             }
             else {
               Client.getInstance().sendMessageServer(this.textChat.getText());

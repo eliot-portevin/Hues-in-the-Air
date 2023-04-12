@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class Lobby {
-  private String name;
-  private String password;
+  private final String name;
+  private final String password;
   private final ArrayList<ClientHandler> clients = new ArrayList<>();
 
   private final Logger LOGGER = Logger.getLogger(Lobby.class.getName());
@@ -45,6 +45,8 @@ public class Lobby {
     Server.getInstance().updateLobbyList();
     Server.getInstance().updateClientList();
     LOGGER.info("Client " + client.getUsername() + " left lobby " + this.name);
+
+    this.updateLobbyList();
   }
 
   public String getName() {
@@ -70,5 +72,11 @@ public class Lobby {
 
   protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clients;
+  }
+
+  public void updateLobbyList() {
+    for (ClientHandler client : this.clients) {
+      client.listLobby();
+    }
   }
 }

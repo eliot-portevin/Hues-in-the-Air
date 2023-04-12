@@ -2,13 +2,13 @@ package client.controllers;
 
 import client.Client;
 import client.util.AlertManager;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -41,7 +41,7 @@ public class LobbyController {
 
   @FXML private HBox alertPane;
   @FXML private Label alert;
-  private AlertManager alertManager;
+  public AlertManager alertManager;
 
   public void initialize() {
     this.setButtonBehaviour();
@@ -60,29 +60,7 @@ public class LobbyController {
   }
 
   private void initialiseLobbyList() {
-    for (ListView<String> list : Arrays.asList(nameList, readyList)) {
-      list.setCellFactory(
-          param ->
-              new ListCell<String>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                  super.updateItem(item, empty);
-                  if (empty || item == null) {
-                    return;
-                  } else {
-                    // set the width's
-                    setMinWidth(param.getWidth());
-                    setMaxWidth(param.getWidth());
-                    setPrefWidth(param.getWidth());
-
-                    // allow wrapping
-                    setWrapText(true);
-
-                    setText(item.toString());
-                  }
-                }
-              });
-    }
+    readyList.setCellFactory(l -> new ListViewCellAlignedRight());
   }
 
   /** Binds the font size of the labels to the size of the window. */
@@ -108,6 +86,12 @@ public class LobbyController {
     this.readyList
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
+    this.lobbyTabButton
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+    this.serverTabButton
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
   }
 
   /**
@@ -141,6 +125,9 @@ public class LobbyController {
           serverTabButton.setSelected(false);
           lobbyChatPane.toFront();
           lobbyChatInFront = true;
+          lobbyTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(45)));
+          serverTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+
         });
 
     serverTabButton.setOnAction(
@@ -149,9 +136,12 @@ public class LobbyController {
           lobbyTabButton.setSelected(false);
           serverChatPane.toFront();
           lobbyChatInFront = false;
+          lobbyTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
+          serverTabButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(45)));
+
         });
 
-    lobbyTabButton.setSelected(lobbyChatInFront);
+    lobbyTabButton.fire();
   }
 
   private void initialiseChats() {
@@ -161,9 +151,7 @@ public class LobbyController {
             String message = chatText.getText();
 
             if (message.startsWith("@")) {
-              String recipient = message.split(" ")[0].substring(1);
-              String messageContent = message.substring(recipient.length() + 2);
-              Client.getInstance().sendMessageClient(recipient, messageContent);
+              Client.getInstance().sendMessageClient(message);
             } else {
               if (lobbyChatInFront) {
                 Client.getInstance().sendMessageLobby(message);
@@ -175,6 +163,27 @@ public class LobbyController {
           }
         });
     this.lobbyChatPane.toFront();
+
+    for (TextFlow chat : new TextFlow[] {this.lobbyChat, this.serverChat}) {
+      Text text1 = new Text("Welcome to the chat!\n");
+      Text text2 = new Text("Type your message and press enter to send it.\n");
+      Text text3 = new Text("Start your message with @username to send a private message.\n\n");
+      for (Text t : Arrays.asList(text1, text2, text3)) {
+        t.styleProperty().set("-fx-fill: #363636");
+        t.setFont(Client.bebasItalics);
+      }
+
+      chat
+          .widthProperty()
+          .addListener(
+              (observable, oldValue, newValue) -> {
+                for (Node node : chat.getChildren()) {
+                  Text text = (Text) node;
+                  text.setFont(new Font(text.getFont().getName(), newValue.doubleValue() / 25));
+                }
+              });
+      chat.getChildren().addAll(text1, text2, text3);
+    }
   }
 
   /**
@@ -197,13 +206,19 @@ public class LobbyController {
             this.lobbyChatPane.getWidth() / 25));
 
     switch (privacy) {
-      case "Private", "Public" -> {
+      case "Public" -> {
         this.serverChat.getChildren().add(text);
         this.serverChatPane.setVvalue(1.0);
       }
       case "Lobby" -> {
         this.lobbyChat.getChildren().add(text);
         this.lobbyChatPane.setVvalue(1.0);
+      }
+      case "Private" -> {
+        TextFlow chat = this.lobbyChatInFront ? this.lobbyChat : this.serverChat;
+        ScrollPane pane = this.lobbyChatInFront ? this.lobbyChatPane : this.serverChatPane;
+        chat.getChildren().add(text);
+        pane.setVvalue(1.0);
       }
     }
   }
@@ -223,10 +238,34 @@ public class LobbyController {
     for (String client : clients) {
       String[] clientInfo = client.split(" ");
       clientNames.add(clientInfo[0]);
-      clientReady.add(clientInfo[1]);
+      clientReady.add(clientInfo[1].equals("true") ? "Ready" : "");
     }
 
     this.nameList.getItems().setAll(clientNames);
     this.readyList.getItems().setAll(clientReady);
+  }
+}
+
+/**
+ * A class to align cells in nameList to the right
+ */
+final class ListViewCellAlignedRight extends ListCell<String> {
+  @Override
+  protected void updateItem(String item, boolean empty) {
+    super.updateItem(item, empty);
+    if (empty) {
+      setGraphic(null);
+    } else {
+      // Create the HBox
+      HBox hBox = new HBox();
+      hBox.setAlignment(Pos.CENTER_RIGHT);
+
+      // Create centered Label
+      Label label = new Label(item);
+      label.setAlignment(Pos.CENTER_RIGHT);
+
+      hBox.getChildren().add(label);
+      setGraphic(hBox);
+    }
   }
 }
