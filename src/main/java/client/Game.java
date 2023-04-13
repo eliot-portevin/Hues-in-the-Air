@@ -15,14 +15,13 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class  Game extends Application {
+public class  Game {
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
   private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
   private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Pane appRoot = new Pane();
   private Pane gameRoot;
-  private Pane uiRoot = new Pane();
   private Cube player;
   private int levelWidth;
   private int levelHeight;
@@ -43,6 +42,8 @@ public class  Game extends Application {
       this.pauseUpdate();
     }
   }
+
+
 
   /**
    * The update method that is called if the game is not paused. Handles the game logic.
@@ -126,14 +127,14 @@ public class  Game extends Application {
    * Will create the coin to finish the game
    */
   public void initializeContent(Pane backgroundPane) {
-    this.gameRoot = backgroundPane;
-
+    this.appRoot = backgroundPane;
+    gameRoot = new Pane();
     levelWidth = LevelData.Level1[0].length() * gridSize;
     levelHeight = LevelData.Level1.length * gridSize;
 
     Rectangle bg = new Rectangle(this.gameRoot.getWidth(), this.gameRoot.getHeight()); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
-
+    appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
     load_platforms(); // Loads the platforms
   }
   /**
@@ -169,7 +170,7 @@ public class  Game extends Application {
             platforms.add(platform5);
             break;
           case '7':
-            load_player(new Vector2D(10, 10));
+            load_player(new Vector2D(j*gridSize, i*gridSize));
         }
       }
     }
@@ -199,40 +200,6 @@ public class  Game extends Application {
     player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
     gameRoot.getChildren().add(new Label("HI there"));
-  }
-  /**
-   * Initializes the content, sets the scene and starts the game with the animation timer
-   * @param primaryStage the primary stage for this application, onto which
-   * the application scene can be set.
-   * Applications may create other stages, if needed, but they will not be
-   * primary stages.
-   */
-  @Override
-  public void start(Stage primaryStage) throws Exception {
-    initializeContent(new Pane());
-    Scene scene = new Scene(appRoot);   // Creates the scene
-    scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
-    scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
-
-    primaryStage.setTitle("Game"); // Sets the title of the window
-    primaryStage.setScene(scene); // Sets the scene
-    primaryStage.show(); // Shows the window
-    //final long[] delta = {0};
-    //final long[] lastFrameTime = {0};
-
-    // Start the game loop called 60 times per second
-    this.timer = new AnimationTimer() {
-      //long delta;
-      //long lastFrameTime;
-      @Override
-      public void handle(long now) { // Called every frame
-        //delta[0] = now - lastFrameTime[0];
-        //lastFrameTime[0] = now;
-        //System.out.println(getFrameRateHertz(delta[0]));
-        update();
-      }
-    };
-    this.timer.start();
   }
 
   public void jump() {
