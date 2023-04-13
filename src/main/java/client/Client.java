@@ -42,8 +42,9 @@ public class Client extends Application {
 
   boolean loginScreen = true;
   boolean menuScreen = false;
+  boolean lobbyScreen = false;
+  boolean gameScreen = false;
   boolean isInLobby = false;
-  boolean isInGame = false;
 
   private GridPane menuScreenRoot;
   private GridPane lobbyScreenRoot;
@@ -129,7 +130,6 @@ public class Client extends Application {
     try {
       LOGGER.info("Loading login screen...");
       this.loadLoginScreen(args);
-      // this.loadGameScreen();
     } catch (IOException e) {
       LOGGER.error("Could not load login screen. Closing the program.");
       e.printStackTrace();
@@ -250,6 +250,7 @@ public class Client extends Application {
 
     this.menuScreen = false;
     this.isInLobby = true;
+    this.lobbyScreen = true;
   }
 
   /** Loads the game screen from the fxml file. */
@@ -260,6 +261,9 @@ public class Client extends Application {
 
     // Set controller
     this.gameController = loader.getController();
+
+    this.lobbyScreen = false;
+    this.gameScreen = true;
   }
 
   public void requestServerInfo() {
@@ -383,22 +387,6 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * Handles interaction with client in the console when the client wants to send a public message
-   * to all other clients (calls <code>sendMessageServer(String message)</code>)
-   */
-  protected void sendMessageServer() {
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print("Enter message: \n> ");
-      String message = reader.readLine();
-      this.sendMessageServer(message);
-    } catch (IOException e) {
-      System.err.println("[CLIENT] Failed to read message: " + e.getMessage());
-      e.printStackTrace();
-    }
-  }
-
   /** This client wants to send a private message to another client (whisper chat). */
   public void sendMessageClient(String message) {
     String[] split = message.split(" ", 2);
@@ -429,7 +417,7 @@ public class Client extends Application {
             + ServerProtocol.SEPARATOR
             + recipient
             + ServerProtocol.SEPARATOR
-            + message;
+            + messageContent;
     this.outputSocket.sendToServer(command);
   }
 
@@ -693,8 +681,10 @@ public class Client extends Application {
 
     if (menuScreen) {
       this.menuController.receiveMessage(message, sender, privacy);
-    } else if (isInLobby) {
+    } else if (lobbyScreen) {
       this.lobbyController.receiveMessage(message, sender, privacy);
+    } else if (gameScreen) {
+      this.gameController.receiveMessage(message, sender, privacy);
     }
   }
 

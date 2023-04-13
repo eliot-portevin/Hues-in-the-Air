@@ -60,12 +60,13 @@
             <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
+            <TextField fx:id="serverChatText" promptText="Type something..." stylesheets="@../TextField.css" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <ScrollPane fx:id="lobbyChatPane" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" stylesheets="@../Chat.css" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
                <content>
                   <TextFlow fx:id="lobbyChat" />
                </content>
             </ScrollPane>
-            <TextField fx:id="chatText" promptText="Type something..." stylesheets="@../TextField.css" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="lobbyChatText" promptText="Type something..." stylesheets="@../TextField.css" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
                <children>
                   <HBox alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
