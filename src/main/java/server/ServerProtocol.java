@@ -27,49 +27,40 @@ public enum ServerProtocol {
     }
   },
 
-  /** Request client username */
-  NO_USERNAME_SET(0),
-
   /** Inform client that the username is already taken */
   USERNAME_SET_TO(1),
 
   /** No user with that username was found. Called from {@link ClientHandler}. */
   NO_USER_FOUND(1),
 
-  /**
-   * A message is being sent to another client.
-   *
-   * <p>Format: WHISPER<Separator>sender.username<Separator>message
-   */
-  WHISPER(2),
+  /** A message is being sent to another client. */
+  SEND_PRIVATE_MESSAGE(2),
 
-  /**
-   * A message is being sent to the whole server.
-   *
-   * <p>Format: SEND_MESSAGE_SERVER<Separator>username<Separator>message
-   */
-  BROADCAST(2),
+  /** A message is being sent to the whole server. */
+  SEND_PUBLIC_MESSAGE(2),
 
   /** A message is being sent to the lobby. */
-  SEND_MESSAGE_LOBBY(2),
-
-  /** Sends the list of clients in the lobby. */
-  SEND_LOBBY_LIST(1),
+  SEND_LOBBY_MESSAGE(2),
 
   /** Informs the client that they have successfully joined a lobby. */
   LOBBY_JOINED(1),
 
-  /* A client has successfully exited the lobby.*/
+  /** A client has successfully exited the lobby. */
   LOBBY_EXITED(1),
 
-  /* Send a list of all lobbies and the clients they contain */
-  UPDATE_LOBBY_LIST(1),
+  /** Send a list of all lobbies and the clients they contain */
+  UPDATE_FULL_LIST(1),
 
   /** Send a list of all clients in the server. Used for the client list in the menu. */
   UPDATE_CLIENT_LIST(1),
 
+  /** Sends the list of clients in the lobby. */
+  UPDATE_LOBBY_LIST(1),
+
+  /** Sets the ready status of a client to true or false. */
   TOGGLE_READY_STATUS(1),
 
+  /** Informs the client that the game is starting. */
   START_GAME(0),
 
   SERVER_PING(0),

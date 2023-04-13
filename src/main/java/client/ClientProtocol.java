@@ -13,66 +13,45 @@ public enum ClientProtocol {
   /**
    * Symbol inputted by the client in the console to indicate that the following input is a command.
    */
-  COMMAND_SYMBOL(0) { public String toString() { return "!"; } },
-  /**
-   * Set client username
-   *
-   * <p>Format: SET_USERNAME<Separator>username
-   */
+  COMMAND_SYMBOL(0) {
+    public String toString() {
+      return "!";
+    }
+  },
+  /** Set client username */
   SET_USERNAME(1),
 
-  /**
-   * Send a chat message to lobby
-   *
-   * <p>Format: SEND_MESSAGE_LOBBY<Separator>message
-   */
-  SEND_MESSAGE_LOBBY(1),
+  /** Send a chat message to lobby */
+  SEND_LOBBY_MESSAGE(1),
 
-  /**
-   * This client wants to send a private message to another client.
-   *
-   * <p>Protocol format: SEND_MESSAGE_CLIENT<SEPARATOR>receiver.username<SEPARATOR>message
-   */
-  WHISPER(2),
+  /** This client wants to send a private message to another client. */
+  SEND_PRIVATE_MESSAGE(2),
 
-  /**
-   * Send a chat message to the whole server
-   *
-   * <p>Format: SEND_MESSAGE_SERVER<Separator>username<Separator>message
-   */
-  BROADCAST(1),
+  /** Send a chat message to the whole server */
+  SEND_PUBLIC_MESSAGE(1),
 
-  /** Client is exitting the program. */
+  /** Client is exiting the program. */
   EXIT(0),
 
-  /**
-   * Client wants to join a lobby
-   *
-   * <p>Format: JOIN_LOBBY<Separator>lobbyName<Separator>password
-   */
+  /** Client wants to join a lobby */
   JOIN_LOBBY(2),
 
-  /**
-   * Client wants to create a lobby
-   *
-   * <p>Format: CREATE_LOBBY<Separator>lobbyName<Separator>password
-   */
+  /** Client wants to create a lobby */
   CREATE_LOBBY(2),
 
   EXIT_LOBBY(0),
 
-  /** Client requests to know their own username */
-  WHOAMI(0),
-
   /** Client wants to know the name of the other players */
-  LIST_SERVER(0),
+  GET_CLIENTS_SERVER(0),
 
-  LIST_LOBBY(0),
-
-  TOGGLE_READY(1),
+  /** Client wants to know the name of the other players in their lobby and their ready status. */
+  GET_CLIENTS_LOBBY(0),
 
   /** Client wants a full list of all lobbies and players in the lobby. Called upon startup. */
-  REQUEST_SERVER_STATUS(0),
+  GET_FULL_SERVER_LIST(0),
+
+  /** Client wants to toggle their ready status to true or false. */
+  TOGGLE_READY_STATUS(1),
 
   CLIENT_PING(0),
   CLIENT_PONG(0);

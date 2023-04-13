@@ -263,7 +263,7 @@ public class Client extends Application {
   }
 
   public void requestServerInfo() {
-    String command = ClientProtocol.REQUEST_SERVER_STATUS.toString();
+    String command = ClientProtocol.GET_FULL_SERVER_LIST.toString();
     this.outputSocket.sendToServer(command);
   }
 
@@ -375,7 +375,7 @@ public class Client extends Application {
   /** This client wants to send a public message to all clients (broadcast). */
   public void sendMessageServer(String message) {
     try {
-      String command = ServerProtocol.BROADCAST.toString() + ServerProtocol.SEPARATOR + message;
+      String command = ServerProtocol.SEND_PUBLIC_MESSAGE.toString() + ServerProtocol.SEPARATOR + message;
       this.outputSocket.sendToServer(command);
     } catch (Exception e) {
       // The message was empty
@@ -425,7 +425,7 @@ public class Client extends Application {
     }
 
     String command =
-        ServerProtocol.WHISPER.toString()
+        ServerProtocol.SEND_PRIVATE_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
             + recipient
             + ServerProtocol.SEPARATOR
@@ -440,7 +440,7 @@ public class Client extends Application {
    */
   public void sendMessageLobby(String message) {
     String command =
-        ClientProtocol.SEND_MESSAGE_LOBBY.toString() + ServerProtocol.SEPARATOR + message;
+        ClientProtocol.SEND_LOBBY_MESSAGE.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
   }
 
@@ -581,7 +581,7 @@ public class Client extends Application {
 
   /** Sends a request to the server asking for the list of clients in the lobby */
   public void listClientsLobby() {
-    String command = ClientProtocol.LIST_LOBBY.toString();
+    String command = ClientProtocol.GET_CLIENTS_LOBBY.toString();
     this.outputSocket.sendToServer(command);
   }
 
@@ -589,7 +589,7 @@ public class Client extends Application {
    * Sends a request to the server asking for the list of total clients connected with the server
    */
   protected void listClientsServer() {
-    String command = ClientProtocol.LIST_SERVER.toString();
+    String command = ClientProtocol.GET_CLIENTS_SERVER.toString();
     this.outputSocket.sendToServer(command);
   }
 
@@ -601,7 +601,7 @@ public class Client extends Application {
   }
 
   public void sendToggleReady(Boolean isReady) {
-    String command = ClientProtocol.TOGGLE_READY.toString() + ServerProtocol.SEPARATOR + isReady;
+    String command = ClientProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + isReady;
     this.outputSocket.sendToServer(command);
   }
 

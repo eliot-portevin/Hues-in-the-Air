@@ -80,20 +80,19 @@ public class ServerIn implements Runnable {
 
             if (protocol.getNumArgs() == command.length - 1) {
               switch (protocol) {
-                case NO_USERNAME_SET -> this.client.setUsername(this.client.username);
-                case BROADCAST -> this.receiveMessage(
+                case SEND_PUBLIC_MESSAGE -> this.receiveMessage(
                     Arrays.copyOfRange(command, 1, command.length), "Public");
-                case WHISPER -> this.receiveMessage(
+                case SEND_PRIVATE_MESSAGE -> this.receiveMessage(
                     Arrays.copyOfRange(command, 1, command.length), "Private");
-                case SEND_MESSAGE_LOBBY -> this.receiveMessage(
+                case SEND_LOBBY_MESSAGE -> this.receiveMessage(
                     Arrays.copyOfRange(command, 1, command.length), "Lobby");
                 case SERVER_PING -> this.client.pong();
                 case SERVER_PONG -> this.resetClientStatus();
                 case USERNAME_SET_TO -> this.client.usernameSetTo(command[1]);
-                case SEND_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
+                case UPDATE_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
                 case LOBBY_JOINED -> this.client.enterLobby(command[1]);
                 case LOBBY_EXITED -> this.client.lobbyExited(command[1]);
-                case UPDATE_LOBBY_LIST -> this.client.updateLobbyInfo(command[1]);
+                case UPDATE_FULL_LIST -> this.client.updateLobbyInfo(command[1]);
                 case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
                 case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
                 case START_GAME -> {

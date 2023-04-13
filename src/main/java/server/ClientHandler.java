@@ -73,11 +73,11 @@ public class ClientHandler implements Runnable {
   /**
    * The client linked to this ClientHandler wants to send a message to all clients on the server.
    *
-   * <p>See {@link ServerProtocol#BROADCAST}
+   * <p>See {@link ServerProtocol#SEND_PUBLIC_MESSAGE}
    */
   private void sendMessageServer(String message) {
     String output =
-        ServerProtocol.BROADCAST.toString()
+        ServerProtocol.SEND_PUBLIC_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
             + this.username
             + ServerProtocol.SEPARATOR
@@ -92,11 +92,11 @@ public class ClientHandler implements Runnable {
    * The client linked to this ClientHandler wants to send a message to another client on the
    * server.
    *
-   * <p>See {@link ServerProtocol#WHISPER}
+   * <p>See {@link ServerProtocol#SEND_PRIVATE_MESSAGE}
    */
   private void sendMessageClient(String recipient, String message) {
     String output =
-        ServerProtocol.WHISPER.toString()
+        ServerProtocol.SEND_PRIVATE_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
             + this.username
             + ServerProtocol.SEPARATOR
@@ -120,13 +120,13 @@ public class ClientHandler implements Runnable {
   /**
    * The client linked to this ClientHandler wants to send a message to all clients in the lobby.
    *
-   * <p>See {@link ServerProtocol#SEND_MESSAGE_LOBBY}
+   * <p>See {@link ServerProtocol#SEND_LOBBY_MESSAGE}
    *
    * @param message The message to send
    */
   private void sendMessageLobby(String message) {
     String command =
-        ServerProtocol.SEND_MESSAGE_LOBBY.toString()
+        ServerProtocol.SEND_LOBBY_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
             + this.username
             + ServerProtocol.SEPARATOR
@@ -162,22 +162,22 @@ public class ClientHandler implements Runnable {
         switch (protocol) {
           case EXIT -> this.server.removeClient(this);
           case SET_USERNAME -> this.setUsername(command[1]);
-          case REQUEST_SERVER_STATUS -> {
+          case GET_FULL_SERVER_LIST -> {
             this.updateClientList();
             this.updateLobbyList();
           }
-          case BROADCAST -> this.sendMessageServer(command[1]);
-          case WHISPER -> this.sendMessageClient(command[1], command[2]);
-          case SEND_MESSAGE_LOBBY -> this.sendMessageLobby(command[1]);
+          case SEND_PUBLIC_MESSAGE -> this.sendMessageServer(command[1]);
+          case SEND_PRIVATE_MESSAGE -> this.sendMessageClient(command[1], command[2]);
+          case SEND_LOBBY_MESSAGE -> this.sendMessageLobby(command[1]);
           case CLIENT_PING -> this.pong();
           case CLIENT_PONG -> this.resetClientStatus();
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
           case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
-          case LIST_LOBBY -> {
+          case GET_CLIENTS_LOBBY -> {
             if (this.lobby != null) this.listLobby();
           }
-          case LIST_SERVER -> this.sendClientList(this.server.getClientHandlers());
-          case TOGGLE_READY -> this.setToggleReady(command[1]);
+          case GET_CLIENTS_SERVER -> this.sendClientList(this.server.getClientHandlers());
+          case TOGGLE_READY_STATUS -> this.setToggleReady(command[1]);
           case EXIT_LOBBY -> {
             if (this.lobby != null) this.lobby.removeClient(this);
           }
@@ -275,7 +275,7 @@ public class ClientHandler implements Runnable {
    */
   protected void listLobby() {
     if (this.lobby != null) {
-      String command = ServerProtocol.SEND_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
+      String command = ServerProtocol.UPDATE_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
 
       command += this.lobby.getClientHandlers().stream()
           .map(
@@ -300,7 +300,7 @@ public class ClientHandler implements Runnable {
    */
   protected void sendClientList(ArrayList<ClientHandler> clients) {
     String command =
-        ServerProtocol.SEND_LOBBY_LIST.toString()
+        ServerProtocol.UPDATE_LOBBY_LIST.toString()
             + ServerProtocol.SEPARATOR
             + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
     System.out.println(command);
@@ -322,7 +322,7 @@ public class ClientHandler implements Runnable {
     String[][] lobbyInfo = this.server.listLobbies();
 
     StringBuilder command =
-        new StringBuilder(ServerProtocol.UPDATE_LOBBY_LIST.toString())
+        new StringBuilder(ServerProtocol.UPDATE_FULL_LIST.toString())
             .append(ServerProtocol.SEPARATOR);
 
     for (int i = 0; i < lobbyInfo.length; i++) {
