@@ -86,6 +86,7 @@ public class ServerIn implements Runnable {
                     Arrays.copyOfRange(command, 1, command.length), "Private");
                 case SEND_LOBBY_MESSAGE -> this.receiveMessage(
                     Arrays.copyOfRange(command, 1, command.length), "Lobby");
+                case NO_USER_FOUND -> this.client.noUserFound(command[1]);
                 case SERVER_PING -> this.client.pong();
                 case SERVER_PONG -> this.resetClientStatus();
                 case USERNAME_SET_TO -> this.client.usernameSetTo(command[1]);

@@ -106,7 +106,9 @@ public class ClientHandler implements Runnable {
     if (recipientHandler != null && recipientHandler != this) {
       recipientHandler.out.println(output);
       this.out.println(output);
-    } else {
+    } else if (recipientHandler == null) {
+      this.out.println(
+          ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient);
       Server.getInstance()
           .LOGGER
           .error(
@@ -203,7 +205,8 @@ public class ClientHandler implements Runnable {
   private void setToggleReady(String isReady) {
     // If the entered value is not a boolean, the value is set to false.
     this.hasToggledReady = Boolean.parseBoolean(isReady);
-    String command = ServerProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + hasToggledReady;
+    String command =
+        ServerProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + hasToggledReady;
     this.out.println(command);
     // Update the lobby list to show the new ready status.
     this.lobby.updateLobbyList();
@@ -223,6 +226,7 @@ public class ClientHandler implements Runnable {
   /**
    * Returns whether the client has toggled ready. Used to display in the client's list and to start
    * the game.
+   *
    * @return True if the client has toggled ready, false otherwise.
    */
   public boolean hasToggledReady() {
@@ -270,20 +274,17 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * Sends a list of clients in the lobby to the client. This includes whether the client has toggled
-   * ready or not.
+   * Sends a list of clients in the lobby to the client. This includes whether the client has
+   * toggled ready or not.
    */
   protected void listLobby() {
     if (this.lobby != null) {
       String command = ServerProtocol.UPDATE_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
 
-      command += this.lobby.getClientHandlers().stream()
-          .map(
-              client ->
-                  client.getUsername()
-                      + " "
-                      + client.hasToggledReady())
-          .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+      command +=
+          this.lobby.getClientHandlers().stream()
+              .map(client -> client.getUsername() + " " + client.hasToggledReady())
+              .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
 
       this.out.println(command);
     }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
@@ -62,5 +63,10 @@
             </ScrollPane>
          </children>
       </GridPane>
+      <HBox fx:id="alertPane" alignment="CENTER" mouseTransparent="true" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowSpan="2147483647">
+         <children>
+            <Label fx:id="alert" text="This is an alert" />
+         </children>
+      </HBox>
    </children>
 </GridPane>

@@ -1,14 +1,17 @@
 package client.controllers;
 
 import client.Game;
+import client.util.AlertManager;
 import client.util.Chat;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.TextFlow;
 
@@ -29,6 +32,10 @@ public class GameController {
   private Chat lobbyChatManager;
   private Chat serverChatManager;
 
+  @FXML private HBox alertPane;
+  @FXML private Label alert;
+  public AlertManager alertManager;
+
   private Game game;
 
   public void initialize() {
@@ -39,6 +46,8 @@ public class GameController {
 
     this.initialiseChats();
     this.setChatTabsBehaviour();
+
+    this.alertManager = new AlertManager(alertPane, alert);
   }
 
   /** Sets the behaviour for detected key presses. */

@@ -432,10 +432,21 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
+  public void noUserFound(String username) {
+    if (this.menuScreen) {
+      this.menuController.alertManager.displayAlert("User " + username + " not found.", true);
+    }
+    else if (this.lobbyScreen) {
+      this.lobbyController.alertManager.displayAlert("User " + username + " not found.", true);
+    }
+    else if (this.gameScreen) {
+      this.gameController.alertManager.displayAlert("User " + username + " not found.", true);
+    }
+  }
+
   /** Notifies server that the client is logging out, closes the socket and stops the threads */
   protected void exit() {
     // Communicate with server that client is logging out
-    // TODO: solve SocketException when logging out
     String command = ClientProtocol.EXIT.toString();
     try {
       this.outputSocket.sendToServer(command);
