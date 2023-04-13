@@ -377,7 +377,7 @@ public class Client extends Application {
   }
 
   /** This client wants to send a public message to all clients (broadcast). */
-  public void sendMessageServer(String message) {
+  public void sendPublicMessage(String message) {
     try {
       String command = ServerProtocol.SEND_PUBLIC_MESSAGE.toString() + ServerProtocol.SEPARATOR + message;
       this.outputSocket.sendToServer(command);
@@ -388,7 +388,7 @@ public class Client extends Application {
   }
 
   /** This client wants to send a private message to another client (whisper chat). */
-  public void sendMessageClient(String message) {
+  public void sendPrivateMessage(String message) {
     String[] split = message.split(" ", 2);
     if (split.length <= 1) {
       if (this.isInLobby) {
@@ -426,26 +426,10 @@ public class Client extends Application {
    *
    * <p>Protocol format: SEND_MESSAGE_LOBBY&#60SEPARATOR&#62message
    */
-  public void sendMessageLobby(String message) {
+  public void sendLobbyMessage(String message) {
     String command =
         ClientProtocol.SEND_LOBBY_MESSAGE.toString() + ServerProtocol.SEPARATOR + message;
     this.outputSocket.sendToServer(command);
-  }
-
-  /**
-   * Handles interaction with client in the console when the client wants to send a message to the
-   * other clients in the lobby (calls <code>sendMessageLobby(String message)</code>)
-   */
-  protected void sendMessageLobby() {
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print("Enter message: \n> ");
-      String message = reader.readLine();
-      this.sendMessageLobby(message);
-    } catch (IOException e) {
-      System.err.println("[CLIENT] Failed to read message: " + e.getMessage());
-      e.printStackTrace();
-    }
   }
 
   /** Notifies server that the client is logging out, closes the socket and stops the threads */

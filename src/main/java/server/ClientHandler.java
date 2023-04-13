@@ -75,7 +75,7 @@ public class ClientHandler implements Runnable {
    *
    * <p>See {@link ServerProtocol#SEND_PUBLIC_MESSAGE}
    */
-  private void sendMessageServer(String message) {
+  private void sendPublicMessage(String message) {
     String output =
         ServerProtocol.SEND_PUBLIC_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
@@ -94,7 +94,7 @@ public class ClientHandler implements Runnable {
    *
    * <p>See {@link ServerProtocol#SEND_PRIVATE_MESSAGE}
    */
-  private void sendMessageClient(String recipient, String message) {
+  private void sendPrivateMessage(String recipient, String message) {
     String output =
         ServerProtocol.SEND_PRIVATE_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
@@ -124,7 +124,7 @@ public class ClientHandler implements Runnable {
    *
    * @param message The message to send
    */
-  private void sendMessageLobby(String message) {
+  private void sendLobbyMessage(String message) {
     String command =
         ServerProtocol.SEND_LOBBY_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
@@ -166,9 +166,9 @@ public class ClientHandler implements Runnable {
             this.updateClientList();
             this.updateLobbyList();
           }
-          case SEND_PUBLIC_MESSAGE -> this.sendMessageServer(command[1]);
-          case SEND_PRIVATE_MESSAGE -> this.sendMessageClient(command[1], command[2]);
-          case SEND_LOBBY_MESSAGE -> this.sendMessageLobby(command[1]);
+          case SEND_PUBLIC_MESSAGE -> this.sendPublicMessage(command[1]);
+          case SEND_PRIVATE_MESSAGE -> this.sendPrivateMessage(command[1], command[2]);
+          case SEND_LOBBY_MESSAGE -> this.sendLobbyMessage(command[1]);
           case CLIENT_PING -> this.pong();
           case CLIENT_PONG -> this.resetClientStatus();
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);

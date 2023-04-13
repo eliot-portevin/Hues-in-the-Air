@@ -10,7 +10,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import static client.Client.bebasItalics;
 
@@ -53,12 +52,12 @@ public class Chat {
 
             if (!message.isBlank()) {
               if (message.startsWith("@")) {
-                Client.getInstance().sendMessageClient(message);
+                Client.getInstance().sendPrivateMessage(message);
               } else {
                 if (chatType.equals("lobby")) {
-                  Client.getInstance().sendMessageLobby(message);
+                  Client.getInstance().sendLobbyMessage(message);
                 } else if (chatType.equals("server")) {
-                  Client.getInstance().sendMessageServer(message);
+                  Client.getInstance().sendPublicMessage(message);
                 }
               }
             }
