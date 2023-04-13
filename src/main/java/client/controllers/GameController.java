@@ -50,7 +50,10 @@ public class GameController {
     this.alertManager = new AlertManager(alertPane, alert);
   }
 
-  /** Sets the behaviour for detected key presses. */
+  /**
+   * Sets the behaviour for detected key presses
+   * and pause the game if escape is pressed
+   */
   private void initialiseKeyboard() {
     backgroundPane.setOnKeyPressed(e -> {
       if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {

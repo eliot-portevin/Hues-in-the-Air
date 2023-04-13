@@ -5,6 +5,10 @@ public class ClientPingSender implements Runnable {
   Client client;
   boolean running = true;
 
+  /**
+   * Initialises the ClientPingSender by setting the client
+   * @param client
+   */
   public ClientPingSender(Client client) {
     this.client = client;
   }

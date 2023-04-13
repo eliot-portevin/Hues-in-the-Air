@@ -40,11 +40,15 @@ public class MenuSettingsController {
     this.setButtonBehaviour();
   }
 
-  /** Fills the username field with the username of the current user. */
+  /**
+   * Fills the username field with the username of the current user.
+   */
   public void setUsernameField() {
     this.textUsername.setText(Client.getInstance().getUsername());
   }
-  /** Sets the text of the credits area to the credits text. */
+  /**
+   * Sets the text of the credits area to the credits text.
+   * */
   private void setCredits() {
     String credits =
         """
@@ -65,7 +69,9 @@ public class MenuSettingsController {
     this.creditsArea.setText(credits);
   }
 
-  /** Binds the font sizes of various elements to the width of the tab pane. */
+  /**
+   * Binds the font sizes of various elements to the width of the tab pane.
+   */
   private void setFontBehaviour() {
     this.labelMusic
         .styleProperty()

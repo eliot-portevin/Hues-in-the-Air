@@ -59,6 +59,9 @@ public class LobbyController {
     this.lobbyNameLabel.setText(Client.getInstance().getLobbyName());
   }
 
+  /**
+   * initialises the LobbyList and aligns it right
+   */
   private void initialiseLobbyList() {
     readyList.setCellFactory(l -> new ListViewCellAlignedRight());
   }
@@ -148,6 +151,10 @@ public class LobbyController {
         });
   }
 
+  /**
+   * Initialises the chat with a welcome message
+   * and sets the size according to the window
+   */
   private void initialiseChats() {
     this.lobbyChatManager = new Chat("lobby", lobbyChatText, lobbyChat, lobbyChatPane);
     this.serverChatManager = new Chat("server", serverChatText, serverChat, serverChatPane);
@@ -203,7 +210,7 @@ public class LobbyController {
   }
 }
 
-/** A class to align cells in nameList to the right */
+/** a class to align cells in nameList to the right */
 final class ListViewCellAlignedRight extends ListCell<String> {
   @Override
   protected void updateItem(String item, boolean empty) {

@@ -25,6 +25,9 @@ public class MenuHomeController {
   private final TreeItem<String> lobbiesHeader = new TreeItem<>("Lobbies (empty)");
   private final TreeItem<String> usersHeader = new TreeItem<>("Users");
 
+  /**
+   * Method that is called when the Home screen is initialised
+   */
   public void initialize() {
     this.setFontBehaviour();
 
@@ -97,7 +100,9 @@ public class MenuHomeController {
         });
   }
 
-  /** Makes the buttons call the appropriate methods in the Client class when clicked. */
+  /**
+   * Makes the buttons call the appropriate methods in the Client class when clicked.
+   */
   private void setButtonBehaviour() {
     buttonCreateLobby.setOnAction(
         e -> {
@@ -114,7 +119,10 @@ public class MenuHomeController {
     buttonJoinLobby.setOnMouseEntered(e -> Client.getInstance().clickSound());
   }
 
-  /** Adds the lobbies and users headers to the lobby list. */
+  /**
+   * Adds the lobbies and users headers to the lobby list
+   * and initialises it
+   */
   private void initialiseLobbyList() {
     this.tree.setRoot(this.root);
     this.tree.setShowRoot(false);
@@ -187,7 +195,9 @@ public class MenuHomeController {
     this.tree.refresh();
   }
 
-  /** Clears the lobby name and password fields. */
+  /**
+   * Clears the lobby name and password fields.
+   */
   public void clear() {
     if (this.textLobbyName != null && this.textLobbyPassword != null) {
       this.textLobbyName.clear();

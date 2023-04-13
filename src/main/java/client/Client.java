@@ -82,12 +82,17 @@ public class Client extends Application {
 
   // Logger
   public Logger LOGGER;
-
+  /**
+   * sets the font to italics
+   */
   public static final javafx.scene.text.Font bebasItalics =
       javafx.scene.text.Font.loadFont(
           Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Italics.otf"))
               .toExternalForm(),
           20);
+  /**
+   * sets the font to regular
+   */
   public final javafx.scene.text.Font bebasRegular =
       Font.loadFont(
           Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Regular.ttf"))
@@ -240,6 +245,10 @@ public class Client extends Application {
     }
   }
 
+  /**
+   * Loads the lobbyScreen from fxml file
+   * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load())
+   */
   private void loadLobbyScreen() throws IOException {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
     this.root = loader.load();
@@ -253,7 +262,10 @@ public class Client extends Application {
     this.lobbyScreen = true;
   }
 
-  /** Loads the game screen from the fxml file. */
+  /**
+   * Loads the game screen from the fxml file.
+   * @throws IOException if the fxml file could not be found
+   */
   public void loadGameScreen() throws IOException {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
     this.root = loader.load();
@@ -266,12 +278,17 @@ public class Client extends Application {
     this.gameScreen = true;
   }
 
+  /**
+   *Called when the client wants a list of all lobbies and players
+   */
   public void requestServerInfo() {
     String command = ClientProtocol.GET_FULL_SERVER_LIST.toString();
     this.outputSocket.sendToServer(command);
   }
 
-  /** Plays a clicking sound. Called when the user hovers over a button. */
+  /**
+   * Plays a clicking sound. Called when the user hovers over a button.
+   */
   public void clickSound() {
     this.clickPlayer.play();
     this.clickPlayer.seek(this.clickPlayer.getStartTime());
@@ -324,7 +341,9 @@ public class Client extends Application {
     }
   }
 
-  /** Sends a CLIENT_PING message to the server */
+  /**
+   * Sends a CLIENT_PING message to the server
+   */
   protected void ping() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PING.toString();
@@ -332,14 +351,18 @@ public class Client extends Application {
     }
   }
 
-  /** Sends a CLIENT_PONG message to the server (meant as a response to the SERVER_PING message) */
+  /**
+   * Sends a CLIENT_PONG message to the server (meant as a response to the SERVER_PING message)
+   */
   protected void pong() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PONG.toString();
       this.outputSocket.sendToServer(command);
     }
   }
-  /** Starts the client */
+  /**
+   * Starts the client and sets the IP and the port
+   */
   public static void start(String[] args) {
     String[] serverInfo = args[0].split(":");
     if (serverInfo.length != 2) {
@@ -360,7 +383,10 @@ public class Client extends Application {
     }
   }
 
-  /** sets the username of the client */
+  /**
+   * Sets the username of the client.
+   * Inform when the username is already set to that one
+   */
   public void setUsername(String username) {
     if (username.equals(this.username)) {
       if (this.menuScreen) {
@@ -376,7 +402,9 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
-  /** This client wants to send a public message to all clients (broadcast). */
+  /**
+   * This client wants to send a public message to all clients (broadcast).
+   */
   public void sendPublicMessage(String message) {
     try {
       String command = ServerProtocol.SEND_PUBLIC_MESSAGE.toString() + ServerProtocol.SEPARATOR + message;
@@ -387,7 +415,9 @@ public class Client extends Application {
     }
   }
 
-  /** This client wants to send a private message to another client (whisper chat). */
+  /**
+   * This client wants to send a private message to another client (whisper chat).
+   */
   public void sendPrivateMessage(String message) {
     String[] split = message.split(" ", 2);
     if (split.length <= 1) {
@@ -444,7 +474,9 @@ public class Client extends Application {
     }
   }
 
-  /** Notifies server that the client is logging out, closes the socket and stops the threads */
+  /**
+   * Notifies server that the client is logging out, closes the socket and stops the threads
+   */
   protected void exit() {
     // Communicate with server that client is logging out
     String command = ClientProtocol.EXIT.toString();
@@ -471,7 +503,9 @@ public class Client extends Application {
     System.exit(0);
   }
 
-  /** Notifies the server that the client wants to exit the lobby */
+  /**
+   * Notifies the server that the client wants to exit the lobby
+   */
   public void exitLobby() {
     String command = ClientProtocol.EXIT_LOBBY.toString();
     this.outputSocket.sendToServer(command);
@@ -556,13 +590,17 @@ public class Client extends Application {
     }
   }
 
-  /** Prints the username of the client to the console */
+  /**
+   * Prints the username of the client to the console
+   */
   protected void whoami() {
     System.out.println(this.username);
     System.out.print("> ");
   }
 
-  /** Sends a request to the server asking for the list of clients in the lobby */
+  /**
+   * Sends a request to the server asking for the list of clients in the lobby
+   * */
   public void listClientsLobby() {
     String command = ClientProtocol.GET_CLIENTS_LOBBY.toString();
     this.outputSocket.sendToServer(command);
@@ -576,18 +614,28 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
-  /** If the client is in a lobby, their list of clients in the lobby is updated. */
+  /**
+   * If the client is in a lobby, their list of clients in the lobby is updated.
+   * */
   protected void updateLobbyList(String clientList) {
     if (this.isInLobby) {
       this.lobbyController.updateLobbyList(clientList.split("<&\\?>"));
     }
   }
 
+  /**
+   * Inform the server when the toggle.isReady is true
+   * @param isReady
+   */
   public void sendToggleReady(Boolean isReady) {
     String command = ClientProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + isReady;
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * This method set the toggle to ready  when it's called
+   * @param isReady
+   */
   public void setToggleReady(String isReady) {
     this.lobbyController.setToggleReady(isReady);
   }
@@ -633,6 +681,10 @@ public class Client extends Application {
     }
   }
 
+  /**
+   * Updates the clientList in the server
+   * @param command
+   */
   public void updateClientInfo(String command) {
     if (this.menuScreen) {
       String[] clients = command.split(" ");
@@ -701,6 +753,10 @@ public class Client extends Application {
     this.clickPlayer.setVolume(volume);
   }
 
+  /**
+   * Sets the username with the String gotten
+   * @param username
+   */
   public void usernameSetTo(String username) {
     if (this.username != null) {
       if (this.menuScreen) {
@@ -712,10 +768,18 @@ public class Client extends Application {
     this.menuController.settingsTabController.setUsernameField();
   }
 
+  /**
+   * returns the username as a String
+   * @return
+   */
   public String getUsername() {
     return this.username;
   }
 
+  /**
+   *returns the lobbyName as a String
+   * @return
+   */
   public String getLobbyName() {
     return this.lobbyName;
   }

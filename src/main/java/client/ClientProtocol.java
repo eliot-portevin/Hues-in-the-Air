@@ -38,7 +38,9 @@ public enum ClientProtocol {
 
   /** Client wants to create a lobby */
   CREATE_LOBBY(2),
-
+  /**
+   * Client wants to exit the lobby
+   */
   EXIT_LOBBY(0),
 
   /** Client wants to know the name of the other players */
@@ -58,10 +60,18 @@ public enum ClientProtocol {
 
   private final int numArgs;
 
+  /**
+   * Initialises the ClientProtocol with the required number of arguments
+   * @param numArgs
+   */
   ClientProtocol(int numArgs) {
     this.numArgs = numArgs;
   }
 
+  /**
+   * Returns the number of arguments required
+   * @return
+   */
   public int getNumArgs() {
     return this.numArgs;
   }
