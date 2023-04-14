@@ -207,24 +207,7 @@ public class ClientHandler implements Runnable {
 
   /** The client has clicked the ready button. */
   private void setToggleReady(String isReady) {
-    // If the entered value is not a boolean, the value is set to false.
-    this.hasToggledReady = Boolean.parseBoolean(isReady);
-    String command =
-        ServerProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + hasToggledReady;
-    this.out.println(command);
-    // Update the lobby list to show the new ready status.
-    this.lobby.updateLobbyList();
-
-    // If all clients are ready, start the game
-    for (ClientHandler client : this.lobby.getClientHandlers()) {
-      if (!client.hasToggledReady) {
-        return;
-      }
-    }
-
-    for (ClientHandler client : this.lobby.getClientHandlers()) {
-      client.out.println(ServerProtocol.START_GAME);
-    }
+    this.lobby.toggleClientReady(this, Boolean.parseBoolean(isReady));
   }
 
   /**
@@ -360,5 +343,12 @@ public class ClientHandler implements Runnable {
             + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
 
     this.out.println(command);
+  }
+
+  /**
+   * Called from {@link Game} to tell the client that the game has started.
+   */
+  public void startGame() {
+    this.out.println(ServerProtocol.START_GAME);
   }
 }

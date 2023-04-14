@@ -33,17 +33,17 @@
          <children>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ToggleButton fx:id="tabHomeButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Home" />
+                  <ToggleButton fx:id="tabHomeButton" mnemonicParsing="false" stylesheets="@../TabButton.css" text="Home" />
                </children>
             </HBox>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ToggleButton fx:id="tabGamesButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Games" />
+                  <ToggleButton fx:id="tabGamesButton" mnemonicParsing="false" stylesheets="@../TabButton.css" text="Games" />
                </children>
             </HBox>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ToggleButton fx:id="tabSettingsButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Settings" />
+                  <ToggleButton fx:id="tabSettingsButton" mnemonicParsing="false" stylesheets="@../TabButton.css" text="Settings" />
                </children>
             </HBox>
          </children>
@@ -68,7 +68,7 @@
             </ScrollPane>
          </children>
       </GridPane>
-      <HBox GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
+      <HBox stylesheets="@../Footer.css" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
          <children>
             <HBox fx:id="footer1" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
             <HBox fx:id="footer2" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
