@@ -67,7 +67,7 @@ Command sent form server to client. This string is sent to client for them to ha
 
 ### UPDATE_LOBBY_LIST
 Sends a list of all clients in the lobby to the client. <br>
-Example: UPDATE_LOBBY_LIST<&!>username1<&?>username2<&?>username3 <br>
+Example: UPDATE_LOBBY_LIST<&!>username1 true #f57dc6<&?>username2 false #ffffff<&?>username3 true #b35h6e<br>
 Command sent form server to client. This string is sent to client for them to have access to a list of all clients connected to the lobby.
 
 ### TOGGLE_READY_STATUS

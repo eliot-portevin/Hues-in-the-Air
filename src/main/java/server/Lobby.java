@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Lobby {
   private final String name;
@@ -53,7 +54,7 @@ public class Lobby {
     for (Color colour : this.clientColours.values()) {
       freeColours.remove(colour);
     }
-    return freeColours.get((int) Math.round(Math.random() * freeColours.size()));
+    return freeColours.get((int) Math.floor(Math.random() * freeColours.size()));
   }
   /**
    * Removes a client from the lobby.
@@ -146,5 +147,25 @@ public class Lobby {
   private void startGame() {
     // The game instance starts itself
     Game game = new Game(this.clientColours);
+    game.run();
+  }
+
+  /**
+   * Returns the lobby list as a string containing all the information about the lobby.
+   */
+  public String listLobby() {
+    String command = ServerProtocol.UPDATE_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
+
+    command +=
+        this.clients.stream()
+            .map(
+                c ->
+                    c.getUsername()
+                        + " "
+                        + this.clientsReady.get(c)
+                        + " "
+                        + this.clientColours.get(c))
+            .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+    return command;
   }
 }

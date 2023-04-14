@@ -94,11 +94,11 @@ public class ServerIn implements Runnable {
                 case SERVER_PING -> this.client.pong();
                 case SERVER_PONG -> this.resetClientStatus();
                 case USERNAME_SET_TO -> this.client.usernameSetTo(command[1]);
-                case UPDATE_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
                 case LOBBY_JOINED -> this.client.enterLobby(command[1]);
                 case LOBBY_EXITED -> this.client.lobbyExited(command[1]);
                 case UPDATE_FULL_LIST -> this.client.updateLobbyInfo(command[1]);
                 case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
+                case UPDATE_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
                 case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
                 case START_GAME -> {
                   try {

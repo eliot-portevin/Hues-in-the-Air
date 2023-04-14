@@ -28,7 +28,6 @@ public class ClientHandler implements Runnable {
   // Client values
   private String username;
   private Lobby lobby;
-  private boolean hasToggledReady = false;
 
   /** Is in charge of a single client. */
   public ClientHandler(Socket clientSocket, Server server) throws IOException {
@@ -199,7 +198,6 @@ public class ClientHandler implements Runnable {
 
   /**
    *Returns the username
-   * @return
    */
   protected String getUsername() {
     return this.username;
@@ -208,16 +206,6 @@ public class ClientHandler implements Runnable {
   /** The client has clicked the ready button. */
   private void setToggleReady(String isReady) {
     this.lobby.toggleClientReady(this, Boolean.parseBoolean(isReady));
-  }
-
-  /**
-   * Returns whether the client has toggled ready. Used to display in the client's list and to start
-   * the game.
-   *
-   * @return True if the client has toggled ready, false otherwise.
-   */
-  public boolean hasToggledReady() {
-    return this.hasToggledReady;
   }
 
   /**
@@ -266,12 +254,7 @@ public class ClientHandler implements Runnable {
    */
   protected void listLobby() {
     if (this.lobby != null) {
-      String command = ServerProtocol.UPDATE_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
-
-      command +=
-          this.lobby.getClientHandlers().stream()
-              .map(client -> client.getUsername() + " " + client.hasToggledReady())
-              .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+      String command = this.lobby.listLobby();
 
       this.out.println(command);
     }
@@ -279,8 +262,7 @@ public class ClientHandler implements Runnable {
 
   /**
    * return this.lobby
-   * Is called from the server when a Client disconnects so it can be removed from the lobby
-   * @return
+   * Is called from the server when a Client disconnects, so it can be removed from the lobby
    */
   protected Lobby getLobby() {
     return this.lobby;
