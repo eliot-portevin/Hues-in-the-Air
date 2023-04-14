@@ -6,6 +6,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class Cube {
   protected Vector2D position;
@@ -40,6 +41,7 @@ public class Cube {
   public void spawnCube() {
     rectangle = new Rectangle(size.getX(), size.getY());
     this.setPositionTo(position.getX(), position.getY());
+    this.moveBuffer = new Vector2D(0, 0);
     rectangle.setFill(Colours.GREEN.getHex());
     gameRoot.getChildren().add(rectangle);
   }
@@ -208,31 +210,29 @@ public class Cube {
   public void moveX(double value) {
     boolean movingRight = value > 0;
     if (!canJump) {
-      //if(moveBuffer.getX() > 1) {
-        gravityRotationX();
-        for (int i = 0; i < Math.abs(value); i++) {
-          for (Node platform : platforms) {
-            if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-              if (movingRight) {
-                if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) { // Checks if the cube is colliding with a platform on the right side
-                  if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                    setGravityAndVelocityRight();
-                    return;
-                  }
+      gravityRotationX();
+      for (int i = 0; i < Math.abs(value); i++) {
+        for (Node platform : platforms) {
+          if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+            if (movingRight) {
+              if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) { // Checks if the cube is colliding with a platform on the right side
+                if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
+                  setGravityAndVelocityRight();
+                  return;
                 }
-              } else {
-                if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) { // Checks if the cube is colliding with a platform on the left side
-                  if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
-                      setGravityAndVelocityLeft();
-                      return;
-                  }
+              }
+            } else {
+              if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) { // Checks if the cube is colliding with a platform on the left side
+                if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                    setGravityAndVelocityLeft();
+                    return;
                 }
               }
             }
           }
-          move1X(movingRight);
         }
-      //}
+        move1X(movingRight);
+      }
     } else {
       for (int i = 0; i < Math.abs(value); i++) {
         move1X(movingRight);
@@ -281,11 +281,21 @@ public class Cube {
   /**
    * updates the velocity of the cube and moves it by the given velocity
    */
-  public void move(Vector2D velocity) {
+  public void move(Vector2D velocity, double deltaF) {
     if (!canJump) {
       velocity.setY(velocity.getY()+g.getY());
       velocity.setX(velocity.getX()+g.getX());
     }
+    /*moveBuffer.setX(moveBuffer.getX() + velocity.getX()*deltaF/1e9);
+    moveBuffer.setY(moveBuffer.getY() + velocity.getY()*deltaF/1e9);
+    if(moveBuffer.getX() > 1) {
+      moveX(Math.floor(moveBuffer.getX()));
+      moveBuffer.setX(roundDownRest(moveBuffer.getX()));
+    }
+    if(moveBuffer.getY() > 1) {
+      moveY(Math.floor(moveBuffer.getY()));
+      moveBuffer.setY(roundDownRest(moveBuffer.getY()));
+    }*/
     moveX(velocity.getX());
     moveY(velocity.getY());
   }
@@ -338,5 +348,9 @@ public class Cube {
    */
   public void resetPosition() {
     rectangle.setFill(Colours.DARK_GREY.getHex());
+  }
+
+  public double roundDownRest(double value) {
+    return value - Math.floor(value);
   }
 }

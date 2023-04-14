@@ -2,15 +2,12 @@ package client;
 
 import gui.Colours;
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,17 +26,18 @@ public class  Game {
   private boolean jumped;
   private AnimationTimer timer;
 
-  public boolean pause = false;
+  public boolean pause = true;
+  private boolean gameStarted = false;
 
   /**
    * Called every frame and handles the game logic
    */
-  public void update(){
+  public void update(double deltaF){
     if (!pause) {
-      this.gameUpdate();
+      this.gameUpdate(deltaF);
     }
     else {
-      this.pauseUpdate();
+      this.pauseUpdate(deltaF);
     }
   }
 
@@ -48,35 +46,42 @@ public class  Game {
   /**
    * The update method that is called if the game is not paused. Handles the game logic.
    */
-  private void gameUpdate() {
-    player.move(player.velocity);
-    this.analyseKeys();
+  private void gameUpdate(double deltaF) {
+    if(gameStarted) {
+      player.move(player.velocity, deltaF);
+    }
+    this.analyseKeys(deltaF);
     player.checkForWhiteBlockHit();
   }
 
   /**
    * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic is handled.
    */
-  private void analyseKeys() {
-    System.out.println(isPressed(KeyCode.ESCAPE));
+  private void analyseKeys(double deltaF) {
     if (isPressed(KeyCode.ESCAPE)) {
-      System.out.println("pressed escape");
       pause = !pause;
+    }
+    if(this.pause && !gameStarted) {
+      if (isPressed(KeyCode.SPACE)) {
+        gameStarted = true;
+        pause = false;
+      }
     }
     if (!this.pause) {
       if (isPressed(KeyCode.UP)) {
-        player.move(new Vector2D(0,-2));
+        player.move(new Vector2D(0,-50), deltaF);
       }
       if (isPressed(KeyCode.DOWN)) {
-        player.move(new Vector2D(0,2));
+        player.move(new Vector2D(0,50), deltaF);
       }
       if (isPressed(KeyCode.LEFT)) {
-        player.move(new Vector2D(-2,0));
+        player.move(new Vector2D(-50,0), deltaF);
       }
       if (isPressed(KeyCode.RIGHT)) {
-        player.move(new Vector2D(2,0));
+        player.move(new Vector2D(50,0), deltaF);
       }
       if (isPressed(KeyCode.SPACE)) {
+        System.out.println("Jump");
         player.jump();
       }
     }
@@ -85,8 +90,8 @@ public class  Game {
   /**
    * The update method that is called if the game is paused.
    */
-  private void pauseUpdate() {
-    analyseKeys();
+  private void pauseUpdate(double deltaF) {
+    analyseKeys(deltaF);
   }
 
   /**
@@ -229,9 +234,28 @@ public class  Game {
     this.initializeContent(pane);
 
     this.timer = new AnimationTimer() {
+      double timePerFrame = 1e9 / 60; // 60 FPS
+      double deltaF = 0;
+      long previousTime = 0;
+      int frames = 0;
+      long lastCheck = System.currentTimeMillis();
       @Override
       public void handle(long now) { // Called every frame
-        update();
+        deltaF += (now - previousTime)/timePerFrame;
+        previousTime = now;
+        if(deltaF >= 1) {
+          while(deltaF >= 1) {
+            update(deltaF);
+            frames++;
+            deltaF--;
+          }
+        }
+
+        if(System.currentTimeMillis() - lastCheck >= 1000) {
+          System.out.println("FPS: " + frames);
+          frames = 0;
+          lastCheck = System.currentTimeMillis();
+        }
       }
     };
     this.timer.start();
