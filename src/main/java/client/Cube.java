@@ -24,6 +24,8 @@ public class Cube {
   private double y0 = 100000;
   private boolean y0passed;
 
+  private Vector2D moveBuffer;
+
 
   public Cube(Pane gameRoot, Vector2D position, Vector2D size) {
     this.position = position;
@@ -206,29 +208,31 @@ public class Cube {
   public void moveX(double value) {
     boolean movingRight = value > 0;
     if (!canJump) {
-      gravityRotationX();
-      for (int i = 0; i < Math.abs(value); i++) {
-        for (Node platform : platforms) {
-          if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-            if (movingRight) {
-              if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) { // Checks if the cube is colliding with a platform on the right side
-                if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                  setGravityAndVelocityRight();
-                  return;
-                }
-              }
-            } else {
-              if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) { // Checks if the cube is colliding with a platform on the left side
-                if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
-                    setGravityAndVelocityLeft();
+      //if(moveBuffer.getX() > 1) {
+        gravityRotationX();
+        for (int i = 0; i < Math.abs(value); i++) {
+          for (Node platform : platforms) {
+            if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+              if (movingRight) {
+                if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) { // Checks if the cube is colliding with a platform on the right side
+                  if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
+                    setGravityAndVelocityRight();
                     return;
+                  }
+                }
+              } else {
+                if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) { // Checks if the cube is colliding with a platform on the left side
+                  if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
+                      setGravityAndVelocityLeft();
+                      return;
+                  }
                 }
               }
             }
           }
+          move1X(movingRight);
         }
-        move1X(movingRight);
-      }
+      //}
     } else {
       for (int i = 0; i < Math.abs(value); i++) {
         move1X(movingRight);
