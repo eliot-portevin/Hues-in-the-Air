@@ -96,6 +96,11 @@ public class  Game {
     this.pause = pause;
   }
 
+  /**
+   * returns true if a key is pressed
+   * @param keyCode
+   * @return
+   */
   private boolean isPressed(KeyCode keyCode) {
     return keys.getOrDefault(keyCode, false);
   }
@@ -137,10 +142,10 @@ public class  Game {
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
     load_platforms(); // Loads the platforms
   }
+
   /**
    * Loads the platforms from the level data
    */
-
   private void load_platforms() {
     for (int i=0; i<LevelData.Level1.length; i++) { // Creates the platforms
       String line = LevelData.Level1[i];
@@ -202,6 +207,9 @@ public class  Game {
     gameRoot.getChildren().add(new Label("HI there"));
   }
 
+  /**
+   * Make the cube jump
+   */
   public void jump() {
     this.player.jump();
   }

@@ -9,6 +9,10 @@ public class Main {
 
   private static final Logger LOGGER = LogManager.getLogger(Main.class);
 
+  /**
+   * Main class of the project. Uses a Logger to save what's happening when it runs.
+   * @param args
+   */
   public static void main(String[] args) {
     if (args.length >= 1) {
       switch (args[0]) {

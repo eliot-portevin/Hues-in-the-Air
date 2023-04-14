@@ -19,14 +19,18 @@ public class ServerIn implements Runnable {
 
   protected Boolean running = true;
 
-  /** Creates an instance of ServerConnection */
+  /**
+   * Creates an instance of ServerConnection
+   */
   public ServerIn(Socket serverSocket, Client client) throws IOException {
     this.serverSocket = serverSocket;
     this.in = new BufferedReader(new InputStreamReader(this.serverSocket.getInputStream()));
     this.client = client;
   }
 
-  /** From the Runnable interface. Runs the ServerIn thread to receive commands from the server */
+  /**
+   * From the Runnable interface. Runs the ServerIn thread to receive commands from the server
+   */
   @Override
   public void run() {
     try {

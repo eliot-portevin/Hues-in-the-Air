@@ -136,10 +136,19 @@ public class Server implements Runnable {
     System.exit(0);
   }
 
+  /**
+   * Used by {@link ClientHandler}  to list the clientHandlers
+   * @return
+   */
   protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clientHandlers;
   }
 
+  /**
+   * Returns the name of the client for given username
+   * @param username of the
+   * @return
+   */
   protected ClientHandler getClientHandler(String username) {
     for (ClientHandler client : this.clientHandlers) {
       if (client.getUsername() != null) {
@@ -233,6 +242,11 @@ public class Server implements Runnable {
     return lobbyInfos.toArray(new String[0][0]);
   }
 
+  /**
+   * Called from {@link ClientHandler} for the logger
+   * and from {@link Lobby} to update the lists
+   * @return the instance of the server
+   */
   public static Server getInstance() {
     return instance;
   }

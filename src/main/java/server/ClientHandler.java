@@ -197,6 +197,10 @@ public class ClientHandler implements Runnable {
     this.noAnswerCounter = 0;
   }
 
+  /**
+   *Returns the username
+   * @return
+   */
   protected String getUsername() {
     return this.username;
   }
@@ -290,6 +294,11 @@ public class ClientHandler implements Runnable {
     }
   }
 
+  /**
+   * return this.lobby
+   * Is called from the server when a Client disconnects so it can be removed from the lobby
+   * @return
+   */
   protected Lobby getLobby() {
     return this.lobby;
   }
@@ -319,6 +328,9 @@ public class ClientHandler implements Runnable {
     this.lobby = null;
   }
 
+  /**
+   * Updates the lobbyList and prints it out
+   */
   public void updateLobbyList() {
     String[][] lobbyInfo = this.server.listLobbies();
 
@@ -336,6 +348,9 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
+  /**
+   * Updates the list of the clients
+   */
   public void updateClientList() {
     ArrayList<ClientHandler> clients = this.server.getClientHandlers();
 

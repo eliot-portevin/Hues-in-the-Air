@@ -1,5 +1,5 @@
 package gui;
-
+/** enum for the colours we use in our game */
 import javafx.scene.paint.Color;public enum Colours {
   BLACK("#363636"),
   WHITE("#ffffff"),
@@ -18,6 +18,7 @@ import javafx.scene.paint.Color;public enum Colours {
     this.hex = hex;
   }
 
+  /** returns the hex of the colour */
   public Color getHex() {
     return Color.valueOf(this.hex);
   }

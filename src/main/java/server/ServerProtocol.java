@@ -69,10 +69,16 @@ public enum ServerProtocol {
 
   private final int numArgs;
 
+  /** Initialises the command */
   ServerProtocol(int numArgs) {
     this.numArgs = numArgs;
   }
 
+  /**
+   *Returns the number of arguments needed.
+   * Called from {@link client.ServerIn} to separate the commands by their length
+   * @return
+   */
   public int getNumArgs() {
     return this.numArgs;
   }

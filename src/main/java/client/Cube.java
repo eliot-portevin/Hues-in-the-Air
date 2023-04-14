@@ -56,7 +56,7 @@ public class Cube {
   /**
    * Sets position of the cube to the given x and y
    */
-  public void setPositionTo(double x, double y) { // Sets the position of the cube to the given x and y
+  public void setPositionTo(double x, double y) {
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
   }

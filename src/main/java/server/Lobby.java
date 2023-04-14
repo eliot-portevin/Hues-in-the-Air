@@ -49,6 +49,10 @@ public class Lobby {
     this.updateLobbyList();
   }
 
+  /**
+   * Returns the name of the lobby. Used to add and remove clients of it.
+   * @return
+   */
   public String getName() {
     return name;
   }
@@ -66,14 +70,26 @@ public class Lobby {
     return false;
   }
 
+  /**
+   * Returns the number of players. Used to see whether the lobby is full or not.
+   * Used by the server:if the lobby is empty, it is deleted.
+   * @return
+   */
   protected int getNumPlayers() {
     return this.clients.size();
   }
 
+  /**
+   * Returns the name of the clientHandlers in the lobby
+   * @return
+   */
   protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clients;
   }
 
+  /**
+   * Called when the lobbyList has to be updated
+   */
   public void updateLobbyList() {
     for (ClientHandler client : this.clients) {
       client.listLobby();

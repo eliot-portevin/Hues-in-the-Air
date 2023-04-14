@@ -26,7 +26,9 @@ public class ServerOut implements Runnable {
     this.client = client;
   }
 
-  /** From the Runnable interface. Runs the ServerOut thread to send commands to the server */
+  /**
+   * From the Runnable interface. Runs the ServerOut thread to send commands to the server
+   */
   @Override
   public void run() {
     try {
@@ -59,6 +61,7 @@ public class ServerOut implements Runnable {
       e.printStackTrace();
     }
   }
+
   /** Sends a message to the server. Called by {@link #run()}
    * @param message The message to send to the server
    * */
@@ -67,6 +70,7 @@ public class ServerOut implements Runnable {
       this.out.println(message);
     }
   }
+
   /** Validates the message to be sent to the server. Called by {@link #sendToServer(String)}
    * @param message The message to validate
    * @return True if the message is valid, false otherwise
