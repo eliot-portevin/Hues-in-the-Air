@@ -5,9 +5,7 @@ import client.controllers.LobbyController;
 import client.controllers.LoginController;
 import client.controllers.MenuController;
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,17 +22,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import server.Server;
 import server.ServerProtocol;
 
 public class Client extends Application {
 
   // Status of client
-  boolean connectedToServer = true;
+  boolean connectedToServer = false;
+  boolean serverHasPonged = true;
   int noAnswerCounter = 0;
   int receivedNullCounter = 0;
   boolean shuttingDown = false;
@@ -46,9 +45,6 @@ public class Client extends Application {
   boolean gameScreen = false;
   boolean isInLobby = false;
 
-  private GridPane menuScreenRoot;
-  private GridPane lobbyScreenRoot;
-
   String lobbyName = "";
 
   // Server info
@@ -59,9 +55,6 @@ public class Client extends Application {
   // Input and output streams
   private ServerIn inputSocket;
   private ServerOut outputSocket;
-  private Thread inputThread;
-  private Thread outputThread;
-  private Thread pingSender;
 
   // Controllers
   private LoginController loginController;
@@ -82,20 +75,11 @@ public class Client extends Application {
 
   // Logger
   public Logger LOGGER;
-  /**
-   * sets the font to italics
-   */
+
+  // Fonts
   public static final javafx.scene.text.Font bebasItalics =
       javafx.scene.text.Font.loadFont(
           Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Italics.otf"))
-              .toExternalForm(),
-          20);
-  /**
-   * sets the font to regular
-   */
-  public final javafx.scene.text.Font bebasRegular =
-      Font.loadFont(
-          Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Regular.ttf"))
               .toExternalForm(),
           20);
 
@@ -108,6 +92,8 @@ public class Client extends Application {
     // Set instance, required for other classes to access the client (for example the controllers)
     instance = this;
     LOGGER = LogManager.getLogger(Client.class);
+
+    LOGGER.info("Starting the program.");
 
     // Set sound
     Media clickSound =
@@ -133,7 +119,6 @@ public class Client extends Application {
     this.stage.setMinHeight(540);
 
     try {
-      LOGGER.info("Loading login screen...");
       this.loadLoginScreen(args);
     } catch (IOException e) {
       LOGGER.error("Could not load login screen. Closing the program.");
@@ -144,6 +129,7 @@ public class Client extends Application {
     // Set stage properties
     this.stage.setOnCloseRequest(
         e -> {
+          LOGGER.info("User has clicked the close button.");
           e.consume();
           this.handleEscape();
         });
@@ -202,6 +188,7 @@ public class Client extends Application {
 
     Optional<ButtonType> result = alert.showAndWait();
     if (result.orElse(null) == ButtonType.YES) {
+      LOGGER.info("User has confirmed exit.");
       this.exit();
     }
   }
@@ -212,6 +199,7 @@ public class Client extends Application {
    * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
    */
   private void loadLoginScreen(String[] args) throws IOException {
+    this.LOGGER.info("Loading login screen.");
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/login/LoginPage.fxml"));
     this.root = loader.load();
     this.stage.getScene().setRoot(this.root);
@@ -222,6 +210,7 @@ public class Client extends Application {
 
     // Set the scene
     this.stage.getScene().setRoot(this.root);
+    LOGGER.info("Login screen loaded.");
   }
 
   /**
@@ -230,26 +219,27 @@ public class Client extends Application {
    * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
    */
   private void loadMenuScreen() throws IOException {
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/menu/MenuPage.fxml"));
-      this.root = loader.load();
-      this.stage.getScene().setRoot(this.root);
+    this.LOGGER.info("Loading menu screen.");
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/menu/MenuPage.fxml"));
+    this.root = loader.load();
+    this.stage.getScene().setRoot(this.root);
 
-      // Set controller
-      this.menuController = loader.getController();
+    // Set controller
+    this.menuController = loader.getController();
 
-      this.loginScreen = false;
-      this.menuScreen = true;
-    } catch (ClassCastException e) {
-      LOGGER.error("ClassCastException: " + e.getMessage());
-    }
+    this.loginScreen = false;
+    this.menuScreen = true;
+    this.connectedToServer = true;
+    LOGGER.info("Menu screen loaded.");
   }
 
   /**
    * Loads the lobbyScreen from fxml file
+   *
    * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load())
    */
   private void loadLobbyScreen() throws IOException {
+    this.LOGGER.info("Loading lobby screen.");
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
     this.root = loader.load();
     this.stage.getScene().setRoot(this.root);
@@ -260,13 +250,17 @@ public class Client extends Application {
     this.menuScreen = false;
     this.isInLobby = true;
     this.lobbyScreen = true;
+    this.gameScreen = false;
+    LOGGER.info("Lobby screen loaded.");
   }
 
   /**
    * Loads the game screen from the fxml file.
+   *
    * @throws IOException if the fxml file could not be found
    */
   public void loadGameScreen() throws IOException {
+    this.LOGGER.info("Loading game screen.");
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
     this.root = loader.load();
     this.stage.getScene().setRoot(this.root);
@@ -276,19 +270,10 @@ public class Client extends Application {
 
     this.lobbyScreen = false;
     this.gameScreen = true;
+    LOGGER.info("Game screen loaded.");
   }
 
-  /**
-   *Called when the client wants a list of all lobbies and players
-   */
-  public void requestServerInfo() {
-    String command = ClientProtocol.GET_FULL_SERVER_LIST.toString();
-    this.outputSocket.sendToServer(command);
-  }
-
-  /**
-   * Plays a clicking sound. Called when the user hovers over a button.
-   */
+  /** Plays a clicking sound. Called when the user hovers over a button. */
   public void clickSound() {
     this.clickPlayer.play();
     this.clickPlayer.seek(this.clickPlayer.getStartTime());
@@ -305,10 +290,19 @@ public class Client extends Application {
    */
   public void connect(String username, String serverIP, String serverPort) {
     try {
+      LOGGER.info(
+          "Attempting to connect to server with IP: " + serverIP + " and port: " + serverPort);
       SERVER_IP = serverIP;
       SERVER_PORT = Integer.parseInt(serverPort);
       if (username.isEmpty()) {
         username = System.getProperty("user.name");
+      } else if (username.length() > Server.MAX_NAME_LENGTH) {
+        loginController.alertManager.displayAlert(
+            "Username cannot be longer than " + Server.MAX_NAME_LENGTH + " characters.", true);
+        return;
+      } else if (username.equalsIgnoreCase("you")) {
+        loginController.alertManager.displayAlert("Username cannot be 'you'.", true);
+        return;
       }
 
       // Create sockets
@@ -319,31 +313,30 @@ public class Client extends Application {
         this.outputSocket = new ServerOut(socket, this);
 
         // Create threads for sockets
-        this.inputThread = new Thread(this.inputSocket);
-        this.outputThread = new Thread(this.outputSocket);
-        this.pingSender = new Thread(new ClientPingSender(this));
+        Thread inputThread = new Thread(this.inputSocket);
+        Thread outputThread = new Thread(this.outputSocket);
+        Thread pingSender = new Thread(new ClientPingSender(this));
 
         // Start threads
-        this.inputThread.start();
-        this.outputThread.start();
-        this.pingSender.start();
+        inputThread.start();
+        outputThread.start();
+        pingSender.start();
+
+        LOGGER.info("Connected to server.");
+        this.serverHasPonged = true;
 
         this.setUsername(username);
 
         // Load menu screen
         this.loadMenuScreen();
-
-        LOGGER.info("Connected to server.");
-        this.connectedToServer = true;
       }
     } catch (IOException | NumberFormatException e) {
       this.loginController.alertManager.displayAlert("Could not connect to server.", true);
+      LOGGER.error("Could not connect to server. " + e.getMessage());
     }
   }
 
-  /**
-   * Sends a CLIENT_PING message to the server
-   */
+  /** Sends a CLIENT_PING message to the server */
   protected void ping() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PING.toString();
@@ -351,18 +344,14 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * Sends a CLIENT_PONG message to the server (meant as a response to the SERVER_PING message)
-   */
+  /** Sends a CLIENT_PONG message to the server (meant as a response to the SERVER_PING message) */
   protected void pong() {
     if (!shuttingDown) {
       String command = ClientProtocol.CLIENT_PONG.toString();
       this.outputSocket.sendToServer(command);
     }
   }
-  /**
-   * Starts the client and sets the IP and the port
-   */
+  /** Starts the client and sets the IP and the port */
   public static void start(String[] args) {
     String[] serverInfo = args[0].split(":");
     if (serverInfo.length != 2) {
@@ -383,15 +372,20 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * Sets the username of the client.
-   * Inform when the username is already set to that one
-   */
+  /** Sets the username of the client. Inform when the username is already set to that one */
   public void setUsername(String username) {
-    if (username.equals(this.username)) {
-      if (this.menuScreen) {
+    if (this.menuScreen) {
+      if (username.equals(this.username)) {
         this.menuController.alertManager.displayAlert(
             "Username already set to " + username + ".", true);
+        return;
+      } else if (username.length() > Server.MAX_NAME_LENGTH) {
+        this.menuController.alertManager.displayAlert(
+            "Username cannot be longer than " + Server.MAX_NAME_LENGTH + " characters.", true);
+        return;
+      } else if (username.equalsIgnoreCase("you")) {
+        this.menuController.alertManager.displayAlert(
+            "\"You\" isn't much of a name is it?", true);
         return;
       }
     }
@@ -400,14 +394,14 @@ public class Client extends Application {
             + ServerProtocol.SEPARATOR
             + username.replace(" ", "_");
     this.outputSocket.sendToServer(command);
+    LOGGER.info("Requested username change from " + this.username + " to " + username + ".");
   }
 
-  /**
-   * This client wants to send a public message to all clients (broadcast).
-   */
+  /** This client wants to send a public message to all clients (broadcast). */
   public void sendPublicMessage(String message) {
     try {
-      String command = ServerProtocol.SEND_PUBLIC_MESSAGE.toString() + ServerProtocol.SEPARATOR + message;
+      String command =
+          ServerProtocol.SEND_PUBLIC_MESSAGE.toString() + ServerProtocol.SEPARATOR + message;
       this.outputSocket.sendToServer(command);
     } catch (Exception e) {
       // The message was empty
@@ -415,16 +409,13 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * This client wants to send a private message to another client (whisper chat).
-   */
+  /** This client wants to send a private message to another client (whisper chat). */
   public void sendPrivateMessage(String message) {
     String[] split = message.split(" ", 2);
     if (split.length <= 1) {
       if (this.isInLobby) {
         this.lobbyController.alertManager.displayAlert("Tried sending empty message.", true);
-      }
-      else if (this.menuScreen) {
+      } else if (this.menuScreen) {
         this.menuController.alertManager.displayAlert("Tried sending empty message.", true);
       }
       return;
@@ -434,10 +425,11 @@ public class Client extends Application {
 
     if (recipient.equals(this.username)) {
       if (this.isInLobby) {
-        this.lobbyController.alertManager.displayAlert("You cannot send messages to yourself.", true);
-      }
-      else if (this.menuScreen) {
-        this.menuController.alertManager.displayAlert("You cannot send messages to yourself.", true);
+        this.lobbyController.alertManager.displayAlert(
+            "You cannot send messages to yourself.", true);
+      } else if (this.menuScreen) {
+        this.menuController.alertManager.displayAlert(
+            "You cannot send messages to yourself.", true);
       }
       return;
     }
@@ -465,47 +457,46 @@ public class Client extends Application {
   public void noUserFound(String username) {
     if (this.menuScreen) {
       this.menuController.alertManager.displayAlert("User " + username + " not found.", true);
-    }
-    else if (this.lobbyScreen) {
+    } else if (this.lobbyScreen) {
       this.lobbyController.alertManager.displayAlert("User " + username + " not found.", true);
-    }
-    else if (this.gameScreen) {
+    } else if (this.gameScreen) {
       this.gameController.alertManager.displayAlert("User " + username + " not found.", true);
     }
   }
 
-  /**
-   * Notifies server that the client is logging out, closes the socket and stops the threads
-   */
+  /** Notifies server that the client is logging out, closes the socket and stops the threads */
   protected void exit() {
-    // Communicate with server that client is logging out
-    String command = ClientProtocol.EXIT.toString();
-    try {
-      this.outputSocket.sendToServer(command);
+    LOGGER.info("Closing the program.");
+    if (this.connectedToServer) {
+      try {
+        // Communicate with server that client is logging out
+        String command = ClientProtocol.EXIT.toString();
+        this.outputSocket.sendToServer(command);
+      } catch (NullPointerException e) {
+        LOGGER.error("Socket is already closed" + e.getMessage());
+      }
 
       // Close the socket and stop the threads
-      this.inputSocket.running = false;
-      this.outputSocket.running = false;
       try {
         this.socket.close();
       } catch (IOException e) {
-        System.err.println("[CLIENT] Failed to close socket: " + e.getMessage());
-        e.printStackTrace();
+        LOGGER.error("Could not close the socket.");
       }
-    } catch (NullPointerException e) {
-      LOGGER.info("Socket is already closed");
+
+      this.inputSocket.running = false;
+      this.outputSocket.running = false;
     }
+
     try {
       this.stage.close();
     } catch (IllegalStateException e) {
-      LOGGER.info("Stage is already closed");
+      LOGGER.error("Stage is already closed");
     }
+
     System.exit(0);
   }
 
-  /**
-   * Notifies the server that the client wants to exit the lobby
-   */
+  /** Notifies the server that the client wants to exit the lobby */
   public void exitLobby() {
     String command = ClientProtocol.EXIT_LOBBY.toString();
     this.outputSocket.sendToServer(command);
@@ -522,6 +513,14 @@ public class Client extends Application {
       if (name.equals("") || password.equals("")) {
         return;
       }
+      if (name.length() > Server.MAX_NAME_LENGTH) {
+        if (this.menuScreen) {
+          this.menuController.alertManager.displayAlert(
+              "Lobby name cannot be longer than " + Server.MAX_NAME_LENGTH + " characters.", true);
+          return;
+        }
+      }
+      LOGGER.info("Requesting creation of lobby with name " + name + ".");
       String command =
           ClientProtocol.CREATE_LOBBY.toString()
               + ServerProtocol.SEPARATOR
@@ -529,24 +528,6 @@ public class Client extends Application {
               + ServerProtocol.SEPARATOR
               + password;
       this.outputSocket.sendToServer(command);
-    }
-  }
-
-  /**
-   * Handles interaction with client in the console when the client wants to create a new lobby
-   * (calls <code>createLobby(String name, String password)</code>)
-   */
-  protected void createLobby() {
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print("Enter lobby name: \n> ");
-      String name = reader.readLine();
-      System.out.print("Enter lobby password: \n> ");
-      String password = reader.readLine();
-      this.createLobby(name, password);
-    } catch (IOException e) {
-      System.err.println("[CLIENT] Failed to read lobby name: " + e.getMessage());
-      e.printStackTrace();
     }
   }
 
@@ -562,6 +543,7 @@ public class Client extends Application {
         System.out.println("Invalid lobby name or password");
         return;
       }
+      LOGGER.info("Requesting to join lobby with name " + name + ".");
       String command =
           ClientProtocol.JOIN_LOBBY.toString()
               + ServerProtocol.SEPARATOR
@@ -572,51 +554,7 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * Handles interaction with client in the console when the client wants to join a lobby (calls
-   * <code>joinLobby(String name, String password)</code>)
-   */
-  protected void joinLobby() {
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print("Enter lobby name: \n> ");
-      String name = reader.readLine();
-      System.out.print("Enter lobby password: \n> ");
-      String password = reader.readLine();
-      this.joinLobby(name, password);
-    } catch (IOException e) {
-      System.err.println("[CLIENT] Failed to read lobby name: " + e.getMessage());
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * Prints the username of the client to the console
-   */
-  protected void whoami() {
-    System.out.println(this.username);
-    System.out.print("> ");
-  }
-
-  /**
-   * Sends a request to the server asking for the list of clients in the lobby
-   * */
-  public void listClientsLobby() {
-    String command = ClientProtocol.GET_CLIENTS_LOBBY.toString();
-    this.outputSocket.sendToServer(command);
-  }
-
-  /**
-   * Sends a request to the server asking for the list of total clients connected with the server
-   */
-  protected void listClientsServer() {
-    String command = ClientProtocol.GET_CLIENTS_SERVER.toString();
-    this.outputSocket.sendToServer(command);
-  }
-
-  /**
-   * If the client is in a lobby, their list of clients in the lobby is updated.
-   * */
+  /** If the client is in a lobby, their list of clients in the lobby is updated. */
   protected void updateLobbyList(String clientList) {
     if (this.isInLobby) {
       this.lobbyController.updateLobbyList(clientList.split("<&\\?>"));
@@ -625,15 +563,19 @@ public class Client extends Application {
 
   /**
    * Inform the server when the toggle.isReady is true
+   *
    * @param isReady whether the client is ready or not
    */
   public void sendToggleReady(Boolean isReady) {
-    String command = ClientProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + isReady;
+    LOGGER.info("Toggling ready status to " + isReady + ".");
+    String command =
+        ClientProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + isReady;
     this.outputSocket.sendToServer(command);
   }
 
   /**
-   * This method set the toggle to ready  when it's called
+   * This method set the toggle to ready when it's called
+   *
    * @param isReady whether the client is ready or not
    */
   public void setToggleReady(String isReady) {
@@ -652,7 +594,7 @@ public class Client extends Application {
     try {
       this.loadMenuScreen();
       this.menuController.alertManager.displayAlert("Exited lobby " + lobbyName + ".", false);
-
+      LOGGER.info("Exited lobby " + lobbyName + ".");
     } catch (IOException e) {
       LOGGER.fatal("Failed to load menu screen. Shutting down.");
       this.exit();
@@ -683,7 +625,8 @@ public class Client extends Application {
 
   /**
    * Updates the clientList in the server
-   * @param command
+   *
+   * @param command The command received from the server containing the list of clients
    */
   public void updateClientInfo(String command) {
     if (this.menuScreen) {
@@ -707,6 +650,7 @@ public class Client extends Application {
    * to load the lobby screen.
    */
   public void enterLobby(String lobbyName) {
+    LOGGER.info("Entered lobby " + lobbyName + ".");
     this.lobbyName = lobbyName;
     try {
       this.loadLobbyScreen();
@@ -753,10 +697,7 @@ public class Client extends Application {
     this.clickPlayer.setVolume(volume);
   }
 
-  /**
-   * Sets the username with the String gotten
-   * @param username
-   */
+  /** Sets the username with the String gotten */
   public void usernameSetTo(String username) {
     if (this.username != null) {
       if (this.menuScreen) {
@@ -764,22 +705,18 @@ public class Client extends Application {
         this.menuController.settingsTabController.setUsernameField();
       }
     }
+    LOGGER.info(
+        "Received confirmation of username change from " + this.username + " to " + username + ".");
     this.username = username;
     this.menuController.settingsTabController.setUsernameField();
   }
 
-  /**
-   * returns the username as a String
-   * @return
-   */
+  /** returns the username as a String */
   public String getUsername() {
     return this.username;
   }
 
-  /**
-   *returns the lobbyName as a String
-   * @return
-   */
+  /** returns the lobbyName as a String */
   public String getLobbyName() {
     return this.lobbyName;
   }

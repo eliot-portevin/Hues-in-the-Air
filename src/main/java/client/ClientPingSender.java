@@ -7,7 +7,6 @@ public class ClientPingSender implements Runnable {
 
   /**
    * Initialises the ClientPingSender by setting the client
-   * @param client
    */
   public ClientPingSender(Client client) {
     this.client = client;
@@ -15,7 +14,6 @@ public class ClientPingSender implements Runnable {
 
   /**
    * Method from Runnable interface.
-   *
    * Sends a ping to the server every 300ms. If the server doesn't respond to 3 pings, the client
    * logs out.
    */
@@ -23,8 +21,8 @@ public class ClientPingSender implements Runnable {
     while (this.running) {
       try {
         Thread.sleep(300);
-        if (client.connectedToServer) {
-          client.connectedToServer = false;
+        if (client.serverHasPonged) {
+          client.serverHasPonged = false;
           client.ping();
         } else {
           if (client.noAnswerCounter > 3) {
@@ -33,7 +31,7 @@ public class ClientPingSender implements Runnable {
             this.client.exit();
           } else {
             client.noAnswerCounter++;
-            client.connectedToServer = true;
+            client.serverHasPonged = true;
           }
         }
       } catch (InterruptedException e) {

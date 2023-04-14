@@ -1,12 +1,11 @@
 package server;
 
-import client.Client;
-import javafx.scene.paint.Color;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.scene.paint.Color;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Lobby {
   private final String name;
@@ -16,7 +15,7 @@ public class Lobby {
   private final HashMap<ClientHandler, Boolean> clientsReady = new HashMap<>();
   private final HashMap<ClientHandler, Color> clientColours = new HashMap<>();
 
-  private final Logger LOGGER = Logger.getLogger(Lobby.class.getName());
+  private final Logger LOGGER = LogManager.getLogger(getClass());
   /**
    * Creates a new lobby.
    *
@@ -37,13 +36,15 @@ public class Lobby {
   protected void addClient(ClientHandler client, String clientPwd) {
     if (clientPwd.equals(this.password)) {
       if (this.getNumPlayers() < 4) {
-        this.clients.add(client);
-        this.clientsReady.put(client, false);
-        this.clientColours.put(client, this.getFreeColour());
-        client.enterLobby(this);
-        Server.getInstance().updateLobbyList();
-        Server.getInstance().updateClientList();
-        LOGGER.info("Client " + client.getUsername() + " joined lobby " + this.name);
+        synchronized (this.clients) {
+          this.clients.add(client);
+          this.clientsReady.put(client, false);
+          this.clientColours.put(client, this.getFreeColour());
+          client.enterLobby(this);
+          Server.getInstance().updateLobbyList();
+          Server.getInstance().updateClientList();
+          LOGGER.info("Client " + client.getUsername() + " joined lobby " + this.name);
+        }
       }
     }
   }
@@ -62,14 +63,15 @@ public class Lobby {
    * @param client The client to remove
    */
   protected void removeClient(ClientHandler client) {
-    client.exitLobby();
-    this.clients.remove(client);
-    this.clientsReady.remove(client);
-    this.clientColours.remove(client);
-    Server.getInstance().updateLobbyList();
-    Server.getInstance().updateClientList();
-    LOGGER.info("Client " + client.getUsername() + " left lobby " + this.name);
-
+    synchronized (this.clients) {
+      client.exitLobby();
+      this.clients.remove(client);
+      this.clientsReady.remove(client);
+      this.clientColours.remove(client);
+      Server.getInstance().updateLobbyList();
+      Server.getInstance().updateClientList();
+      LOGGER.info("Client " + client.getUsername() + " left lobby " + this.name);
+    }
     this.updateLobbyList();
   }
 
@@ -115,7 +117,7 @@ public class Lobby {
   /** Called from {@link ClientHandler} when a client toggles their ready status. */
   public void toggleClientReady(ClientHandler client, boolean isReady) {
     if (!isInLobby(client.getUsername())) {
-      LOGGER.warning(
+      LOGGER.warn(
           "Client "
               + client.getUsername()
               + " tried to toggle their ready status in lobby "
@@ -150,9 +152,7 @@ public class Lobby {
     game.run();
   }
 
-  /**
-   * Returns the lobby list as a string containing all the information about the lobby.
-   */
+  /** Returns the lobby list as a string containing all the information about the lobby. */
   public String listLobby() {
     String command = ServerProtocol.UPDATE_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
 

@@ -11,7 +11,6 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 public class Server implements Runnable {
 
   private final int PORT;
@@ -27,6 +26,8 @@ public class Server implements Runnable {
 
   private static Server instance;
   protected final Logger LOGGER;
+
+  public static final int MAX_NAME_LENGTH = 24;
 
   public Server(int PORT) {
     this.PORT = PORT;
@@ -45,17 +46,15 @@ public class Server implements Runnable {
 
       while (true) {
         if (!shuttingDown) {
-          if(this.noClientConnected) {
+          if (this.noClientConnected) {
             this.noClientConnected = false;
             pingSender.start();
           }
-          LOGGER.info("Waiting for client connection...");
           try {
             Socket client = listener.accept();
             this.addClient(client);
-           // LOGGER.info("Client was added");
-          }
-          catch (SocketException e) {
+            // LOGGER.info("Client was added");
+          } catch (SocketException e) {
             if (this.shuttingDown) {
               LOGGER.error("Unable to connect with message: " + e.getMessage());
               break;
@@ -73,6 +72,7 @@ public class Server implements Runnable {
 
   /**
    * Adds a client to the list of clients and starts a dedicated thread for the client.
+   *
    * @param clientSocket The socket of the client
    * @throws IOException If the client socket is closed
    */
@@ -109,16 +109,18 @@ public class Server implements Runnable {
 
   /**
    * Called when a lobby is empty and should be removed.
+   *
    * @param lobby The lobby that should be removed
    */
   protected void removeLobby(Lobby lobby) {
     this.lobbies.remove(lobby.getName());
     this.updateLobbyList();
-    LOGGER.info("Lobby " + lobby + " removed");
+    LOGGER.info("The lobby " + lobby.getName() + " was removed because it was empty.");
   }
 
   /**
    * Called from {@link ClientHandler} when a client disconnects
+   *
    * @throws IOException If the socket fails to close
    */
   protected void shutdown() throws IOException {
@@ -137,8 +139,7 @@ public class Server implements Runnable {
   }
 
   /**
-   * Used by {@link ClientHandler}  to list the clientHandlers
-   * @return
+   * Used by {@link ClientHandler} to list the clientHandlers
    */
   protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clientHandlers;
@@ -146,8 +147,8 @@ public class Server implements Runnable {
 
   /**
    * Returns the name of the client for given username
-   * @param username of the
-   * @return
+   *
+   * @param username of the client
    */
   protected ClientHandler getClientHandler(String username) {
     for (ClientHandler client : this.clientHandlers) {
@@ -161,8 +162,9 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link ClientHandler} when a client wants to create a lobby
-   * Creates a new lobby and adds the client to it.
+   * Called from {@link ClientHandler} when a client wants to create a lobby Creates a new lobby and
+   * adds the client to it.
+   *
    * @param lobbyName The name of the lobby
    * @param password The password of the lobby
    * @param client The client that wants to create the lobby
@@ -177,13 +179,14 @@ public class Server implements Runnable {
     }
 
     this.lobbies.put(lobbyName, new Lobby(lobbyName, password));
-    LOGGER.info(client.getUsername() + " created lobby " + lobbyName + "\n");
+    LOGGER.info(client.getUsername() + " created lobby " + lobbyName + ".");
     this.lobbies.get(lobbyName).addClient(client, password);
   }
 
   /**
-   * Called from {@link ClientHandler} when a client wants to join a lobby
-   * Adds the client to the lobby.
+   * Called from {@link ClientHandler} when a client wants to join a lobby Adds the client to the
+   * lobby.
+   *
    * @param lobbyName The name of the lobby
    * @param password The password of the lobby
    * @param client The client that wants to join the lobby
@@ -203,29 +206,31 @@ public class Server implements Runnable {
    * clients.
    */
   protected void updateLobbyList() {
-    for (Lobby lobby : this.lobbies.values()) {
-      if (lobby.getNumPlayers() == 0) {
-        this.removeLobby(lobby);
-        LOGGER.info("Lobby " + lobby + " removed.");
+    synchronized (this.lobbies) {
+      for (Lobby lobby : this.lobbies.values()) {
+        if (lobby.getNumPlayers() == 0) {
+          this.removeLobby(lobby);
+        }
       }
-    }
-    for (ClientHandler client : this.clientHandlers) {
-      client.updateLobbyList();
+      for (ClientHandler client : this.clientHandlers) {
+        client.updateLobbyList();
+      }
     }
   }
 
-  /**
-   * Sends a message to all clients in the server containing the list of all clients.
-   */
+  /** Sends a message to all clients in the server containing the list of all clients. */
   protected void updateClientList() {
-    for (ClientHandler client : this.clientHandlers) {
-      client.updateClientList();
+    synchronized (this.clientHandlers) {
+      for (ClientHandler client : this.clientHandlers) {
+        client.updateClientList();
+      }
     }
   }
 
   /**
    * Produces an array of all lobbies and their clients. Called from {@link ClientHandler} each time
    * the client list is updated. This list is then sent to the client.
+   *
    * @return An array of all lobbies and their clients
    */
   protected String[][] listLobbies() {
@@ -243,8 +248,8 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link ClientHandler} for the logger
-   * and from {@link Lobby} to update the lists
+   * Called from {@link ClientHandler} for the logger and from {@link Lobby} to update the lists
+   *
    * @return the instance of the server
    */
   public static Server getInstance() {

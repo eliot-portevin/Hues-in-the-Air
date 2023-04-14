@@ -121,7 +121,7 @@ public class ServerIn implements Runnable {
    * #protocolSwitch(String[])} upon receiving a PONG from the server.
    */
   private void resetClientStatus() {
-    this.client.connectedToServer = true;
+    this.client.serverHasPonged = true;
     this.client.noAnswerCounter = 0;
   }
 

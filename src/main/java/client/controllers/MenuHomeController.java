@@ -143,8 +143,10 @@ public class MenuHomeController {
                 } else if (newValue.getParent() == this.lobbiesHeader) {
                   this.textLobbyName.setText(newValue.getValue().split(" ")[0]);
                   this.textLobbyPassword.setText("");
-                  this.textLobbyPassword.requestFocus();
-                  this.textLobbyPassword.end();
+                  Platform.runLater(() -> {
+                    this.textLobbyPassword.requestFocus();
+                    this.textLobbyPassword.end();
+                  });
                 }
               }
             });

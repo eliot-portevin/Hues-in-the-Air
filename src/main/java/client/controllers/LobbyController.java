@@ -2,10 +2,8 @@ package client.controllers;
 
 import client.Client;
 import client.util.AlertManager;
-import java.util.ArrayList;
-import java.util.Objects;
-
 import client.util.Chat;
+import java.util.ArrayList;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -13,9 +11,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 
 public class LobbyController {
@@ -36,10 +33,8 @@ public class LobbyController {
   @FXML private Button logoutButton;
   @FXML private Label lobbyNameLabel;
 
-  @FXML private GridPane rightPane;
   @FXML private Label membersLabel;
-  @FXML private ListView<Rectangle> colourList;
-  @FXML private ListView<String> nameList;
+  @FXML private ListView<HBox> nameList;
   @FXML private ListView<String> readyList;
   @FXML private ToggleButton toggleReadyButton;
 
@@ -62,9 +57,58 @@ public class LobbyController {
     this.lobbyNameLabel.setText(Client.getInstance().getLobbyName());
   }
 
-  /** initialises the LobbyList and aligns it right */
+  /**
+   * Initialises the LobbyList format: player's status is aligned right and the colour's height has
+   * to be bound to the height of the other cells
+   */
   private void initialiseLobbyList() {
-    readyList.setCellFactory(l -> new ListViewCellAlignedRight());
+    nameList.setCellFactory(
+        l -> {
+          ListCell<HBox> cell =
+              new ListCell<>() {
+                @Override
+                protected void updateItem(HBox item, boolean empty) {
+                  super.updateItem(item, empty);
+                  if (empty || item == null || item.getChildren().size() != 2) {
+                    setText(null);
+                  } else {
+                    setAccessibleText(item.getAccessibleText());
+                    setAlignment(Pos.CENTER_LEFT);
+                    item.setAlignment(Pos.CENTER_LEFT);
+
+                    setGraphic(item);
+                  }
+                }
+              };
+          cell.setOnMouseClicked(
+              e -> {
+                if (!cell.isEmpty()) {
+                  Chat chat = serverChatManager.isInFront ? serverChatManager : lobbyChatManager;
+                  chat.fillTextField("@" + (cell.getAccessibleText() + " "));
+                }
+              });
+          return cell;
+        });
+    readyList.setCellFactory(
+        l ->
+            new ListCell<>() {
+              @Override
+              protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                  setText(null);
+                } else {
+                  HBox hBox = new HBox();
+                  Text text = new Text(item);
+                  hBox.setAlignment(Pos.CENTER_RIGHT);
+                  text.setTextAlignment(TextAlignment.RIGHT);
+                  hBox.getChildren().add(text);
+
+                  setAlignment(Pos.CENTER_RIGHT);
+                  setGraphic(hBox);
+                }
+              }
+            });
   }
 
   /** Binds the font size of the labels to the size of the window. */
@@ -83,14 +127,8 @@ public class LobbyController {
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
     this.nameList
         .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
-    this.readyList
-        .styleProperty()
-        .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(60)));
-    this.lobbyTabButton
-        .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    this.serverTabButton
+    this.readyList
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
   }
@@ -104,8 +142,16 @@ public class LobbyController {
     toggleReadyButton.setOnAction(
         e -> Client.getInstance().sendToggleReady(toggleReadyButton.isSelected()));
 
-    // Set the lobby tab to be selected by default.
-    lobbyTabButton.fire();
+    logoutButton.setOnMouseEntered(e -> Client.getInstance().clickSound());
+    toggleReadyButton.setOnMouseEntered(e -> Client.getInstance().clickSound());
+    lobbyTabButton.setOnMouseEntered(
+        e -> {
+          if (!lobbyTabButton.isSelected()) Client.getInstance().clickSound();
+        });
+    serverTabButton.setOnMouseEntered(
+        e -> {
+          if (!serverTabButton.isSelected()) Client.getInstance().clickSound();
+        });
   }
 
   /**
@@ -150,6 +196,9 @@ public class LobbyController {
               .styleProperty()
               .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(45)));
         });
+
+    lobbyTabButton.setSelected(false);
+    lobbyTabButton.fire();
   }
 
   /** Initialises the chat with a welcome message and sets the size according to the window */
@@ -168,12 +217,8 @@ public class LobbyController {
    */
   public void receiveMessage(String message, String sender, String privacy) {
     switch (privacy) {
-      case "Public" -> {
-        this.serverChatManager.addMessage(message, sender, false);
-      }
-      case "Lobby" -> {
-        this.lobbyChatManager.addMessage(message, sender, false);
-      }
+      case "Public" -> this.serverChatManager.addMessage(message, sender, false);
+      case "Lobby" -> this.lobbyChatManager.addMessage(message, sender, false);
       case "Private" -> {
         if (this.serverChatManager.isInFront) {
           this.serverChatManager.addMessage(message, sender, true);
@@ -190,50 +235,29 @@ public class LobbyController {
    * @param clients The list of clients in the lobby and their status separated by a space.
    */
   public void updateLobbyList(String[] clients) {
-    this.colourList.getItems().clear();
-    this.nameList.getItems().clear();
-    this.readyList.getItems().clear();
-
-    ArrayList<Rectangle> clientColours = new ArrayList<>();
-    ArrayList<String> clientNames = new ArrayList<>();
+    ArrayList<HBox> clientNames = new ArrayList<>();
     ArrayList<String> clientReady = new ArrayList<>();
 
     for (String client : clients) {
       String[] clientInfo = client.split(" ");
-      clientNames.add(
-          clientInfo[0].equals(Client.getInstance().getUsername()) ? "You" : clientInfo[0]);
-      clientReady.add(clientInfo[1].equals("true") ? "Ready" : "");
-      Rectangle colourRect = new Rectangle();
-      colourRect.widthProperty().bind(this.nameList.heightProperty().divide(10));
-      colourRect.heightProperty().bind(this.nameList.heightProperty().divide(10));
-      colourRect.setFill(Color.valueOf(clientInfo[2]));
-      clientColours.add(colourRect);
+
+      // Name
+      HBox clientNameAndColour = new HBox();
+      Text colour = new Text("■ ");
+      // ■ ●
+      Text name =
+          new Text(
+              clientInfo[0].equals(Client.getInstance().getUsername()) ? "You" : clientInfo[0]);
+      colour.setFill(Color.valueOf(clientInfo[2]));
+      clientNameAndColour.getChildren().addAll(colour, name);
+      clientNameAndColour.setAccessibleText(name.getText());
+      clientNames.add(clientNameAndColour);
+
+      // Status
+      clientReady.add(clientInfo[1].equals("true") ? "Ready" : "...");
     }
 
     this.nameList.getItems().setAll(clientNames);
     this.readyList.getItems().setAll(clientReady);
-    this.colourList.getItems().setAll(clientColours);
-  }
-}
-
-/** a class to align cells in nameList to the right */
-final class ListViewCellAlignedRight extends ListCell<String> {
-  @Override
-  protected void updateItem(String item, boolean empty) {
-    super.updateItem(item, empty);
-    if (empty) {
-      setGraphic(null);
-    } else {
-      // Create the HBox
-      HBox hBox = new HBox();
-      hBox.setAlignment(Pos.CENTER_RIGHT);
-
-      // Create centered Label
-      Label label = new Label(item);
-      label.setAlignment(Pos.CENTER_RIGHT);
-
-      hBox.getChildren().add(label);
-      setGraphic(hBox);
-    }
   }
 }

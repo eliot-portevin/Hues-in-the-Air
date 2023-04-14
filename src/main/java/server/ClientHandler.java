@@ -1,6 +1,9 @@
 package server;
 
 import client.ClientProtocol;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,12 +32,15 @@ public class ClientHandler implements Runnable {
   private String username;
   private Lobby lobby;
 
+  private final Logger LOGGER;
+
   /** Is in charge of a single client. */
   public ClientHandler(Socket clientSocket, Server server) throws IOException {
     this.client = clientSocket;
     this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
     this.out = new PrintWriter(client.getOutputStream(), true);
     this.server = server;
+    this.LOGGER = LogManager.getLogger(getClass());
   }
   /**
    * Handles the client's input. If the client sends "exit", the server shuts down. If the client
@@ -108,14 +114,12 @@ public class ClientHandler implements Runnable {
     } else if (recipientHandler == null) {
       this.out.println(
           ServerProtocol.NO_USER_FOUND.toString() + ServerProtocol.SEPARATOR + recipient);
-      Server.getInstance()
-          .LOGGER
-          .error(
-              "ClientHandler "
-                  + this.username
-                  + " tried to send a message to "
-                  + recipient
-                  + ", but the recipient doesn't exist.");
+      this.LOGGER.error(
+          "ClientHandler "
+              + this.username
+              + " tried to send a message to "
+              + recipient
+              + ", but the recipient doesn't exist.");
     }
   }
   /**
@@ -143,9 +147,8 @@ public class ClientHandler implements Runnable {
     try {
       return this.in.readLine();
     } catch (IOException e) {
-      Server.getInstance()
-          .LOGGER
-          .error("ClientHandler " + this.username + " couldn't receive message from client.");
+      this.LOGGER.error(
+          "ClientHandler " + this.username + " couldn't receive message from client.");
       return null;
     }
   }
@@ -196,9 +199,7 @@ public class ClientHandler implements Runnable {
     this.noAnswerCounter = 0;
   }
 
-  /**
-   *Returns the username
-   */
+  /** Returns the username */
   protected String getUsername() {
     return this.username;
   }
@@ -216,14 +217,16 @@ public class ClientHandler implements Runnable {
     ClientHandler client = this.server.getClientHandler(username);
 
     if (client == null) {
+      if (this.username == null) {
+        this.LOGGER.info("Connected client with username " + username + ".");
+      } else {
+        this.LOGGER.info("Client " + this.username + " changed username to " + username + ".");
+      }
+
       this.username = username;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
       this.out.println(message);
-
-      Server.getInstance()
-          .LOGGER
-          .info("ClientHandler " + this.username + " changed username to " + username);
 
       this.server.updateClientList();
       this.server.updateLobbyList();
@@ -261,8 +264,8 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * return this.lobby
-   * Is called from the server when a Client disconnects, so it can be removed from the lobby
+   * return this.lobby Is called from the server when a Client disconnects, so it can be removed
+   * from the lobby
    */
   protected Lobby getLobby() {
     return this.lobby;
@@ -293,9 +296,7 @@ public class ClientHandler implements Runnable {
     this.lobby = null;
   }
 
-  /**
-   * Updates the lobbyList and prints it out
-   */
+  /** Updates the lobbyList and prints it out */
   public void updateLobbyList() {
     String[][] lobbyInfo = this.server.listLobbies();
 
@@ -313,9 +314,7 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
-  /**
-   * Updates the list of the clients
-   */
+  /** Updates the list of the clients */
   public void updateClientList() {
     ArrayList<ClientHandler> clients = this.server.getClientHandlers();
 
@@ -327,9 +326,7 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
-  /**
-   * Called from {@link Game} to tell the client that the game has started.
-   */
+  /** Called from {@link Game} to tell the client that the game has started. */
   public void startGame() {
     this.out.println(ServerProtocol.START_GAME);
   }

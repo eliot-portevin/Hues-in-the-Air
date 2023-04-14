@@ -25,6 +25,14 @@
             <DefaultRolloverStrategy max="5" />
             <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
         </RollingFile>
+        <RollingFile name="ClientHandler" fileName="${basePath}server.log" filePattern="${basePath}%d{yyyy-MM-dd-hh} - " append="false">
+            <PatternLayout pattern="${loggingPattern}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="3000 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
         <RollingFile name="Client" fileName="${basePath}client.log" filePattern="${basePath}%d{yyyy-MM-dd-hh} - " append="false">
             <PatternLayout pattern="${loggingPattern}"/>
             <Policies>
@@ -40,6 +48,12 @@
         </Logger>
         <Logger name="server.ServerMain" level="TRACE" additivity="false">
             <AppenderRef ref="Server"/>
+        </Logger>
+        <Logger name="server.Lobby" level="TRACE" additivity="false">
+            <AppenderRef ref="Lobby"/>
+        </Logger>
+        <Logger name="server.ClientHandler" level="TRACE" additivity="false">
+            <AppenderRef ref="ClientHandler"/>
         </Logger>
         <Logger name="client.Client" level="TRACE" additivity="false">
             <AppenderRef ref="Client"/>

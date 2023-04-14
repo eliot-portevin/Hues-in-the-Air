@@ -1,6 +1,7 @@
 package client.util;
 
 import client.Client;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -62,8 +63,7 @@ public class Chat {
               }
             }
             chatText.clear();
-          }
-          else if (e.getCode().toString().equals("ESCAPE")) {
+          } else if (e.getCode().toString().equals("ESCAPE")) {
             chatText.getParent().requestFocus();
           }
         });
@@ -116,8 +116,8 @@ public class Chat {
   }
 
   /**
-   * Appends a received message to the chat in the correct format. Called from the concerned controller
-   * when a message is received.
+   * Appends a received message to the chat in the correct format. Called from the concerned
+   * controller when a message is received.
    */
   public void addMessage(String message, String sender, Boolean isPrivate) {
     Text text =
@@ -132,5 +132,18 @@ public class Chat {
 
     // Scroll to bottom
     this.scrollPane.setVvalue(1.0);
+  }
+
+  /**
+   * Fills the chat text field with a message and focuses on it. E.g. when a user clicks on a
+   * username in the lobby, the chat text field will be filled with the username.
+   */
+  public void fillTextField(String message) {
+    this.chatText.setText(message);
+    Platform.runLater(
+        () -> {
+          this.chatText.requestFocus();
+          this.chatText.end();
+        });
   }
 }

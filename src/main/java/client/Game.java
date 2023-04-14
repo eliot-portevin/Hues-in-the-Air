@@ -1,16 +1,14 @@
 package client;
 
 import gui.Colours;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class  Game {
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
@@ -102,9 +100,7 @@ public class  Game {
   }
 
   /**
-   * returns true if a key is pressed
-   * @param keyCode
-   * @return
+   * Returns whether a key has been pressed by the user or not.
    */
   private boolean isPressed(KeyCode keyCode) {
     return keys.getOrDefault(keyCode, false);
@@ -209,7 +205,6 @@ public class  Game {
     player.platforms = platforms; // Sets the platforms for the player
     player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
-    gameRoot.getChildren().add(new Label("HI there"));
   }
 
   /**

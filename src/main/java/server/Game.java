@@ -44,7 +44,6 @@ public class Game implements Runnable {
    * Updates the game. Called at every frame.
    */
   private void update() {
-    System.out.println("Started updating...");
     this.running = false;
   }
 
