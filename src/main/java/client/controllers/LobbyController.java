@@ -12,6 +12,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -36,6 +38,7 @@ public class LobbyController {
 
   @FXML private GridPane rightPane;
   @FXML private Label membersLabel;
+  @FXML private ListView<Rectangle> colourList;
   @FXML private ListView<String> nameList;
   @FXML private ListView<String> readyList;
   @FXML private ToggleButton toggleReadyButton;
@@ -59,9 +62,7 @@ public class LobbyController {
     this.lobbyNameLabel.setText(Client.getInstance().getLobbyName());
   }
 
-  /**
-   * initialises the LobbyList and aligns it right
-   */
+  /** initialises the LobbyList and aligns it right */
   private void initialiseLobbyList() {
     readyList.setCellFactory(l -> new ListViewCellAlignedRight());
   }
@@ -151,10 +152,7 @@ public class LobbyController {
         });
   }
 
-  /**
-   * Initialises the chat with a welcome message
-   * and sets the size according to the window
-   */
+  /** Initialises the chat with a welcome message and sets the size according to the window */
   private void initialiseChats() {
     this.lobbyChatManager = new Chat("lobby", lobbyChatText, lobbyChat, lobbyChatPane);
     this.serverChatManager = new Chat("server", serverChatText, serverChat, serverChatPane);
@@ -192,9 +190,11 @@ public class LobbyController {
    * @param clients The list of clients in the lobby and their status separated by a space.
    */
   public void updateLobbyList(String[] clients) {
+    this.colourList.getItems().clear();
     this.nameList.getItems().clear();
     this.readyList.getItems().clear();
 
+    ArrayList<Rectangle> clientColours = new ArrayList<>();
     ArrayList<String> clientNames = new ArrayList<>();
     ArrayList<String> clientReady = new ArrayList<>();
 
@@ -203,10 +203,16 @@ public class LobbyController {
       clientNames.add(
           clientInfo[0].equals(Client.getInstance().getUsername()) ? "You" : clientInfo[0]);
       clientReady.add(clientInfo[1].equals("true") ? "Ready" : "");
+      Rectangle colourRect = new Rectangle();
+      colourRect.widthProperty().bind(this.nameList.heightProperty().divide(10));
+      colourRect.heightProperty().bind(this.nameList.heightProperty().divide(10));
+      colourRect.setFill(Color.valueOf(clientInfo[2]));
+      clientColours.add(colourRect);
     }
 
     this.nameList.getItems().setAll(clientNames);
     this.readyList.getItems().setAll(clientReady);
+    this.colourList.getItems().setAll(clientColours);
   }
 }
 

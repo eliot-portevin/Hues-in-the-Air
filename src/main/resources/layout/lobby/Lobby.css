@@ -21,7 +21,7 @@
     -fx-font-size: 50;
 }
 
-#nameList, #readyList {
+#colourList, #nameList, #readyList {
     -fx-background-color: transparent;
     -fx-background: transparent;
     -fx-border-width: 0;

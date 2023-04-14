@@ -45,12 +45,12 @@
                <children>
                   <HBox alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <ToggleButton fx:id="lobbyTabButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Lobby" />
+                        <ToggleButton fx:id="lobbyTabButton" mnemonicParsing="false" stylesheets="@../TabButton.css" text="Lobby" />
                      </children>
                   </HBox>
                   <HBox alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <ToggleButton fx:id="serverTabButton" mnemonicParsing="false" stylesheets="@../tabButton.css" text="Server" />
+                        <ToggleButton fx:id="serverTabButton" mnemonicParsing="false" stylesheets="@../TabButton.css" text="Server" />
                      </children>
                   </HBox>
                </children>

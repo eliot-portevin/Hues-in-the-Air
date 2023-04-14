@@ -625,7 +625,7 @@ public class Client extends Application {
 
   /**
    * Inform the server when the toggle.isReady is true
-   * @param isReady
+   * @param isReady whether the client is ready or not
    */
   public void sendToggleReady(Boolean isReady) {
     String command = ClientProtocol.TOGGLE_READY_STATUS.toString() + ServerProtocol.SEPARATOR + isReady;
@@ -634,7 +634,7 @@ public class Client extends Application {
 
   /**
    * This method set the toggle to ready  when it's called
-   * @param isReady
+   * @param isReady whether the client is ready or not
    */
   public void setToggleReady(String isReady) {
     this.lobbyController.setToggleReady(isReady);
