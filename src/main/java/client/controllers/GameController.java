@@ -36,7 +36,7 @@ public class GameController {
   @FXML private Label alert;
   public AlertManager alertManager;
 
-  private Game game;
+  public Game game;
 
   public void initialize() {
     this.game = new Game();
@@ -48,6 +48,10 @@ public class GameController {
     this.setChatTabsBehaviour();
 
     this.alertManager = new AlertManager(alertPane, alert);
+  }
+
+  public Game getGame() {
+    return this.game;
   }
 
   /**

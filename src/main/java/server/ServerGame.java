@@ -48,7 +48,7 @@ public class ServerGame implements Runnable {
   }
 
   // TODO add a method to handle client jumping
-  // TODO add a method to uppdate the client's position
+  // TODO add a method to update the client's position
   // TODO add a method to updated the client's velocity and gravity
   // TODO add a method to pause game when client disconnects
   // TODO add a method to unpause game when client reconnects
@@ -201,6 +201,7 @@ public class ServerGame implements Runnable {
     long now = 0;
     while(this.running){
       now = System.nanoTime();
+      System.out.println("hi");
       try {
         Thread.sleep((long) Math.floor(1e3/60));
       } catch (InterruptedException e) {

@@ -185,6 +185,8 @@ public class ClientHandler implements Runnable {
           case EXIT_LOBBY -> {
             if (this.lobby != null) this.lobby.removeClient(this);
           }
+          case REQUEST_JUMP -> this.requestJump();
+          case REQUEST_PAUSE -> this.requestPause();
 
           default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
         }
@@ -326,8 +328,19 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
-  /** Called from {@link Game} to tell the client that the game has started. */
+  /** Called from {@link ServerGame} to tell the client that the game has started. */
   public void startGame() {
     this.out.println(ServerProtocol.START_GAME);
+  }
+
+  private void requestJump() {
+    this.lobby.getGame().requestJump();
+  }
+
+  private void requestPause() {
+    this.lobby.getGame().pauseGame();
+    for(ClientHandler client : this.lobby.getClientHandlers()) {
+      client.out.println("PAUSE");
+    }
   }
 }

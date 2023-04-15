@@ -65,7 +65,13 @@ public enum ServerProtocol {
 
   SERVER_PING(0),
 
-  SERVER_PONG(0);
+  SERVER_PONG(0),
+
+  TOGGLE_PAUSE(0),
+
+  BIG_UPDATE(6),
+
+  POSITION_UPDATE(2);
 
   private final int numArgs;
 

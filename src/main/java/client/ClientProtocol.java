@@ -56,7 +56,11 @@ public enum ClientProtocol {
   TOGGLE_READY_STATUS(1),
 
   CLIENT_PING(0),
-  CLIENT_PONG(0);
+  CLIENT_PONG(0),
+
+  REQUEST_JUMP(0),
+
+  REQUEST_PAUSE(0);
 
   private final int numArgs;
 

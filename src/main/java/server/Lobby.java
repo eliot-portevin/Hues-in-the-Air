@@ -18,6 +18,9 @@ public class Lobby {
   private final HashMap<ClientHandler, Color> clientColours = new HashMap<>();
 
   private final Logger LOGGER = LogManager.getLogger(getClass());
+
+  private ServerGame game;
+  boolean gameInitialised = false;
   /**
    * Creates a new lobby.
    *
@@ -150,9 +153,17 @@ public class Lobby {
   /** Starts the game. */
   private void startGame() {
     // The game instance starts itself
-    ServerGame game = new ServerGame(this.clientColours);
+    this.game = new ServerGame(this.clientColours);
+    gameInitialised = true;
     Thread gameThread = new Thread(game);
     gameThread.start();
+    for(ClientHandler client : this.getClientHandlers()) {
+      client.startGame();
+    }
+  }
+
+  protected ServerGame getGame() {
+    return this.game;
   }
 
   /** Returns the lobby list as a string containing all the information about the lobby. */

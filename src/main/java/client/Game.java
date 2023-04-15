@@ -92,6 +92,14 @@ public class  Game {
     analyseKeys(deltaF);
   }
 
+  protected void updatePosition(String positionX, String positionY) {
+
+  }
+
+  protected void bigUpdate(String positionX, String positionY, String velocityX, String velocityY, String gravX, String gravY) {
+
+  }
+
   /**
    * Sets whether the game is paused or not.
    */
