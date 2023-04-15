@@ -56,7 +56,7 @@ public class ServerGame implements Runnable {
   // TODO add a method to pause game when client disconnects
   // TODO add a method to unpause game when client reconnects
 
-  private void handleJumpRequest(ClientHandler client) {
+  protected void handleJumpRequest(ClientHandler client) {
     if (client.canJump) {
       player.jump();
       //TODO: BROADCAST JUMP TO ALL CLIENTS
@@ -64,17 +64,17 @@ public class ServerGame implements Runnable {
     }
   }
 
-  private void updateAllClientPositions() {
+  protected void updateAllClientPositions() {
     //TODO: BROADCAST POSITION TO ALL CLIENTS
     //Statement String = POSITIONUPDATE + SEPERATOR + player.position.x + SEPERATOR + player.position.y;
   }
 
-  private void updateAllClientsGravitationAndVelocity() {
+  protected void updateAllClientsGravitationAndVelocity() {
     //TODO: BROADCAST GRAVITATION AND VELOCITY TO ALL CLIENTS
     //Statement string = BIGUPDATE + SEPERATOR + player.position.x + SEPERATOR + player.position.y + SEPERATOR + player.velocity.x + SEPERATOR + player.velocity.y + SEPERATOR + player.gravity.x + SEPERATOR + player.gravity.y;
   }
 
-  private void pauseGame() {
+  protected void pauseGame() {
     pause = true;
   }
 

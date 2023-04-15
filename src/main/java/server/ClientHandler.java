@@ -338,7 +338,7 @@ public class ClientHandler implements Runnable {
   }
 
   private void requestJump() {
-    this.lobby.getGame().requestJump();
+    this.lobby.getGame().handleJumpRequest(this);
   }
 
   private void requestPause() {
