@@ -51,7 +51,7 @@ public class Lobby {
 
   /** Gets an available colour for a new client. */
   private Color getFreeColour() {
-    ArrayList<Color> freeColours = new ArrayList<>(Game.blockColours);
+    ArrayList<Color> freeColours = new ArrayList<>(ServerGame.blockColours);
     for (Color colour : this.clientColours.values()) {
       freeColours.remove(colour);
     }
@@ -148,7 +148,7 @@ public class Lobby {
   /** Starts the game. */
   private void startGame() {
     // The game instance starts itself
-    Game game = new Game(this.clientColours);
+    ServerGame game = new ServerGame(this.clientColours);
     game.run();
   }
 

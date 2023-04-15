@@ -70,6 +70,7 @@ public class GameController {
         game.keys.put(e.getCode(), false);
       }
     });
+    backgroundPane.requestFocus();
   }
 
   /** Creates the chat objects for the right pane. */
