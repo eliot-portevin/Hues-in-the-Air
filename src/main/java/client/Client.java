@@ -267,6 +267,7 @@ public class Client extends Application {
 
     // Set controller
     this.gameController = loader.getController();
+    this.gameController.setClient(this);
 
     this.lobbyScreen = false;
     this.gameScreen = true;
@@ -677,6 +678,10 @@ public class Client extends Application {
     } else if (gameScreen) {
       this.gameController.receiveMessage(message, sender, privacy);
     }
+  }
+
+  protected void sendGameCommand(String command) {
+    this.outputSocket.sendToServer(command);
   }
 
   /**

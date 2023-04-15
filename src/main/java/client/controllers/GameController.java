@@ -1,5 +1,6 @@
 package client.controllers;
 
+import client.Client;
 import client.Game;
 import client.util.AlertManager;
 import client.util.Chat;
@@ -38,8 +39,10 @@ public class GameController {
 
   public Game game;
 
+  private Client client;
+
   public void initialize() {
-    this.game = new Game();
+    this.game = new Game(this.client);
     game.run(this.gamePane);
 
     this.initialiseKeyboard();
@@ -52,6 +55,10 @@ public class GameController {
 
   public Game getGame() {
     return this.game;
+  }
+
+  public void setClient(Client client) {
+    this.client = client;
   }
 
   /**

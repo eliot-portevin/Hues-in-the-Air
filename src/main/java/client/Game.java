@@ -27,6 +27,12 @@ public class  Game {
   public boolean pause = true;
   private boolean gameStarted = false;
 
+  private Client client;
+
+  public Game(Client client) {
+    this.client = client;
+  }
+
   /**
    * Called every frame and handles the game logic
    */
@@ -93,7 +99,6 @@ public class  Game {
   }
 
   protected void updatePosition(String positionX, String positionY) {
-
   }
 
   protected void bigUpdate(String positionX, String positionY, String velocityX, String velocityY, String gravX, String gravY) {
