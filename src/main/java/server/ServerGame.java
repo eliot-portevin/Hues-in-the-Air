@@ -29,7 +29,10 @@ public class ServerGame implements Runnable {
   private boolean jumped;
   private AnimationTimer timer;
   public boolean pause = false;
-  private boolean gameStarted = false;
+  //TODO reset to false
+  private boolean gameStarted = true;
+  private boolean allClientsReady = false;
+  private String[] levelData = LevelData.Level1;
 
   public static ArrayList<Color> blockColours =
       new ArrayList<>(
@@ -52,6 +55,41 @@ public class ServerGame implements Runnable {
   // TODO add a method to updated the client's velocity and gravity
   // TODO add a method to pause game when client disconnects
   // TODO add a method to unpause game when client reconnects
+
+  private void handleJumpRequest(ClientHandler client) {
+    if (client.canJump) {
+      player.jump();
+      //TODO: BROADCAST JUMP TO ALL CLIENTS
+      //Statement String = JUMP
+    }
+  }
+
+  private void updateAllClientPositions() {
+    //TODO: BROADCAST POSITION TO ALL CLIENTS
+    //Statement String = POSITIONUPDATE + SEPERATOR + player.position.x + SEPERATOR + player.position.y;
+  }
+
+  private void updateAllClientsGravitationAndVelocity() {
+    //TODO: BROADCAST GRAVITATION AND VELOCITY TO ALL CLIENTS
+    //Statement string = BIGUPDATE + SEPERATOR + player.position.x + SEPERATOR + player.position.y + SEPERATOR + player.velocity.x + SEPERATOR + player.velocity.y + SEPERATOR + player.gravity.x + SEPERATOR + player.gravity.y;
+  }
+
+  private void pauseGame() {
+    pause = true;
+  }
+
+  /**
+   * Checks for collisions with the white blocks and calls resetsPosition if it collides with one
+   */
+  public void checkForWhiteBlockHit() {
+    for (Node platform : death_platforms) {
+      if (player.rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
+        //TODO send message to client to reset position
+        //Statement String = DEATH
+        System.out.println("DEATH");
+      }
+    }
+  }
   /**
    * Called every frame and handles the game logic
    */
@@ -70,8 +108,11 @@ public class ServerGame implements Runnable {
   private void gameUpdate(double deltaF) {
     if(gameStarted) {
       player.move(player.velocity);
+      System.out.println("Player position: " + player.position.getX() + ", " + player.position.getY());
+      System.out.println("Player velocity: " + player.velocity.getX() + ", " + player.velocity.getY());
+      player.setPositionTo(player.start_position.getX(), player.start_position.getY());
     }
-    player.checkForWhiteBlockHit();
+    checkForWhiteBlockHit();
   }
 
 
@@ -79,6 +120,7 @@ public class ServerGame implements Runnable {
    * The update method that is called if the game is paused.
    */
   private void pauseUpdate(double deltaF) {
+    setPause(false);
     //Todo: Add pause menu and pause logic
   }
 
@@ -124,8 +166,8 @@ public class ServerGame implements Runnable {
    * Loads the platforms from the level data
    */
   private void load_platforms() {
-    for (int i=0; i<LevelData.Level1.length; i++) { // Creates the platforms
-      String line = LevelData.Level1[i];
+    for (int i=0; i<this.levelData.length; i++) { // Creates the platforms
+      String line = this.levelData[i];
       for (int j = 0; j < line.length(); j++) {
         switch (line.charAt(j)) {
           case '0':
@@ -152,7 +194,9 @@ public class ServerGame implements Runnable {
             platforms.add(platform5);
             break;
           case '7':
+            System.out.println("Player positionasdffffffffffffffffffffffffffffffffffff: " + j*gridSize + ", " + i*gridSize);
             load_player(new Vector2D(j*gridSize, i*gridSize));
+            System.out.println("Player positionasdfffffffffffffffffffffffffffffffffffffffffffff: " + player.position.getX() + ", " + player.position.getY());
         }
       }
     }
@@ -195,10 +239,29 @@ public class ServerGame implements Runnable {
 
     double timePerFrame = 1e9 / 60; // 60 FPS
     double deltaF = 0;
-    long previousTime = 0;
+    long previousTime = System.nanoTime();
     int frames = 0;
     long lastCheck = System.currentTimeMillis();
     long now = 0;
+
+
+
+    /**while (!allClientsReady){
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        allClientsReady = true;
+        //TODO: when start method in clientgame is called set corresponding clientReady to true
+        for (Boolean ready : clientReady){
+            if (!ready){
+                allClientsReady = false;
+                break;
+            }
+        }
+
+    }*/
     while(this.running){
       now = System.nanoTime();
       System.out.println("hi");

@@ -44,16 +44,7 @@ public class ServerCube {
         gameRoot.getChildren().add(rectangle);
     }
 
-    /**
-     * Checks for collisions with the white blocks and calls resetsPosition if it collides with one
-     */
-    public void checkForWhiteBlockHit() {
-        for (Node platform : death_platforms) {
-            if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
-                death();
-            }
-        }
-    }
+
 
     /**
      * Sets position of the cube to the given x and y

@@ -34,6 +34,10 @@ public class ClientHandler implements Runnable {
 
   private final Logger LOGGER;
 
+  // Variables required for the game
+  public boolean canJump = false;
+  public boolean ready = false;
+
   /** Is in charge of a single client. */
   public ClientHandler(Socket clientSocket, Server server) throws IOException {
     this.client = clientSocket;

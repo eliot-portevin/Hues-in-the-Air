@@ -244,7 +244,7 @@ public class LobbyController {
       // Name
       HBox clientNameAndColour = new HBox();
       Text colour = new Text("■ ");
-      // ■ ●
+      //
       Text name =
           new Text(
               clientInfo[0].equals(Client.getInstance().getUsername()) ? "You" : clientInfo[0]);
