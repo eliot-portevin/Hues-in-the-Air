@@ -1,5 +1,7 @@
 package server;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
 import server.ServerCube;
 import client.LevelData;
 import client.Vector2D;
@@ -27,6 +29,8 @@ public class ServerGame implements Runnable {
   private boolean jumped;
   private AnimationTimer timer;
   public boolean pause = false;
+  private boolean gameStarted = false;
+
   public static ArrayList<Color> blockColours =
       new ArrayList<>(
           Arrays.asList(
@@ -48,35 +52,33 @@ public class ServerGame implements Runnable {
   // TODO add a method to updated the client's velocity and gravity
   // TODO add a method to pause game when client disconnects
   // TODO add a method to unpause game when client reconnects
-  private void start() {
-    //Todo: Add start start logic
-  }
   /**
    * Called every frame and handles the game logic
    */
-  public void update(){
+  public void update(double deltaF){
     if (!pause) {
-      gameUpdate();
+      this.gameUpdate(deltaF);
     }
     else {
-      pauseUpdate();
+      this.pauseUpdate(deltaF);
     }
   }
 
   /**
    * The update method that is called if the game is not paused. Handles the game logic.
    */
-  private void gameUpdate() {
-    player.move(player.velocity);
+  private void gameUpdate(double deltaF) {
+    if(gameStarted) {
+      player.move(player.velocity);
+    }
     player.checkForWhiteBlockHit();
-    System.out.println("Game updated");
   }
 
 
   /**
    * The update method that is called if the game is paused.
    */
-  private void pauseUpdate() {
+  private void pauseUpdate(double deltaF) {
     //Todo: Add pause menu and pause logic
   }
 
@@ -115,7 +117,6 @@ public class ServerGame implements Runnable {
    */
   public void initializeContent() {
     gameRoot = new Pane();
-
     load_platforms(); // Loads the platforms
   }
 
@@ -190,11 +191,36 @@ public class ServerGame implements Runnable {
    * */
   @Override
   public void run() {
-    this.start();
+    this.initializeContent();
 
-    while (this.running) {
-      this.update();
-    }
-  }
+    double timePerFrame = 1e9 / 60; // 60 FPS
+    double deltaF = 0;
+    long previousTime = 0;
+    int frames = 0;
+    long lastCheck = System.currentTimeMillis();
+    long now = 0;
+    while(this.running){
+      now = System.nanoTime();
+      try {
+        Thread.sleep((long) Math.floor(1e3/60));
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+        deltaF += (System.nanoTime() - previousTime)/timePerFrame;
+        previousTime = System.nanoTime();
+        if(deltaF >= 1) {
+          while(deltaF >= 1) {
+            update(deltaF);
+            frames++;
+            deltaF--;
+          }
+        }
 
+        if(System.currentTimeMillis() - lastCheck >= 1000) {
+          System.out.println("FPS: " + frames);
+          frames = 0;
+          lastCheck = System.currentTimeMillis();
+        }
+      }
+    };
 }

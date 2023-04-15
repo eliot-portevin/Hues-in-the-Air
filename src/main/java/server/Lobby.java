@@ -7,6 +7,8 @@ import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static javafx.application.Application.launch;
+
 public class Lobby {
   private final String name;
   private final String password;
@@ -149,7 +151,8 @@ public class Lobby {
   private void startGame() {
     // The game instance starts itself
     ServerGame game = new ServerGame(this.clientColours);
-    game.run();
+    Thread gameThread = new Thread(game);
+    gameThread.start();
   }
 
   /** Returns the lobby list as a string containing all the information about the lobby. */
