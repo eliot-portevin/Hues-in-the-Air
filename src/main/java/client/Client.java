@@ -449,7 +449,7 @@ public class Client extends Application {
   /**
    * This client wants to send a message to the other clients in the lobby.
    *
-   * <p>Protocol format: SEND_MESSAGE_LOBBY&#60SEPARATOR&#62message
+   * Protocol format: SEND_MESSAGE_LOBBY&#60;SEPARATOR&#62;message
    */
   public void sendLobbyMessage(String message) {
     String command =
@@ -607,7 +607,7 @@ public class Client extends Application {
 
   /**
    * Updates the list of lobbies and their respective clients in the gui. The list of lobbies is
-   * given in the following format: <code>lobbyName1 client1 client2 client3<&?>lobbyName2</code>
+   * given in the following format: <code>lobbyName1 client1 client2 client3&#60;&#38;&#63;&#62;lobbyName2</code>
    *
    * @param command The command containing the list of lobbies and their respective clients
    */
