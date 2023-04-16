@@ -41,7 +41,7 @@ Command sent form server all clients, to relay the message of one client to all 
 
 ### SEND_LOBBY_MESSAGE
 A message is being sent to all clients in the lobby <br>
-Example: ServerProtocol.SEND_LOBBY_MESSAGE + ServerProtocol.Separator + username + ServerProtocol.Separator + message <br>
+Example: SEND_LOBBY_MESSAGE<&!>username<&!>message <br>
 Command sent form server all clients in the lobby, to send message to all clients connected to the lobby
 
 ### LOBBY_JOINED
@@ -90,6 +90,20 @@ Signal sent to client upon receiving a PING from the client <br>
 Example: SERVER_PONG; <br>
 Command sent form server to client. Server has received a PING from client and sends this command to client to confirm connection.
 
+### TOGGLE_PAUSE
+Signal sent to client upon receiving a pause request.
+Example: TOGGLE_PAUSE <br>
+Command sent form server to client. Server has received a pause request from client and sends this command to all clients to pause the game.
+
+###  START_GAME_LOOP
+Signal sent to client upon receiving a start game request.
+Example: START_GAME_LOOP <br>
+Command sent form server to client. Server has received a start game request from client and sends this command to all clients to start the game.
+
+### POSITION_UPDATE
+Updates the position of the cube for the client. <br>
+Example: POSITION_UPDATE<&!>x_pos<&!>y_pos <br>
+Command sent form server to client. Server sends this command to all clients to update the position of the cube.
 
 ## ClientProtocol
 ### COMMAND_SYMBOL
@@ -148,6 +162,11 @@ Client wants a list of all clients connected to the lobby <br>
 Example: GET_CLIENTS_LOBBY <br>
 Command sent from client to server. Client requests names of all clients connected to the lobby
 
+### TOGGLE_READY_STATUS
+Client wants to toggle their ready status <br>
+Example: TOGGLE_READY_STATUS<&!>clientIsReady <br> 
+Command sent from client to server. Client wants to toggle their ready status
+
 ### CLIENT_PING
 Signal regularly sent from client to server to confirm connection<br>
 Example: PING <br>
@@ -156,3 +175,21 @@ Command sent form client to server. Client sends this command regularly to serve
 ### CLIENT_PONG
 Signal sent to server upon receiving a PING from the server <br>
 Example: PONG <br>
+
+### REQUEST_JUMP
+Signal sent to server to tell server that client wants to jump <br>
+Example: REQUEST_JUMP <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to jump,
+server then checks whether the client is allowed to jump and either makes all clients jump or does nothing.
+
+### REQUEST_PAUSE
+Signal sent to server to tell server that client wants to pause the game <br>
+Example: REQUEST_PAUSE <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to pause the game,
+server then pauses the game and sends TOGGLE_PAUSE to all clients.
+
+### START_GAME_LOOP
+Signal sent to server to tell server that client wants to start the game <br>
+Example: START_GAME_LOOP <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to start the game,
+server then starts the game and sends START_GAME to all clients.
