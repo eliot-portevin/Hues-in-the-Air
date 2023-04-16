@@ -211,8 +211,6 @@ public class ServerCube {
                             if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize){
                                 rectangle.setTranslateX(platform.getTranslateX()-size.getX());
                                 setGravityAndVelocityRight();
-                                System.out.println("Right");
-                                System.out.println("wall: "+platform.getTranslateX()+" cube: "+rectangle.getTranslateX());
                             }
                         }
                     } else {
@@ -220,8 +218,6 @@ public class ServerCube {
                             if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize){
                                 rectangle.setTranslateX(platform.getTranslateX() + gridSize);
                                 setGravityAndVelocityLeft();
-                                System.out.println("Left");
-                                System.out.println("wall: "+platform.getTranslateX()+" cube: "+rectangle.getTranslateX());
                             }
                         }
                     }
@@ -250,8 +246,6 @@ public class ServerCube {
                             if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
                                 rectangle.setTranslateY(platform.getTranslateY() - size.getY());
                                 setGravityAndVelocityDown();
-                                System.out.println("Down");
-                                System.out.println("wall: "+platform.getTranslateY()+" cube: "+rectangle.getTranslateY());
                             }
                         }
                     } else {
@@ -259,8 +253,6 @@ public class ServerCube {
                             if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
                                 rectangle.setTranslateY(platform.getTranslateY() + gridSize);
                                 setGravityAndVelocityUp();
-                                System.out.println("Up");
-                                System.out.println("wall: "+platform.getTranslateY()+" cube: "+rectangle.getTranslateY());
                             }
                         }
                     }

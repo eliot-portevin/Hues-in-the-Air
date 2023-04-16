@@ -104,7 +104,6 @@ public class ServerGame implements Runnable {
    * The update method that is called if the game is paused.
    */
   private void pauseUpdate(double deltaF) {
-    System.out.println("Game is paused");
     //Todo: Add pause menu and pause logic
   }
 
