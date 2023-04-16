@@ -40,7 +40,7 @@ public class GameController {
   public Game game;
 
   private Client client;
-
+  /** Initializes the controller class. */
   public void initialize() {
 
     this.initialiseKeyboard();
@@ -51,15 +51,16 @@ public class GameController {
     this.alertManager = new AlertManager(alertPane, alert);
   }
 
+  /** Starts the game. Is required because otherwise the client is being set too late otherwise */
     public void startGame() {
       this.game = new Game(this.client);
       game.run(this.gamePane);
     }
-
+  /** getter for the game */
   public Game getGame() {
     return this.game;
   }
-
+  /** setter for the client */
   public void setClient(Client client) {
     this.client = client;
   }

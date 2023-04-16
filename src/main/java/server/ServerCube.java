@@ -48,10 +48,6 @@ public class ServerCube {
         gameRoot.getChildren().add(rectangle);
     }
 
-    public void bigUpdate() {
-
-    }
-
     /**
      * Sets position of the cube to the given x and y
      */
@@ -299,9 +295,6 @@ public class ServerCube {
 
     }
 
-    private void setOnlyMoveOneDir() {
-        this.onlyMoveOneDir = false;
-    }
     /**
      * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector
      */
@@ -337,12 +330,14 @@ public class ServerCube {
             onlyMoveOneDir = true;
         }
     }
-
+    /** Moves the cube by the given value in the x direction and updates the position of the cube
+     */
     public void moveValueX(double value){
         this.rectangle.setTranslateX(this.rectangle.getTranslateX() + value);
         this.position.setX(this.rectangle.getTranslateX());
     }
-
+    /** Moves the cube by the given value in the y direction and updates the position of the cube
+     */
     public void moveValueY(double value){
         this.rectangle.setTranslateY(this.rectangle.getTranslateY() + value);
         this.position.setY(this.rectangle.getTranslateY());
@@ -352,7 +347,12 @@ public class ServerCube {
      * Called upon collision with a white block, is responsible for the death effects of the cube.
      */
     public void death() {
-
         rectangle.setFill(Colours.DARK_GREY.getHex());
+    }
+
+    /** only here to prevent the cube from colliding strangely with the walls
+     */
+    private void setOnlyMoveOneDir() {
+        this.onlyMoveOneDir = false;
     }
 }

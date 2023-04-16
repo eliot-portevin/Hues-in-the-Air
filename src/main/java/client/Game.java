@@ -58,7 +58,8 @@ public class  Game {
   private void gameUpdate(double deltaF) {
     this.analyseKeys(deltaF);
   }
-
+  /** sends a request to the server to Toggle the pause
+   */
   private void setPauseRequestSent() {
     this.pauseRequestSent = false;
   }
@@ -94,7 +95,8 @@ public class  Game {
       }
     }
   }
-
+  /** Sends a ready up command to the server
+   */
   private void readyUp(){
     System.out.println("Ready upStarted");
     this.client.sendGameCommand(ClientProtocol.READY_UP.toString());
@@ -106,7 +108,10 @@ public class  Game {
   private void pauseUpdate(double deltaF) {
     analyseKeys(deltaF);
   }
-
+  /** update the position of the player
+   * @param positionX - x position
+   * @param positionY - y position
+   */
   protected void updatePosition(String positionX, String positionY) {
     player.setPositionTo(Double.parseDouble(positionX), Double.parseDouble(positionY));
   }

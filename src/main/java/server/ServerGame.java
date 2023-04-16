@@ -47,12 +47,7 @@ public class ServerGame implements Runnable {
     System.out.println("Game initialized");
   }
 
-  // TODO add a method to handle client jumping
-  // TODO add a method to update the client's position
-  // TODO add a method to updated the client's velocity and gravity
-  // TODO add a method to pause game when client disconnects
-  // TODO add a method to unpause game when client reconnects
-
+  /** Handles the jumprequest from the client */
   protected boolean handleJumpRequest(ClientHandler client) {
     if (client.canJump) {
       player.jump();
@@ -60,13 +55,13 @@ public class ServerGame implements Runnable {
     }
     return false;
   }
-
+  /** Updates position on all clients */
   protected void updateAllClientPositions() {
     for (ClientHandler client : clients) {
       client.positionUpdate(ServerProtocol.POSITION_UPDATE.toString() + ServerProtocol.SEPARATOR.toString() + player.position.getX() + ServerProtocol.SEPARATOR.toString() + player.position.getY());
     }
   }
-
+  /** Toggles pause state */
   protected void setPause() {
     pause = !pause;
   }
@@ -207,26 +202,9 @@ public class ServerGame implements Runnable {
     this.player.jump();
   }
 
-  /**
-   * Gets the frame rate in hertz
-   * @param deltaTimeNano - the time between frames in nanoseconds
-   * @return - the frame rate in hertz
-   */
-  public double getFrameRateHertz(long deltaTimeNano) {
-    double frameRate = 1d / deltaTimeNano;
-    return frameRate * 1e9;
-  }
-
+  /** Starts the game loop */
   public void startGameLoop() {
     this.running = true;
-    this.pause = false;
-  }
-
-  public void pause() {
-    this.pause = true;
-  }
-
-  public void unpause() {
     this.pause = false;
   }
 
@@ -245,7 +223,7 @@ public class ServerGame implements Runnable {
     long now = 0;
 
 
-
+    /** Wait for all clients to be ready */
     while (!allClientsReady){
         try {
             Thread.sleep(100);
@@ -262,6 +240,7 @@ public class ServerGame implements Runnable {
         }
     }
 
+    /** The game loop */
     while(this.running) {
       now = System.nanoTime();
       try {
@@ -280,11 +259,11 @@ public class ServerGame implements Runnable {
           }
         }
         updateAllClientPositions();
-        if (System.currentTimeMillis() - lastCheck >= 1000) {
+        /**if (System.currentTimeMillis() - lastCheck >= 1000) {
           System.out.println("FPS: " + frames);
           frames = 0;
           lastCheck = System.currentTimeMillis();
-        }
+        }*/
       } else {
         pauseUpdate(deltaF);
         deltaF += (System.nanoTime() - previousTime) / timePerFrame;
