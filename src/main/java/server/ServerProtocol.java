@@ -63,15 +63,18 @@ public enum ServerProtocol {
   /** Informs the client that the game is starting. */
   START_GAME(0),
 
+  /** Signal regularly sent from server to client to confirm connection. */
   SERVER_PING(0),
 
+  /** Signal sent to client upon receiving a PING from the client. */
   SERVER_PONG(0),
-
+  /** Signal sent to client upon receiving a pause request. */
   TOGGLE_PAUSE(0),
-
+  /** Informs clients that the game is starting. */
   START_GAME_LOOP(0),
+  /** Informs the client, that the jump request was successful. */
   JUMP(0),
-
+  /** Updates the position of the cube for the client. */
   POSITION_UPDATE(2);
 
   private final int numArgs;

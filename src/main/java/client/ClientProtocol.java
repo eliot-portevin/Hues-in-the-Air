@@ -54,14 +54,17 @@ public enum ClientProtocol {
 
   /** Client wants to toggle their ready status to true or false. */
   TOGGLE_READY_STATUS(1),
-
+  /** Signal regularly sent from client to server to confirm connection. */
   CLIENT_PING(0),
+  /** Signal sent to server upon receiving a PING from the server. */
   CLIENT_PONG(0),
-
+  /** Client wants to jump */
   REQUEST_JUMP(0),
-
+  /** Client wants to pause the game */
   REQUEST_PAUSE(0),
+  /** Client game is opened and is ready to start */
   READY_UP(0),
+  /** Client wants to start the game */
   START_GAME_LOOP(0);
 
   private final int numArgs;
