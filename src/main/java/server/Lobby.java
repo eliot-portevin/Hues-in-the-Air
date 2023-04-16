@@ -187,7 +187,7 @@ public class Lobby {
 
   public void sendGameCommandToAllClients(String command) {
     for(ClientHandler client : this.getClientHandlers()) {
-      client.startGameLoop(command);
+      client.startClientGameLoop();
     }
   }
 }

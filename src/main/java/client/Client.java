@@ -457,6 +457,10 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
+  /**
+   * Displays an alert on the screen when a user is not found
+   * @param username The username that was not found
+   * */
   public void noUserFound(String username) {
     if (this.menuScreen) {
       this.menuController.alertManager.displayAlert("User " + username + " not found.", true);

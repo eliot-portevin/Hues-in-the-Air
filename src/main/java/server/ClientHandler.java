@@ -98,6 +98,10 @@ public class ClientHandler implements Runnable {
     }
   }
 
+  /**
+   * Sets the ready status of the client to true. The game only starts when the
+   * ready status of all clients is set to true
+   */
   protected void readyUp() {
     this.ready = true;
   }
@@ -207,11 +211,15 @@ public class ClientHandler implements Runnable {
     }
   }
 
-
+  /**
+   * Starts the game loop of the game in this client's lobby, and sends a protocol command to all clients
+   * to start their game loops.
+   */
   private void startGameLoop() {
     this.lobby.getGame().startGameLoop();
     this.lobby.sendGameCommandToAllClients(ClientProtocol.START_GAME_LOOP.toString());
   }
+
   /** Resets noAnswerCounter. */
   private void resetClientStatus() {
     this.clientConnected = true;
@@ -358,6 +366,10 @@ public class ClientHandler implements Runnable {
     }
   }
 
+  /**
+   * Called when the client has requested to toggle pause. The game is paused, and a protocol command is sent back
+   * to all clients in the lobby to toggle pause on their end.
+   */
   private void requestPause() {
     System.out.println("Request pause Executed");
     this.lobby.getGame().setPause();
@@ -366,12 +378,19 @@ public class ClientHandler implements Runnable {
     }
   }
 
-  public void startGameLoop(String message) {
+  /**
+   * Sends StartGameLoop command to the client associated with this ClientHandler
+   */
+  public void startClientGameLoop() {
     String command = ClientProtocol.START_GAME_LOOP.toString();
     this.out.println(command);
   }
 
-  public void smallUpdate(String command){
+  /**
+   * Sends a command to the client to update the position of the player
+   * @param command the ServerProtocol command POSITION_UPDATE
+   */
+  public void positionUpdate(String command){
     this.out.println(command);
   }
 

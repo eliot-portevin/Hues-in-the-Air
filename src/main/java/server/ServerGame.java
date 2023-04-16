@@ -1,14 +1,10 @@
 package server;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-import server.ServerCube;
 import client.LevelData;
 import client.Vector2D;
 import gui.Colours;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -67,7 +63,7 @@ public class ServerGame implements Runnable {
 
   protected void updateAllClientPositions() {
     for (ClientHandler client : clients) {
-      client.smallUpdate(ServerProtocol.POSITION_UPDATE.toString() + ServerProtocol.SEPARATOR.toString() + player.position.getX() + ServerProtocol.SEPARATOR.toString() + player.position.getY());
+      client.positionUpdate(ServerProtocol.POSITION_UPDATE.toString() + ServerProtocol.SEPARATOR.toString() + player.position.getX() + ServerProtocol.SEPARATOR.toString() + player.position.getY());
     }
   }
 
