@@ -457,6 +457,7 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
+  /** Handles error noUserFound and pops up an alertMessage on Screen */
   public void noUserFound(String username) {
     if (this.menuScreen) {
       this.menuController.alertManager.displayAlert("User " + username + " not found.", true);
@@ -682,6 +683,7 @@ public class Client extends Application {
     }
   }
 
+  /** Sends the game commands to the server */
   protected void sendGameCommand(String command) {
     System.out.println("Sending game command: " + command);
     this.outputSocket.sendToServer(command);
@@ -719,6 +721,7 @@ public class Client extends Application {
     this.menuController.settingsTabController.setUsernameField();
   }
 
+  /** Starts the game loop */
   public void startGameLoop() {
     this.gameController.getGame().pause = false;
     this.gameController.getGame().gameStarted = true;

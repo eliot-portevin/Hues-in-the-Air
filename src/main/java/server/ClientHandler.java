@@ -370,7 +370,7 @@ public class ClientHandler implements Runnable {
     String command = ClientProtocol.START_GAME_LOOP.toString();
     this.out.println(command);
   }
-
+  /** Sends a command to the client. */
   public void smallUpdate(String command){
     this.out.println(command);
   }
