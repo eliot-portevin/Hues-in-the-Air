@@ -69,8 +69,6 @@ public enum ServerProtocol {
 
   TOGGLE_PAUSE(0),
 
-  BIG_UPDATE(6),
-
   START_GAME_LOOP(0),
   JUMP(0),
 

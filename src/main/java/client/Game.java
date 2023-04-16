@@ -3,6 +3,9 @@ package client;
 import gui.Colours;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -29,8 +32,9 @@ public class  Game {
 
   public boolean pause = true;
   public boolean gameStarted = false;
-
+  private boolean pauseRequestSent = false;
   private Client client;
+  private Timer pauseTimer = new Timer();
 
   public Game(Client client) {
     this.client = client;
@@ -52,19 +56,28 @@ public class  Game {
    * The update method that is called if the game is not paused. Handles the game logic.
    */
   private void gameUpdate(double deltaF) {
-    if(gameStarted) {
-      //player.move(player.velocity, deltaF);
-    }
     this.analyseKeys(deltaF);
-    //player.checkForWhiteBlockHit();
+  }
+
+  private void setPauseRequestSent() {
+    this.pauseRequestSent = false;
   }
 
   /**
    * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic is handled.
    */
   private void analyseKeys(double deltaF) {
-    if (isPressed(KeyCode.ESCAPE)) {
-      pause = !pause;
+    if (isPressed(KeyCode.ENTER)) {
+      if(!pauseRequestSent) {
+        pauseRequestSent = true;
+        pauseTimer.schedule(new TimerTask() {
+          @Override
+          public void run() {
+            setPauseRequestSent();
+          }
+        }, 500);
+        this.client.sendGameCommand(ClientProtocol.REQUEST_PAUSE.toString());
+      }
     }
     if(this.pause && !gameStarted) {
       if (isPressed(KeyCode.SPACE)) {
@@ -72,24 +85,11 @@ public class  Game {
       }
     }
     if (!this.pause) {
-      if (isPressed(KeyCode.UP)) {
-        player.move(new Vector2D(0,-50), deltaF);
-      }
-      if (isPressed(KeyCode.DOWN)) {
-        player.move(new Vector2D(0,50), deltaF);
-      }
-      if (isPressed(KeyCode.LEFT)) {
-        player.move(new Vector2D(-50,0), deltaF);
-      }
-      if (isPressed(KeyCode.RIGHT)) {
-        player.move(new Vector2D(50,0), deltaF);
-      }
       if (isPressed(KeyCode.SPACE)) {
         System.out.println("Jump");
         if (!jumped) {
           jumped = true;
           this.client.sendGameCommand(ClientProtocol.REQUEST_JUMP.toString());
-          //player.jump();
         }
       }
     }
@@ -105,25 +105,19 @@ public class  Game {
    */
   private void pauseUpdate(double deltaF) {
     analyseKeys(deltaF);
-    //this.client.sendGameCommand(ClientProtocol.REQUEST_PAUSE.toString());
   }
 
   protected void updatePosition(String positionX, String positionY) {
-    //System.out.println("Updating position to: " + positionX + ", " + positionY+ " " + player);
-    //System.out.println("Player:X " + positionX + "should be" + player.position.getX());
-    //System.out.println("Player:Y " + positionY + "should be" + player.position.getY());
     player.setPositionTo(Double.parseDouble(positionX), Double.parseDouble(positionY));
   }
 
-  protected void bigUpdate(String positionX, String positionY, String velocityX, String velocityY, String gravX, String gravY) {
 
-  }
 
   /**
    * Sets whether the game is paused or not.
    */
-  public void setPause(boolean pause) {
-    this.pause = pause;
+  public void setPause() {
+    this.pause = !this.pause;
   }
 
   /**
@@ -236,21 +230,6 @@ public class  Game {
     player.gridSize = gridSize; // Sets the grid size for the player
   }
 
-  /**
-   * Make the cube jump
-   */
-  public void jump() {
-    this.player.jump();
-  }
-/**
-   * Gets the frame rate in hertz
-   * @param deltaTimeNano - the time between frames in nanoseconds
-   * @return - the frame rate in hertz
-   */
-  public double getFrameRateHertz(long deltaTimeNano) {
-    double frameRate = 1d / deltaTimeNano;
-    return frameRate * 1e9;
-  }
   /**
    * Launches the application
    */

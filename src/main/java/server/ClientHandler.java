@@ -359,9 +359,10 @@ public class ClientHandler implements Runnable {
   }
 
   private void requestPause() {
-    this.lobby.getGame().pauseGame();
+    System.out.println("Request pause Executed");
+    this.lobby.getGame().setPause();
     for(ClientHandler client : this.lobby.getClientHandlers()) {
-      client.out.println("PAUSE");
+      client.out.println(ServerProtocol.TOGGLE_PAUSE.toString());
     }
   }
 
@@ -373,7 +374,6 @@ public class ClientHandler implements Runnable {
   public void smallUpdate(String command){
     this.out.println(command);
   }
-
 
 }
 

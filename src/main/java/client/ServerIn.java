@@ -109,13 +109,11 @@ public class ServerIn implements Runnable {
                   }
                 }
                 case JUMP -> {
-                  this.client.gameController.getGame().jump();
                   this.client.gameController.getGame().jumped = false;
                 }
                 case START_GAME_LOOP -> this.client.startGameLoop();
                 case POSITION_UPDATE -> this.client.gameController.getGame().updatePosition(command[1], command[2]);
-                case BIG_UPDATE -> this.client.gameController.getGame().bigUpdate(command[0], command[1], command[2], command[3], command[4], command[5]);
-                case TOGGLE_PAUSE -> this.client.gameController.getGame().setPause(!this.client.gameController.getGame().pause);
+                case TOGGLE_PAUSE -> this.client.gameController.getGame().setPause();
               }
             }
           });

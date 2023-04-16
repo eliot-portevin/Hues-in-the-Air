@@ -71,16 +71,8 @@ public class ServerGame implements Runnable {
     }
   }
 
-  protected void updateAllClientsGravitationAndVelocity() {
-    for (ClientHandler client : clients) {
-      client.smallUpdate(ServerProtocol.BIG_UPDATE.toString() + ServerProtocol.SEPARATOR.toString() + player.velocity.getX() + ServerProtocol.SEPARATOR.toString() + player.velocity.getY() + ServerProtocol.SEPARATOR.toString() + player.g.getX() + ServerProtocol.SEPARATOR.toString() + player.g.getY());
-    }
-    //TODO: BROADCAST GRAVITATION AND VELOCITY TO ALL CLIENTS
-    //Statement string = BIGUPDATE + SEPERATOR + player.position.x + SEPERATOR + player.position.y + SEPERATOR + player.velocity.x + SEPERATOR + player.velocity.y + SEPERATOR + player.gravity.x + SEPERATOR + player.gravity.y;
-  }
-
-  protected void pauseGame() {
-    pause = true;
+  protected void setPause() {
+    pause = !pause;
   }
 
   /**

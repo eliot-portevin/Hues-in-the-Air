@@ -29,6 +29,7 @@ public class ServerCube {
     public Vector2D start_position = new Vector2D(0, 0);
     private boolean onlyMoveOneDir = false;
     private Vector2D moveBuffer;
+    private final Timer timer = new Timer();
 
 
     public ServerCube(Pane gameRoot, Vector2D position, Vector2D size) {
@@ -233,47 +234,6 @@ public class ServerCube {
         } else{
             moveValueX(value);
         }
-
-        /**
-        boolean movingRight = value > 0;
-        if (!canJump) {
-            //if(moveBuffer.getX() > 1) {
-            gravityRotationX();
-            for (int i = 0; i < Math.abs(value); i++) {
-                for (Node platform : platforms) {
-                    if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-                        if (movingRight) {
-                            if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) { // Checks if the cube is colliding with a platform on the right side
-                                if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                                    setGravityAndVelocityRight();
-                                    bigUpdate();
-                                    System.out.println("Right");
-                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
-                                    return;
-                                }
-                            }
-                        } else {
-                            if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) { // Checks if the cube is colliding with a platform on the left side
-                                if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
-                                    setGravityAndVelocityLeft();
-                                    bigUpdate();
-                                    System.out.println("Left");
-                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-                move1X(movingRight);
-            }
-            //}
-        } else {
-            for (int i = 0; i < Math.abs(value); i++) {
-                move1X(movingRight);
-            }
-        }
-         */
     }
 
     /**
@@ -313,45 +273,6 @@ public class ServerCube {
         } else {
             moveValueY(value);
         }
-
-        /**
-        boolean movingDown = value > 0;
-        if (!canJump) {
-            gravityRotationY();
-            for (int i = 0; i < Math.abs(value); i++) {
-                for (Node platform : platforms) {
-                    if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-                        if (movingDown) {
-                            if (rectangle.getTranslateY() + size.getY() == platform.getTranslateY()) { // Checks if the cube is colliding with a platform on the bottom side
-                                if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                                    setGravityAndVelocityDown();
-                                    bigUpdate();
-                                    System.out.println("Down");
-                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
-                                    return;
-                                }
-                            }
-                        } else {
-                            if (rectangle.getTranslateY() == platform.getTranslateY() + gridSize) { // Checks if the cube is colliding with a platform on the top side
-                                if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
-                                    setGravityAndVelocityUp();
-                                    bigUpdate();
-                                    System.out.println("Up");
-                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-                move1Y(movingDown);
-            }
-        } else {
-            for (int i = 0; i < Math.abs(value); i++) {
-                move1Y(movingDown);
-            }
-        }
-         */
     }
 
     /**
@@ -407,23 +328,14 @@ public class ServerCube {
                 velocity.setX(-jumpHeight*g.getX());
             }
             canJump = false;
-            Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     setOnlyMoveOneDir();
                 }
-            }, 100);
+            }, 50);
             onlyMoveOneDir = true;
         }
-    }
-
-    /**
-     * Moves the cube 1 pixel on the x-axis
-     */
-    public void move1X(boolean movingRight) {
-        this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
-        this.position.setX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
     }
 
     public void moveValueX(double value){
@@ -434,14 +346,6 @@ public class ServerCube {
     public void moveValueY(double value){
         this.rectangle.setTranslateY(this.rectangle.getTranslateY() + value);
         this.position.setY(this.rectangle.getTranslateY());
-    }
-
-    /**
-     * Moves the cube 1 pixel on the y axis
-     */
-    public void move1Y(boolean movingDown) {
-        this.rectangle.setTranslateY(this.rectangle.getTranslateY() + (movingDown ? 1 : -1));
-        this.position.setY(this.rectangle.getTranslateY() + (movingDown ? 1 : -1));
     }
 
     /**
