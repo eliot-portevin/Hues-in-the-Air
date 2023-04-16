@@ -56,7 +56,7 @@ public class  Game {
       //player.move(player.velocity, deltaF);
     }
     this.analyseKeys(deltaF);
-    player.checkForWhiteBlockHit();
+    //player.checkForWhiteBlockHit();
   }
 
   /**
@@ -109,9 +109,9 @@ public class  Game {
   }
 
   protected void updatePosition(String positionX, String positionY) {
-    System.out.println("Updating position to: " + positionX + ", " + positionY+ " " + player);
-    System.out.println("Player:X " + positionX + "should be" + player.position.getX());
-    System.out.println("Player:Y " + positionY + "should be" + player.position.getY());
+    //System.out.println("Updating position to: " + positionX + ", " + positionY+ " " + player);
+    //System.out.println("Player:X " + positionX + "should be" + player.position.getX());
+    //System.out.println("Player:Y " + positionY + "should be" + player.position.getY());
     player.setPositionTo(Double.parseDouble(positionX), Double.parseDouble(positionY));
   }
 
