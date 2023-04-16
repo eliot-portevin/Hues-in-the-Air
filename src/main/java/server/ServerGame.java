@@ -26,6 +26,7 @@ public class ServerGame implements Runnable {
   private Pane gameRoot;
   private ServerCube player;
   private int gridSize = 50;
+  private int cubeSize = 20;
   private boolean jumped;
   private AnimationTimer timer;
   public boolean pause = true;
@@ -194,7 +195,7 @@ public class ServerGame implements Runnable {
             platforms.add(platform5);
             break;
           case '7':
-            load_player(new Vector2D(j*gridSize, i*gridSize));
+            load_player(new Vector2D((j+1)*gridSize-cubeSize, (i+1)*gridSize-cubeSize));
         }
       }
     }

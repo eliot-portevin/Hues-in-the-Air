@@ -6,6 +6,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import client.Vector2D;
 public class ServerCube {
     protected Vector2D position;
@@ -24,7 +27,7 @@ public class ServerCube {
     private double y0 = 100000;
     private boolean y0passed;
     public Vector2D start_position = new Vector2D(0, 0);
-
+    private boolean onlyMoveOneDir = false;
     private Vector2D moveBuffer;
 
 
@@ -200,6 +203,39 @@ public class ServerCube {
      */
     public void moveX(double value) {
         boolean movingRight = value > 0;
+        if(!canJump){
+            gravityRotationX();
+            moveValueX(value);
+
+            for(Node platform : platforms){
+                if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
+                    if(movingRight){
+                        if (rectangle.getTranslateX() + size.getX()+value >= platform.getTranslateX()){
+                            if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize){
+                                rectangle.setTranslateX(platform.getTranslateX()-size.getX());
+                                setGravityAndVelocityRight();
+                                System.out.println("Right");
+                                System.out.println("wall: "+platform.getTranslateX()+" cube: "+rectangle.getTranslateX());
+                            }
+                        }
+                    } else {
+                        if (rectangle.getTranslateX() + value <= platform.getTranslateX() + gridSize){
+                            if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize){
+                                rectangle.setTranslateX(platform.getTranslateX() + gridSize);
+                                setGravityAndVelocityLeft();
+                                System.out.println("Left");
+                                System.out.println("wall: "+platform.getTranslateX()+" cube: "+rectangle.getTranslateX());
+                            }
+                        }
+                    }
+                }
+            }
+        } else{
+            moveValueX(value);
+        }
+
+        /**
+        boolean movingRight = value > 0;
         if (!canJump) {
             //if(moveBuffer.getX() > 1) {
             gravityRotationX();
@@ -237,6 +273,7 @@ public class ServerCube {
                 move1X(movingRight);
             }
         }
+         */
     }
 
     /**
@@ -245,6 +282,39 @@ public class ServerCube {
      * On collision the cubes gravity is also set to the opposite of the normal of the surface it is colliding with
      */
     public void moveY(double value) {
+
+        boolean movingDown = value > 0;
+        if(!canJump){
+            gravityRotationY();
+            moveValueY(value);
+            for(Node platform : platforms) {
+                if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+                    if (movingDown) {
+                        if (rectangle.getTranslateY() + size.getY()+value >= platform.getTranslateY()) {
+                            if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                                rectangle.setTranslateY(platform.getTranslateY() - size.getY());
+                                setGravityAndVelocityDown();
+                                System.out.println("Down");
+                                System.out.println("wall: "+platform.getTranslateY()+" cube: "+rectangle.getTranslateY());
+                            }
+                        }
+                    } else {
+                        if (rectangle.getTranslateY() + value <= platform.getTranslateY() + gridSize) {
+                            if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
+                                rectangle.setTranslateY(platform.getTranslateY() + gridSize);
+                                setGravityAndVelocityUp();
+                                System.out.println("Up");
+                                System.out.println("wall: "+platform.getTranslateY()+" cube: "+rectangle.getTranslateY());
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            moveValueY(value);
+        }
+
+        /**
         boolean movingDown = value > 0;
         if (!canJump) {
             gravityRotationY();
@@ -281,6 +351,7 @@ public class ServerCube {
                 move1Y(movingDown);
             }
         }
+         */
     }
 
     /**
@@ -290,12 +361,26 @@ public class ServerCube {
         if (!canJump) {
             this.velocity.setY(velocity.getY()+g.getY());
             this.velocity.setX(velocity.getX()+g.getX());
+            if (onlyMoveOneDir){
+                if (g.getX() < 0.1 && g.getX() > -0.1){
+                    moveY(velocity.getY());
+                } else {
+                    moveX(velocity.getX());
+                }
+            } else {
+                moveX(velocity.getX());
+                moveY(velocity.getY());
+            }
+        } else {
+            moveX(velocity.getX());
+            moveY(velocity.getY());
         }
-        System.out.println(" no col X: " + position.getX() + " Y: " + position.getY());
-        moveX(velocity.getX());
-        moveY(velocity.getY());
+
     }
 
+    private void setOnlyMoveOneDir() {
+        this.onlyMoveOneDir = false;
+    }
     /**
      * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector
      */
@@ -315,11 +400,21 @@ public class ServerCube {
                 y0passed = false;
             }
             if (velocity.getY() < 1 && velocity.getY() > -1) {
+                rectangle.setTranslateY(Math.signum(g.getY()) * -2 + rectangle.getTranslateY());
                 velocity.setY(-jumpHeight*g.getY());
             } else {
+                rectangle.setTranslateX(Math.signum(g.getX()) * -2 + rectangle.getTranslateX());
                 velocity.setX(-jumpHeight*g.getX());
             }
             canJump = false;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    setOnlyMoveOneDir();
+                }
+            }, 100);
+            onlyMoveOneDir = true;
         }
     }
 
@@ -329,6 +424,16 @@ public class ServerCube {
     public void move1X(boolean movingRight) {
         this.rectangle.setTranslateX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
         this.position.setX(this.rectangle.getTranslateX() + (movingRight ? 1 : -1));
+    }
+
+    public void moveValueX(double value){
+        this.rectangle.setTranslateX(this.rectangle.getTranslateX() + value);
+        this.position.setX(this.rectangle.getTranslateX());
+    }
+
+    public void moveValueY(double value){
+        this.rectangle.setTranslateY(this.rectangle.getTranslateY() + value);
+        this.position.setY(this.rectangle.getTranslateY());
     }
 
     /**
