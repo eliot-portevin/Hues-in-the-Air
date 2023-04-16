@@ -71,6 +71,9 @@ public enum ServerProtocol {
 
   BIG_UPDATE(6),
 
+  START_GAME_LOOP(0),
+  JUMP(0),
+
   POSITION_UPDATE(2);
 
   private final int numArgs;

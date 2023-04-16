@@ -9,6 +9,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import server.ServerGame;
+import server.ServerProtocol;
 
 public class  Game {
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
@@ -21,11 +23,12 @@ public class  Game {
   private int levelWidth;
   private int levelHeight;
   private int gridSize = 50;
-  private boolean jumped;
+  public boolean jumped;
+  private int cubesize = 20;
   private AnimationTimer timer;
 
   public boolean pause = true;
-  private boolean gameStarted = false;
+  public boolean gameStarted = false;
 
   private Client client;
 
@@ -45,14 +48,12 @@ public class  Game {
     }
   }
 
-
-
   /**
    * The update method that is called if the game is not paused. Handles the game logic.
    */
   private void gameUpdate(double deltaF) {
     if(gameStarted) {
-      player.move(player.velocity, deltaF);
+      //player.move(player.velocity, deltaF);
     }
     this.analyseKeys(deltaF);
     player.checkForWhiteBlockHit();
@@ -67,8 +68,7 @@ public class  Game {
     }
     if(this.pause && !gameStarted) {
       if (isPressed(KeyCode.SPACE)) {
-        gameStarted = true;
-        pause = false;
+        this.client.sendGameCommand(ClientProtocol.START_GAME_LOOP.toString());
       }
     }
     if (!this.pause) {
@@ -86,9 +86,18 @@ public class  Game {
       }
       if (isPressed(KeyCode.SPACE)) {
         System.out.println("Jump");
-        player.jump();
+        if (!jumped) {
+          jumped = true;
+          this.client.sendGameCommand(ClientProtocol.REQUEST_JUMP.toString());
+          //player.jump();
+        }
       }
     }
+  }
+
+  private void readyUp(){
+    System.out.println("Ready upStarted");
+    this.client.sendGameCommand(ClientProtocol.READY_UP.toString());
   }
 
   /**
@@ -96,9 +105,14 @@ public class  Game {
    */
   private void pauseUpdate(double deltaF) {
     analyseKeys(deltaF);
+    //this.client.sendGameCommand(ClientProtocol.REQUEST_PAUSE.toString());
   }
 
   protected void updatePosition(String positionX, String positionY) {
+    System.out.println("Updating position to: " + positionX + ", " + positionY+ " " + player);
+    System.out.println("Player:X " + positionX + "should be" + player.position.getX());
+    System.out.println("Player:Y " + positionY + "should be" + player.position.getY());
+    player.setPositionTo(Double.parseDouble(positionX), Double.parseDouble(positionY));
   }
 
   protected void bigUpdate(String positionX, String positionY, String velocityX, String velocityY, String gravX, String gravY) {
@@ -155,6 +169,8 @@ public class  Game {
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
     load_platforms(); // Loads the platforms
+
+    readyUp();
   }
 
   /**
@@ -189,7 +205,7 @@ public class  Game {
             platforms.add(platform5);
             break;
           case '7':
-            load_player(new Vector2D(j*gridSize, i*gridSize));
+            load_player(new Vector2D((j+1)*gridSize-cubesize, (i+1)*gridSize-cubesize));
         }
       }
     }
@@ -198,7 +214,7 @@ public class  Game {
    * Loads the player
    */
   private void load_player(Vector2D position){
-    player = new Cube(gameRoot, position, new Vector2D(20,20));  // creates the player
+    player = new Cube(gameRoot, position, new Vector2D(cubesize,cubesize));  // creates the player
 
     player.rectangle.translateXProperty().addListener((obs, old, newValue) -> {   // Listens for changes in the player's x position and moves the terrain accordingly
       int offset = newValue.intValue();

@@ -266,8 +266,10 @@ public class Client extends Application {
     this.stage.getScene().setRoot(this.root);
 
     // Set controller
+    System.out.println("Game controller:");
     this.gameController = loader.getController();
     this.gameController.setClient(this);
+    this.gameController.startGame();
 
     this.lobbyScreen = false;
     this.gameScreen = true;
@@ -681,6 +683,7 @@ public class Client extends Application {
   }
 
   protected void sendGameCommand(String command) {
+    System.out.println("Sending game command: " + command);
     this.outputSocket.sendToServer(command);
   }
 
@@ -714,6 +717,11 @@ public class Client extends Application {
         "Received confirmation of username change from " + this.username + " to " + username + ".");
     this.username = username;
     this.menuController.settingsTabController.setUsernameField();
+  }
+
+  public void startGameLoop() {
+    this.gameController.getGame().pause = false;
+    this.gameController.getGame().gameStarted = true;
   }
 
   /** returns the username as a String */

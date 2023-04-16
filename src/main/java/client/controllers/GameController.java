@@ -42,8 +42,6 @@ public class GameController {
   private Client client;
 
   public void initialize() {
-    this.game = new Game(this.client);
-    game.run(this.gamePane);
 
     this.initialiseKeyboard();
 
@@ -52,6 +50,11 @@ public class GameController {
 
     this.alertManager = new AlertManager(alertPane, alert);
   }
+
+    public void startGame() {
+      this.game = new Game(this.client);
+      game.run(this.gamePane);
+    }
 
   public Game getGame() {
     return this.game;

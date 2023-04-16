@@ -153,12 +153,14 @@ public class Lobby {
   /** Starts the game. */
   private void startGame() {
     // The game instance starts itself
-    this.game = new ServerGame(this.clientColours);
+    System.out.println(getClientHandlers());
+    this.game = new ServerGame(this.clientColours, getClientHandlers());
     gameInitialised = true;
     Thread gameThread = new Thread(game);
     gameThread.start();
     for(ClientHandler client : this.getClientHandlers()) {
       client.startGame();
+      System.out.println("Client " + client.getUsername() + " started game");
     }
   }
 
@@ -181,5 +183,11 @@ public class Lobby {
                         + this.clientColours.get(c))
             .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
     return command;
+  }
+
+  public void sendGameCommandToAllClients(String command) {
+    for(ClientHandler client : this.getClientHandlers()) {
+      client.startGameLoop(command);
+    }
   }
 }

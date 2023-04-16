@@ -19,7 +19,7 @@ public class ServerCube {
     protected Rectangle rectangle = new Rectangle();
     private final double gravity_scalar = 0.3;
     private final double speed = 3;
-    private Vector2D g = new Vector2D(0, gravity_scalar);
+    public Vector2D g = new Vector2D(0, gravity_scalar);
     protected Vector2D velocity = new Vector2D(speed, 0);
     private double y0 = 100000;
     private boolean y0passed;
@@ -44,7 +44,9 @@ public class ServerCube {
         gameRoot.getChildren().add(rectangle);
     }
 
+    public void bigUpdate() {
 
+    }
 
     /**
      * Sets position of the cube to the given x and y
@@ -208,6 +210,9 @@ public class ServerCube {
                             if (rectangle.getTranslateX() + size.getX() == platform.getTranslateX()) { // Checks if the cube is colliding with a platform on the right side
                                 if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
                                     setGravityAndVelocityRight();
+                                    bigUpdate();
+                                    System.out.println("Right");
+                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
                                     return;
                                 }
                             }
@@ -215,6 +220,9 @@ public class ServerCube {
                             if (rectangle.getTranslateX() == platform.getTranslateX() + gridSize) { // Checks if the cube is colliding with a platform on the left side
                                 if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize) {
                                     setGravityAndVelocityLeft();
+                                    bigUpdate();
+                                    System.out.println("Left");
+                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
                                     return;
                                 }
                             }
@@ -247,6 +255,9 @@ public class ServerCube {
                             if (rectangle.getTranslateY() + size.getY() == platform.getTranslateY()) { // Checks if the cube is colliding with a platform on the bottom side
                                 if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
                                     setGravityAndVelocityDown();
+                                    bigUpdate();
+                                    System.out.println("Down");
+                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
                                     return;
                                 }
                             }
@@ -254,6 +265,9 @@ public class ServerCube {
                             if (rectangle.getTranslateY() == platform.getTranslateY() + gridSize) { // Checks if the cube is colliding with a platform on the top side
                                 if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) { // For edge cases where the cube should slide over a corner but instead gets stuck
                                     setGravityAndVelocityUp();
+                                    bigUpdate();
+                                    System.out.println("Up");
+                                    System.out.println("X: " + position.getX() + " Y: " + position.getY());
                                     return;
                                 }
                             }
@@ -274,9 +288,10 @@ public class ServerCube {
      */
     public void move(Vector2D velocity) {
         if (!canJump) {
-            velocity.setY(velocity.getY()+g.getY());
-            velocity.setX(velocity.getX()+g.getX());
+            this.velocity.setY(velocity.getY()+g.getY());
+            this.velocity.setX(velocity.getX()+g.getX());
         }
+        System.out.println(" no col X: " + position.getX() + " Y: " + position.getY());
         moveX(velocity.getX());
         moveY(velocity.getY());
     }

@@ -35,7 +35,8 @@ public class ClientHandler implements Runnable {
   private final Logger LOGGER;
 
   // Variables required for the game
-  public boolean canJump = false;
+  // TODO: replace with false and add check to set correct players canJump to true
+  public boolean canJump = true;
   public boolean ready = false;
 
   /** Is in charge of a single client. */
@@ -95,6 +96,10 @@ public class ClientHandler implements Runnable {
     for (ClientHandler client : this.server.getClientHandlers()) {
       client.out.println(output);
     }
+  }
+
+  protected void readyUp() {
+    this.ready = true;
   }
 
   /**
@@ -189,6 +194,8 @@ public class ClientHandler implements Runnable {
           case EXIT_LOBBY -> {
             if (this.lobby != null) this.lobby.removeClient(this);
           }
+          case START_GAME_LOOP -> this.startGameLoop();
+          case READY_UP -> this.readyUp();
           case REQUEST_JUMP -> this.requestJump();
           case REQUEST_PAUSE -> this.requestPause();
 
@@ -198,6 +205,12 @@ public class ClientHandler implements Runnable {
     } catch (IllegalArgumentException e) {
       System.out.println("[CLIENT_HANDLER] Unknown command: " + command[0]);
     }
+  }
+
+
+  private void startGameLoop() {
+    this.lobby.getGame().startGameLoop();
+    this.lobby.sendGameCommandToAllClients(ClientProtocol.START_GAME_LOOP.toString());
   }
   /** Resets noAnswerCounter. */
   private void resetClientStatus() {
@@ -338,7 +351,11 @@ public class ClientHandler implements Runnable {
   }
 
   private void requestJump() {
-    this.lobby.getGame().handleJumpRequest(this);
+    if (this.lobby.getGame().handleJumpRequest(this)){
+      for(ClientHandler client : this.lobby.getClientHandlers()) {
+        client.out.println(ServerProtocol.JUMP.toString());
+      }
+    }
   }
 
   private void requestPause() {
@@ -347,4 +364,17 @@ public class ClientHandler implements Runnable {
       client.out.println("PAUSE");
     }
   }
+
+  public void startGameLoop(String message) {
+    String command = ClientProtocol.START_GAME_LOOP.toString();
+    this.out.println(command);
+  }
+
+  public void smallUpdate(String command){
+    this.out.println(command);
+  }
+
+
 }
+
+

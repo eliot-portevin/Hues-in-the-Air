@@ -28,9 +28,7 @@ public class ServerGame implements Runnable {
   private int gridSize = 50;
   private boolean jumped;
   private AnimationTimer timer;
-  public boolean pause = false;
-  //TODO reset to false
-  private boolean gameStarted = true;
+  public boolean pause = true;
   private boolean allClientsReady = false;
   private String[] levelData = LevelData.Level1;
 
@@ -43,10 +41,12 @@ public class ServerGame implements Runnable {
               Color.valueOf("#fccf78")));
   private final HashMap<ClientHandler, Color> clientColours;
   private Boolean running = true;
-  public ServerGame(HashMap<ClientHandler, Color> clientColours) {
+  private ArrayList<ClientHandler> clients;
+  public ServerGame(HashMap<ClientHandler, Color> clientColours, ArrayList<ClientHandler> clients) {
 
     this.clientColours = clientColours;
     initializeContent();
+    this.clients = clients;
     System.out.println("Game initialized");
   }
 
@@ -56,20 +56,24 @@ public class ServerGame implements Runnable {
   // TODO add a method to pause game when client disconnects
   // TODO add a method to unpause game when client reconnects
 
-  protected void handleJumpRequest(ClientHandler client) {
+  protected boolean handleJumpRequest(ClientHandler client) {
     if (client.canJump) {
       player.jump();
-      //TODO: BROADCAST JUMP TO ALL CLIENTS
-      //Statement String = JUMP
+      return true;
     }
+    return false;
   }
 
   protected void updateAllClientPositions() {
-    //TODO: BROADCAST POSITION TO ALL CLIENTS
-    //Statement String = POSITIONUPDATE + SEPERATOR + player.position.x + SEPERATOR + player.position.y;
+    for (ClientHandler client : clients) {
+      client.smallUpdate(ServerProtocol.POSITION_UPDATE.toString() + ServerProtocol.SEPARATOR.toString() + player.position.getX() + ServerProtocol.SEPARATOR.toString() + player.position.getY());
+    }
   }
 
   protected void updateAllClientsGravitationAndVelocity() {
+    for (ClientHandler client : clients) {
+      client.smallUpdate(ServerProtocol.BIG_UPDATE.toString() + ServerProtocol.SEPARATOR.toString() + player.velocity.getX() + ServerProtocol.SEPARATOR.toString() + player.velocity.getY() + ServerProtocol.SEPARATOR.toString() + player.g.getX() + ServerProtocol.SEPARATOR.toString() + player.g.getY());
+    }
     //TODO: BROADCAST GRAVITATION AND VELOCITY TO ALL CLIENTS
     //Statement string = BIGUPDATE + SEPERATOR + player.position.x + SEPERATOR + player.position.y + SEPERATOR + player.velocity.x + SEPERATOR + player.velocity.y + SEPERATOR + player.gravity.x + SEPERATOR + player.gravity.y;
   }
@@ -86,7 +90,7 @@ public class ServerGame implements Runnable {
       if (player.rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
         //TODO send message to client to reset position
         //Statement String = DEATH
-        System.out.println("DEATH");
+        //System.out.println("DEATH");
       }
     }
   }
@@ -106,12 +110,8 @@ public class ServerGame implements Runnable {
    * The update method that is called if the game is not paused. Handles the game logic.
    */
   private void gameUpdate(double deltaF) {
-    if(gameStarted) {
-      player.move(player.velocity);
-      System.out.println("Player position: " + player.position.getX() + ", " + player.position.getY());
-      System.out.println("Player velocity: " + player.velocity.getX() + ", " + player.velocity.getY());
-      player.setPositionTo(player.start_position.getX(), player.start_position.getY());
-    }
+    player.move(player.velocity);
+    player.setPositionTo(player.start_position.getX(), player.start_position.getY());
     checkForWhiteBlockHit();
   }
 
@@ -120,7 +120,7 @@ public class ServerGame implements Runnable {
    * The update method that is called if the game is paused.
    */
   private void pauseUpdate(double deltaF) {
-    setPause(false);
+    System.out.println("Game is paused");
     //Todo: Add pause menu and pause logic
   }
 
@@ -194,9 +194,7 @@ public class ServerGame implements Runnable {
             platforms.add(platform5);
             break;
           case '7':
-            System.out.println("Player positionasdffffffffffffffffffffffffffffffffffff: " + j*gridSize + ", " + i*gridSize);
             load_player(new Vector2D(j*gridSize, i*gridSize));
-            System.out.println("Player positionasdfffffffffffffffffffffffffffffffffffffffffffff: " + player.position.getX() + ", " + player.position.getY());
         }
       }
     }
@@ -230,6 +228,19 @@ public class ServerGame implements Runnable {
     return frameRate * 1e9;
   }
 
+  public void startGameLoop() {
+    this.running = true;
+    this.pause = false;
+  }
+
+  public void pause() {
+    this.pause = true;
+  }
+
+  public void unpause() {
+    this.pause = false;
+  }
+
   /**
    * Runnable run method. This method is called when the thread is started.
    * */
@@ -246,45 +257,57 @@ public class ServerGame implements Runnable {
 
 
 
-    /**while (!allClientsReady){
+    while (!allClientsReady){
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         allClientsReady = true;
-        //TODO: when start method in clientgame is called set corresponding clientReady to true
-        for (Boolean ready : clientReady){
-            if (!ready){
+        for (ClientHandler client : clients){
+            if (!client.ready){
                 allClientsReady = false;
+                System.out.println("Client not ready");
                 break;
             }
         }
+    }
 
-    }*/
-    while(this.running){
+    while(this.running) {
       now = System.nanoTime();
-      System.out.println("hi");
       try {
-        Thread.sleep((long) Math.floor(1e3/60));
+        Thread.sleep((long) Math.floor(1e3 / 60));
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
-        deltaF += (System.nanoTime() - previousTime)/timePerFrame;
+      if (!pause) {
+        deltaF += (System.nanoTime() - previousTime) / timePerFrame;
         previousTime = System.nanoTime();
-        if(deltaF >= 1) {
-          while(deltaF >= 1) {
+        if (deltaF >= 1) {
+          while (deltaF >= 1) {
             update(deltaF);
             frames++;
             deltaF--;
           }
         }
-
-        if(System.currentTimeMillis() - lastCheck >= 1000) {
+        updateAllClientPositions();
+        if (System.currentTimeMillis() - lastCheck >= 1000) {
           System.out.println("FPS: " + frames);
           frames = 0;
           lastCheck = System.currentTimeMillis();
         }
+      } else {
+        pauseUpdate(deltaF);
+        deltaF += (System.nanoTime() - previousTime) / timePerFrame;
+        previousTime = System.nanoTime();
+        if (deltaF >= 1) {
+          while (deltaF >= 1) {
+            update(deltaF);
+            frames++;
+            deltaF--;
+          }
+        }
       }
-    };
+    }
+  };
 }

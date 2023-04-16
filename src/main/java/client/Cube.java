@@ -12,7 +12,7 @@ public class Cube {
   protected Vector2D position;
   public Vector2D size;
   private final double jumpHeight = 30;
-  private boolean canJump = true;
+  public boolean canJump = true;
   private Pane gameRoot;
   public ArrayList<Node> platforms;
   public ArrayList<Node> death_platforms;

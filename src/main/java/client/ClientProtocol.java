@@ -60,7 +60,9 @@ public enum ClientProtocol {
 
   REQUEST_JUMP(0),
 
-  REQUEST_PAUSE(0);
+  REQUEST_PAUSE(0),
+  READY_UP(0),
+  START_GAME_LOOP(0);
 
   private final int numArgs;
 
