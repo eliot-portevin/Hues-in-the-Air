@@ -163,7 +163,7 @@ public class Lobby {
       System.out.println("Client " + client.getUsername() + " started game");
     }
   }
-
+  /** getter for the game */
   protected ServerGame getGame() {
     return this.game;
   }
@@ -185,6 +185,7 @@ public class Lobby {
     return command;
   }
 
+  /** Sends a game command to all clients in the lobby. */
   public void sendGameCommandToAllClients(String command) {
     for(ClientHandler client : this.getClientHandlers()) {
       client.startGameLoop(command);
