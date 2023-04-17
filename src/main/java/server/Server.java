@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +16,7 @@ public class Server implements Runnable {
   private final ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
   private final ArrayList<Thread> clientThreads = new ArrayList<>();
   private final HashMap<String, Lobby> lobbies = new HashMap<>();
+  private final Map<ServerGame, Boolean> games = new LinkedHashMap<>();
 
   private ServerSocket listener;
 
@@ -146,6 +145,13 @@ public class Server implements Runnable {
   }
 
   /**
+   * @return The games that have been played, or are still playing, and their status
+   */
+  protected Map<ServerGame, Boolean> getGames() {
+    return this.games;
+  }
+
+  /**
    * Returns the name of the client for given username
    *
    * @param username of the client
@@ -228,6 +234,16 @@ public class Server implements Runnable {
   }
 
   /**
+   * Sends a message to all clients in the server containing the list of all games and their
+   * status (running or finished).
+   */
+  private void updateGameList() {
+    for (ClientHandler client : this.clientHandlers) {
+      client.updateGameList();
+    }
+  }
+
+  /**
    * Produces an array of all lobbies and their clients. Called from {@link ClientHandler} each time
    * the client list is updated. This list is then sent to the client.
    *
@@ -254,5 +270,25 @@ public class Server implements Runnable {
    */
   public static Server getInstance() {
     return instance;
+  }
+
+  /**
+   * Called from {@link Lobby} when a game has been started. Adds the game to the list of games and
+   * sends a message to all clients in the server containing the list of all games.
+   * @param game The game instance that has been started
+   */
+  protected void addGame(ServerGame game) {
+    this.games.put(game, true);
+    this.updateGameList();
+  }
+
+  /**
+   * Called from {@link ServerGame} when a game has ended. Sets the game to finished and sends a
+   * message to all clients in the server containing the list of all games.
+   * @param game The game instance that has ended
+   */
+  protected void endGame(ServerGame game) {
+    this.games.put(game, false);
+    this.updateGameList();
   }
 }

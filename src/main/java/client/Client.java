@@ -387,8 +387,7 @@ public class Client extends Application {
             "Username cannot be longer than " + Server.MAX_NAME_LENGTH + " characters.", true);
         return;
       } else if (username.equalsIgnoreCase("you")) {
-        this.menuController.alertManager.displayAlert(
-            "\"You\" isn't much of a name is it?", true);
+        this.menuController.alertManager.displayAlert("\"You\" isn't much of a name is it?", true);
         return;
       }
     }
@@ -449,7 +448,7 @@ public class Client extends Application {
   /**
    * This client wants to send a message to the other clients in the lobby.
    *
-   * Protocol format: SEND_MESSAGE_LOBBY&#60;SEPARATOR&#62;message
+   * <p>Protocol format: SEND_MESSAGE_LOBBY&#60;SEPARATOR&#62;message
    */
   public void sendLobbyMessage(String message) {
     String command =
@@ -459,8 +458,9 @@ public class Client extends Application {
 
   /**
    * Displays an alert on the screen when a user is not found
+   *
    * @param username The username that was not found
-   * */
+   */
   public void noUserFound(String username) {
     if (this.menuScreen) {
       this.menuController.alertManager.displayAlert("User " + username + " not found.", true);
@@ -564,7 +564,15 @@ public class Client extends Application {
   /** If the client is in a lobby, their list of clients in the lobby is updated. */
   protected void updateLobbyList(String clientList) {
     if (this.isInLobby) {
-      this.lobbyController.updateLobbyList(clientList.split("<&\\?>"));
+      this.lobbyController.updateLobbyList(
+          clientList.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+    }
+  }
+
+  protected void updateGameList(String gameList) {
+    if (this.menuScreen) {
+      String[] games = gameList.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString());
+      this.menuController.setGameList(games);
     }
   }
 
@@ -610,7 +618,8 @@ public class Client extends Application {
 
   /**
    * Updates the list of lobbies and their respective clients in the gui. The list of lobbies is
-   * given in the following format: <code>lobbyName1 client1 client2 client3&#60;&#38;&#63;&#62;lobbyName2</code>
+   * given in the following format: <code>
+   * lobbyName1 client1 client2 client3&#60;&#38;&#63;&#62;lobbyName2</code>
    *
    * @param command The command containing the list of lobbies and their respective clients
    */

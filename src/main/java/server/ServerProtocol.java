@@ -23,7 +23,7 @@ public enum ServerProtocol {
   /** Separator used for lobby lists */
   LOBBY_INFO_SEPARATOR(0) {
     public String toString() {
-      return "<&?>";
+      return "<&.>";
     }
   },
 
@@ -56,6 +56,9 @@ public enum ServerProtocol {
 
   /** Sends the list of clients in the lobby. */
   UPDATE_LOBBY_LIST(1),
+
+  /** Sends the list of games that have been played or are being played. */
+  UPDATE_GAME_LIST(1),
 
   /** Sets the ready status of a client to true or false. */
   TOGGLE_READY_STATUS(1),

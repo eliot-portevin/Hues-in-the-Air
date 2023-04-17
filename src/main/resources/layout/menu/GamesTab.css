@@ -20,17 +20,32 @@
     -fx-text-fill: #363636;
     -fx-font-size: 20;
 }
-.list-view .list-cell {
-    -fx-border-radius: 500;
-    -fx-background-radius: 500;
+
+#gameList, #scoreList, #gameStatusList {
+    -fx-border-width: 0;
+    -fx-padding: 0;
 }
 
-.list-view .list-cell:odd {
+#gameList .list-cell {
+    -fx-background-radius: 500 0 0 500;
+    -fx-border-radius: 500 0 0 500;
+}
+
+#gameStatusList .list-cell {
+    -fx-background-radius: 0 500 500 0;
+    -fx-border-radius: 0 500 500 0;
+}
+
+.list-view .list-cell:filled:odd {
     -fx-background-color: #f2f2f2;
 }
 
-.list-view .list-cell:even {
+.list-view .list-cell:filled:even {
     -fx-background-color: #e6e6e6;
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
 }
 
 #labelLobbyName, #labelScore, #labelStatus {

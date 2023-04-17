@@ -36,15 +36,22 @@ public class ServerGame implements Runnable {
               Color.valueOf("#b3d5f2"),
               Color.valueOf("#9ae6ae"),
               Color.valueOf("#fccf78")));
-  private final HashMap<ClientHandler, Color> clientColours;
-  private Boolean running = true;
-  private ArrayList<ClientHandler> clients;
-  public ServerGame(HashMap<ClientHandler, Color> clientColours, ArrayList<ClientHandler> clients) {
 
+  private final HashMap<ClientHandler, Color> clientColours;
+
+  private Boolean running = true;
+  private final ArrayList<ClientHandler> clients;
+
+  private final String gameId;
+
+  public ServerGame(
+      HashMap<ClientHandler, Color> clientColours,
+      ArrayList<ClientHandler> clients,
+      String gameId) {
     this.clientColours = clientColours;
-    initializeContent();
     this.clients = clients;
-    System.out.println("Game initialized");
+    this.gameId = gameId;
+    initializeContent();
   }
 
   /** Handles the jumprequest from the client */
@@ -58,7 +65,12 @@ public class ServerGame implements Runnable {
   /** Updates position on all clients */
   protected void updateAllClientPositions() {
     for (ClientHandler client : clients) {
-      client.positionUpdate(ServerProtocol.POSITION_UPDATE.toString() + ServerProtocol.SEPARATOR.toString() + player.position.getX() + ServerProtocol.SEPARATOR.toString() + player.position.getY());
+      client.positionUpdate(
+          ServerProtocol.POSITION_UPDATE.toString()
+              + ServerProtocol.SEPARATOR.toString()
+              + player.position.getX()
+              + ServerProtocol.SEPARATOR.toString()
+              + player.position.getY());
     }
   }
   /** Toggles pause state */
@@ -71,52 +83,42 @@ public class ServerGame implements Runnable {
    */
   public void checkForWhiteBlockHit() {
     for (Node platform : death_platforms) {
-      if (player.rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
-        //TODO send message to client to reset position
-        //Statement String = DEATH
-        //System.out.println("DEATH");
+      if (player.rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+        // TODO send message to client to reset position
+        // Statement String = DEATH
+        // System.out.println("DEATH");
       }
     }
   }
-  /**
-   * Called every frame and handles the game logic
-   */
-  public void update(double deltaF){
+  /** Called every frame and handles the game logic */
+  public void update(double deltaF) {
     if (!pause) {
       this.gameUpdate(deltaF);
-    }
-    else {
+    } else {
       this.pauseUpdate(deltaF);
     }
   }
 
-  /**
-   * The update method that is called if the game is not paused. Handles the game logic.
-   */
+  /** The update method that is called if the game is not paused. Handles the game logic. */
   private void gameUpdate(double deltaF) {
     player.move(player.velocity);
     player.setPositionTo(player.start_position.getX(), player.start_position.getY());
     checkForWhiteBlockHit();
   }
 
-
-  /**
-   * The update method that is called if the game is paused.
-   */
+  /** The update method that is called if the game is paused. */
   private void pauseUpdate(double deltaF) {
-    //Todo: Add pause menu and pause logic
+    // Todo: Add pause menu and pause logic
   }
 
-  /**
-   * Sets whether the game is paused or not.
-   */
+  /** Sets whether the game is paused or not. */
   public void setPause(boolean pause) {
     this.pause = pause;
   }
 
-
   /**
    * Creates a new rectangle entity
+   *
    * @param x - x position
    * @param y - y position
    * @param w - width
@@ -134,69 +136,69 @@ public class ServerGame implements Runnable {
   }
 
   /**
-   * Initializes the content of the game
-   * Loads the level data and creates the platforms
-   * Creates the player
-   * Creates the stars
-   * Will create the coin to finish the game
+   * Initializes the content of the game Loads the level data and creates the platforms Creates the
+   * player Creates the stars Will create the coin to finish the game
    */
   public void initializeContent() {
     gameRoot = new Pane();
     load_platforms(); // Loads the platforms
   }
 
-  /**
-   * Loads the platforms from the level data
-   */
+  /** Loads the platforms from the level data */
   private void load_platforms() {
-    for (int i=0; i<this.levelData.length; i++) { // Creates the platforms
+    for (int i = 0; i < this.levelData.length; i++) { // Creates the platforms
       String line = this.levelData[i];
       for (int j = 0; j < line.length(); j++) {
         switch (line.charAt(j)) {
           case '0':
             break;
           case '1':
-            Node platform1 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.WHITE.getHex());
+            Node platform1 =
+                createEntity(
+                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.WHITE.getHex());
             platforms.add(platform1);
             death_platforms.add(platform1);
             break;
           case '2':
-            Node platform2 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.PINK.getHex());
+            Node platform2 =
+                createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.PINK.getHex());
             platforms.add(platform2);
             break;
           case '3':
-            Node platform3 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.BLUE1.getHex());
+            Node platform3 =
+                createEntity(
+                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.BLUE1.getHex());
             platforms.add(platform3);
             break;
           case '4':
-            Node platform4 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.GREEN.getHex());
+            Node platform4 =
+                createEntity(
+                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.GREEN.getHex());
             platforms.add(platform4);
             break;
           case '5':
-            Node platform5 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.YELLOW.getHex());
+            Node platform5 =
+                createEntity(
+                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.YELLOW.getHex());
             platforms.add(platform5);
             break;
           case '7':
-            load_player(new Vector2D((j+1)*gridSize-cubeSize, (i+1)*gridSize-cubeSize));
+            load_player(new Vector2D((j + 1) * gridSize - cubeSize, (i + 1) * gridSize - cubeSize));
         }
       }
     }
   }
 
-  /**
-   * Loads the player
-   */
-  private void load_player(Vector2D position){
-    player = new ServerCube(gameRoot, position, new Vector2D(20,20));  // creates the player
+  /** Loads the player */
+  private void load_player(Vector2D position) {
+    player = new ServerCube(gameRoot, position, new Vector2D(20, 20)); // creates the player
     player.start_position = position;
     player.platforms = platforms; // Sets the platforms for the player
     player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
   }
 
-  /**
-   * Make the cube jump
-   */
+  /** Make the cube jump */
   public void jump() {
     this.player.jump();
   }
@@ -207,9 +209,7 @@ public class ServerGame implements Runnable {
     this.pause = false;
   }
 
-  /**
-   * Runnable run method. This method is called when the thread is started.
-   * */
+  /** Runnable run method. This method is called when the thread is started. */
   @Override
   public void run() {
     this.initializeContent();
@@ -221,26 +221,24 @@ public class ServerGame implements Runnable {
     long lastCheck = System.currentTimeMillis();
     long now = 0;
 
-
     /** Wait for all clients to be ready */
-    while (!allClientsReady){
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    while (!allClientsReady) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      allClientsReady = true;
+      for (ClientHandler client : clients) {
+        if (!client.ready) {
+          allClientsReady = false;
+          System.out.println("Client not ready");
+          break;
         }
-        allClientsReady = true;
-        for (ClientHandler client : clients){
-            if (!client.ready){
-                allClientsReady = false;
-                System.out.println("Client not ready");
-                break;
-            }
-        }
+      }
     }
 
-    /** The game loop */
-    while(this.running) {
+    while (this.running) {
       now = System.nanoTime();
       try {
         Thread.sleep((long) Math.floor(1e3 / 60));
@@ -258,11 +256,10 @@ public class ServerGame implements Runnable {
           }
         }
         updateAllClientPositions();
-        /**if (System.currentTimeMillis() - lastCheck >= 1000) {
-          System.out.println("FPS: " + frames);
-          frames = 0;
-          lastCheck = System.currentTimeMillis();
-        }*/
+        /**
+         * if (System.currentTimeMillis() - lastCheck >= 1000) { System.out.println("FPS: " +
+         * frames); frames = 0; lastCheck = System.currentTimeMillis(); }
+         */
       } else {
         pauseUpdate(deltaF);
         deltaF += (System.nanoTime() - previousTime) / timePerFrame;
@@ -276,5 +273,17 @@ public class ServerGame implements Runnable {
         }
       }
     }
+    Server.getInstance().endGame(this);
   };
+
+  /**
+   * @return The name of the game instance concerned.
+   */
+  protected String getGameId() {
+    return gameId;
+  }
+
+  protected void removeClient(ClientHandler client) {
+    this.running = false;
+  }
 }

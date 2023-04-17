@@ -169,6 +169,15 @@ public class MenuController {
   }
 
   /**
+   * Sets the game list in the games tab.
+   *
+   * @param games The list of games and whether they are being played or not
+   */
+  public void setGameList(String[] games) {
+    this.gamesTabController.setGameList(games);
+  }
+
+  /**
    * Updates the list of users in the home tab.
    *
    * @param users A String array containing all the usernames
@@ -189,10 +198,11 @@ public class MenuController {
    * @param text The text to set
    */
   public void fillChatText(String text) {
-    Platform.runLater(() -> {
-      this.textChat.setText(text);
-      this.textChat.requestFocus();
-      this.textChat.end();
-    });
+    Platform.runLater(
+        () -> {
+          this.textChat.setText(text);
+          this.textChat.requestFocus();
+          this.textChat.end();
+        });
   }
 }

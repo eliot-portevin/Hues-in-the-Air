@@ -7,8 +7,6 @@ import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static javafx.application.Application.launch;
-
 public class Lobby {
   private final String name;
   private final String password;
@@ -20,7 +18,9 @@ public class Lobby {
   private final Logger LOGGER = LogManager.getLogger(getClass());
 
   private ServerGame game;
-  boolean gameInitialised = false;
+  private boolean isInGame = false;
+  int gamesPlayed = 0;
+  
   /**
    * Creates a new lobby.
    *
@@ -68,6 +68,10 @@ public class Lobby {
    * @param client The client to remove
    */
   protected void removeClient(ClientHandler client) {
+    if (this.isInGame) {
+      this.game.removeClient(client);
+    }
+
     synchronized (this.clients) {
       client.exitLobby();
       this.clients.remove(client);
@@ -153,17 +157,21 @@ public class Lobby {
   /** Starts the game. */
   private void startGame() {
     // The game instance starts itself
-    System.out.println(getClientHandlers());
-    this.game = new ServerGame(this.clientColours, getClientHandlers());
-    gameInitialised = true;
+    String gameId = this.getName() + "_" + gamesPlayed;
+    this.game = new ServerGame(this.clientColours, getClientHandlers(), gameId);
+    
     Thread gameThread = new Thread(game);
     gameThread.start();
+    
     for(ClientHandler client : this.getClientHandlers()) {
       client.startGame();
-      System.out.println("Client " + client.getUsername() + " started game");
     }
+    
+    Server.getInstance().addGame(this.game);
+    this.isInGame = true;
   }
-  /** getter for the game */
+
+  /** Getter for the game */
   protected ServerGame getGame() {
     return this.game;
   }

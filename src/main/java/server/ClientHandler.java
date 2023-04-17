@@ -1,16 +1,16 @@
 package server;
 
 import client.ClientProtocol;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ClientHandler implements Runnable {
 
@@ -353,6 +353,18 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
+  public void updateGameList() {
+    Map<ServerGame, Boolean> games = this.server.getGames();
+
+    StringBuilder command = new StringBuilder(ServerProtocol.UPDATE_GAME_LIST.toString() + ServerProtocol.SEPARATOR);
+
+    for (ServerGame game : games.keySet()) {
+      command.append(game.getGameId()).append(" ").append(games.get(game)).append(ServerProtocol.LOBBY_INFO_SEPARATOR);
+    }
+
+    this.out.println(command);
+  }
+
   /** Called from {@link ServerGame} to tell the client that the game has started. */
   public void startGame() {
     this.out.println(ServerProtocol.START_GAME);
@@ -361,7 +373,7 @@ public class ClientHandler implements Runnable {
   private void requestJump() {
     if (this.lobby.getGame().handleJumpRequest(this)){
       for(ClientHandler client : this.lobby.getClientHandlers()) {
-        client.out.println(ServerProtocol.JUMP.toString());
+        client.out.println(ServerProtocol.JUMP);
       }
     }
   }
@@ -374,7 +386,7 @@ public class ClientHandler implements Runnable {
     System.out.println("Request pause Executed");
     this.lobby.getGame().setPause();
     for(ClientHandler client : this.lobby.getClientHandlers()) {
-      client.out.println(ServerProtocol.TOGGLE_PAUSE.toString());
+      client.out.println(ServerProtocol.TOGGLE_PAUSE);
     }
   }
 

@@ -24,10 +24,12 @@
           <RowConstraints percentHeight="5.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <ListView fx:id="list" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2" />
+            <ListView fx:id="gameList" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label fx:id="labelLobbyName" alignment="CENTER" text="Lobby name" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Label fx:id="labelScore" text="Score" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Label fx:id="labelStatus" text="Status" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ListView fx:id="gameStatusList" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <ListView fx:id="scoreList" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </children>

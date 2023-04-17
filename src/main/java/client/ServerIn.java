@@ -99,6 +99,7 @@ public class ServerIn implements Runnable {
                 case UPDATE_FULL_LIST -> this.client.updateLobbyInfo(command[1]);
                 case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
                 case UPDATE_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
+                case UPDATE_GAME_LIST -> this.client.updateGameList(command[1]);
                 case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
                 case START_GAME -> {
                   try {
