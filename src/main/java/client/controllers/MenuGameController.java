@@ -63,6 +63,7 @@ public class MenuGameController {
   public void setGameList(String[] games) {
     this.gameList.getItems().clear();
     this.gameStatusList.getItems().clear();
+    this.scoreList.getItems().clear();
 
     ArrayList<String> gameList = new ArrayList<>();
     ArrayList<String> gameStatusList = new ArrayList<>();
