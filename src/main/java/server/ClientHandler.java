@@ -99,8 +99,8 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * Sets the ready status of the client to true. The game only starts when the
-   * ready status of all clients is set to true
+   * Sets the ready status of the client to true. The game only starts when the ready status of all
+   * clients is set to true
    */
   protected void readyUp() {
     this.ready = true;
@@ -179,10 +179,6 @@ public class ClientHandler implements Runnable {
         switch (protocol) {
           case EXIT -> this.server.removeClient(this);
           case SET_USERNAME -> this.setUsername(command[1]);
-          case GET_FULL_SERVER_LIST -> {
-            this.updateClientList();
-            this.updateLobbyList();
-          }
           case SEND_PUBLIC_MESSAGE -> this.sendPublicMessage(command[1]);
           case SEND_PRIVATE_MESSAGE -> this.sendPrivateMessage(command[1], command[2]);
           case SEND_LOBBY_MESSAGE -> this.sendLobbyMessage(command[1]);
@@ -190,10 +186,15 @@ public class ClientHandler implements Runnable {
           case CLIENT_PONG -> this.resetClientStatus();
           case CREATE_LOBBY -> this.server.createLobby(command[1], command[2], this);
           case JOIN_LOBBY -> this.server.joinLobby(command[1], command[2], this);
-          case GET_CLIENTS_LOBBY -> {
-            if (this.lobby != null) this.listLobby();
+          case GET_FULL_SERVER_LIST -> {
+            this.updateClientList();
+            this.updateLobbyList();
           }
-          case GET_CLIENTS_SERVER -> this.sendClientList(this.server.getClientHandlers());
+          case GET_FULL_MENU_LISTS -> {
+            this.updateClientList();
+            this.updateLobbyList();
+            this.updateGameList();
+          }
           case TOGGLE_READY_STATUS -> this.setToggleReady(command[1]);
           case EXIT_LOBBY -> {
             if (this.lobby != null) this.lobby.removeClient(this);
@@ -212,8 +213,8 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * Starts the game loop of the game in this client's lobby, and sends a protocol command to all clients
-   * to start their game loops.
+   * Starts the game loop of the game in this client's lobby, and sends a protocol command to all
+   * clients to start their game loops.
    */
   private void startGameLoop() {
     this.lobby.getGame().startGameLoop();
@@ -356,10 +357,15 @@ public class ClientHandler implements Runnable {
   public void updateGameList() {
     Map<ServerGame, Boolean> games = this.server.getGames();
 
-    StringBuilder command = new StringBuilder(ServerProtocol.UPDATE_GAME_LIST.toString() + ServerProtocol.SEPARATOR);
+    StringBuilder command =
+        new StringBuilder(ServerProtocol.UPDATE_GAME_LIST.toString() + ServerProtocol.SEPARATOR);
 
     for (ServerGame game : games.keySet()) {
-      command.append(game.getGameId()).append(" ").append(games.get(game)).append(ServerProtocol.LOBBY_INFO_SEPARATOR);
+      command
+          .append(game.getGameId())
+          .append(" ")
+          .append(games.get(game))
+          .append(ServerProtocol.LOBBY_INFO_SEPARATOR);
     }
 
     this.out.println(command);
@@ -371,28 +377,26 @@ public class ClientHandler implements Runnable {
   }
 
   private void requestJump() {
-    if (this.lobby.getGame().handleJumpRequest(this)){
-      for(ClientHandler client : this.lobby.getClientHandlers()) {
+    if (this.lobby.getGame().handleJumpRequest(this)) {
+      for (ClientHandler client : this.lobby.getClientHandlers()) {
         client.out.println(ServerProtocol.JUMP);
       }
     }
   }
 
   /**
-   * Called when the client has requested to toggle pause. The game is paused, and a protocol command is sent back
-   * to all clients in the lobby to toggle pause on their end.
+   * Called when the client has requested to toggle pause. The game is paused, and a protocol
+   * command is sent back to all clients in the lobby to toggle pause on their end.
    */
   private void requestPause() {
     System.out.println("Request pause Executed");
     this.lobby.getGame().setPause();
-    for(ClientHandler client : this.lobby.getClientHandlers()) {
+    for (ClientHandler client : this.lobby.getClientHandlers()) {
       client.out.println(ServerProtocol.TOGGLE_PAUSE);
     }
   }
 
-  /**
-   * Sends StartGameLoop command to the client associated with this ClientHandler
-   */
+  /** Sends StartGameLoop command to the client associated with this ClientHandler */
   public void startClientGameLoop() {
     String command = ClientProtocol.START_GAME_LOOP.toString();
     this.out.println(command);
@@ -400,12 +404,10 @@ public class ClientHandler implements Runnable {
 
   /**
    * Sends a command to the client to update the position of the player
+   *
    * @param command the ServerProtocol command POSITION_UPDATE
    */
-  public void positionUpdate(String command){
+  public void positionUpdate(String command) {
     this.out.println(command);
   }
-
 }
-
-

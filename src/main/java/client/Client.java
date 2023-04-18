@@ -227,6 +227,9 @@ public class Client extends Application {
     // Set controller
     this.menuController = loader.getController();
 
+    // Request the lobby list, the client list and the game list
+    this.requestMenuLists();
+
     this.loginScreen = false;
     this.menuScreen = true;
     this.connectedToServer = true;
@@ -569,11 +572,25 @@ public class Client extends Application {
     }
   }
 
+  /**
+   * The client has receieved a list of all games that are currently running or have been completed.
+   * These are passed on to the games tab controller in the menu.
+   *
+   * @param gameList The list of games in the format from the server command
+   */
   protected void updateGameList(String gameList) {
     if (this.menuScreen) {
       String[] games = gameList.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString());
       this.menuController.setGameList(games);
     }
+  }
+
+  /**
+   * The client has entered the menu screen and wants to update all the lists available to them.
+   */
+  protected void requestMenuLists() {
+    String command = ClientProtocol.GET_FULL_MENU_LISTS.toString();
+    this.outputSocket.sendToServer(command);
   }
 
   /**

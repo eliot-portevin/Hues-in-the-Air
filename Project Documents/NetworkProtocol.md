@@ -157,16 +157,6 @@ Command sent from client to server. Client requests to create lobby on server.
 Client wants to exit a lobby. If they are not in a lobby, the server will ignore their request. <br>
 Example: EXIT_LOBBY <br>
 
-### GET_CLIENTS_SERVER
-Client wants a list of all clients connected to the server <br>
-Example: GET_CLIENTS_SERVER <br>
-Command sent from client to server. Client requests names of all clients connected to the server
-
-### GET_CLIENTS_LOBBY
-Client wants a list of all clients connected to the lobby <br>
-Example: GET_CLIENTS_LOBBY <br>
-Command sent from client to server. Client requests names of all clients connected to the lobby
-
 ### TOGGLE_READY_STATUS
 Client wants to toggle their ready status <br>
 Example: TOGGLE_READY_STATUS<&!>clientIsReady <br> 
@@ -198,3 +188,9 @@ Signal sent to server to tell server that client wants to start the game <br>
 Example: START_GAME_LOOP <br>
 Command sent form client to server. Client sends this command to server to tell server that client wants to start the game,
 server then starts the game and sends START_GAME to all clients.
+
+### GET_FULL_MENU_LISTS
+Signal sent to server to tell server that client wants to get a list of all clients, lobbies and games. Used
+when the client has loaded their menu screen.<br>
+Example: GET_FULL_MENU_LISTS <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to get a list of all clients, lobbies and games,

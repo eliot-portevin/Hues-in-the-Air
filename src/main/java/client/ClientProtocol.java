@@ -43,14 +43,11 @@ public enum ClientProtocol {
    */
   EXIT_LOBBY(0),
 
-  /** Client wants to know the name of the other players */
-  GET_CLIENTS_SERVER(0),
-
-  /** Client wants to know the name of the other players in their lobby and their ready status. */
-  GET_CLIENTS_LOBBY(0),
-
   /** Client wants a full list of all lobbies and players in the lobby. Called upon startup. */
   GET_FULL_SERVER_LIST(0),
+
+  /** Client has opened the menu screen and wants to get the lists of clients/lobbies/games*/
+  GET_FULL_MENU_LISTS(0),
 
   /** Client wants to toggle their ready status to true or false. */
   TOGGLE_READY_STATUS(1),
