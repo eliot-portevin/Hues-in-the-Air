@@ -2,6 +2,7 @@ package server;
 
 import client.LevelData;
 import client.Vector2D;
+import game.Block;
 import gui.Colours;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
@@ -15,11 +16,29 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class ServerGame implements Runnable {
+  // Pane that contains the game
+  private Pane gameRoot;
+
+  // Keys pressed by the players
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
+
   private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
   private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
-  private Pane gameRoot;
+  private Block[][] grid; // Used to store the grid of blocks, null if no block is present
+
+  // Clients
+  public static ArrayList<Color> blockColours =
+          new ArrayList<>(
+                  Arrays.asList(
+                          Color.valueOf("#f57dc6"),
+                          Color.valueOf("#b3d5f2"),
+                          Color.valueOf("#9ae6ae"),
+                          Color.valueOf("#fccf78")));
+
+  private final HashMap<ClientHandler, Color> clientColours;
+
+  // In-Game variables
   private ServerCube player;
   private int gridSize = 50;
   private int cubeSize = 20;
@@ -28,16 +47,6 @@ public class ServerGame implements Runnable {
   public boolean pause = true;
   private boolean allClientsReady = false;
   private String[] levelData = LevelData.Level1;
-
-  public static ArrayList<Color> blockColours =
-      new ArrayList<>(
-          Arrays.asList(
-              Color.valueOf("#f57dc6"),
-              Color.valueOf("#b3d5f2"),
-              Color.valueOf("#9ae6ae"),
-              Color.valueOf("#fccf78")));
-
-  private final HashMap<ClientHandler, Color> clientColours;
 
   private Boolean running = true;
   private final ArrayList<ClientHandler> clients;
@@ -146,6 +155,9 @@ public class ServerGame implements Runnable {
 
   /** Loads the platforms from the level data */
   private void load_platforms() {
+    // Set the grid size
+    this.grid = new Block[levelData.length][levelData[0].length()];
+
     for (int i = 0; i < this.levelData.length; i++) { // Creates the platforms
       String line = this.levelData[i];
       for (int j = 0; j < line.length(); j++) {
