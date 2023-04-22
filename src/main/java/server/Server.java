@@ -238,8 +238,10 @@ public class Server implements Runnable {
    * status (running or finished).
    */
   private void updateGameList() {
-    for (ClientHandler client : this.clientHandlers) {
-      client.updateGameList();
+    synchronized (this.clientHandlers) {
+      for (ClientHandler client : this.clientHandlers) {
+        client.updateGameList();
+      }
     }
   }
 

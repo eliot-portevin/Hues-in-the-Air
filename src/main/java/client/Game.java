@@ -12,8 +12,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import server.ServerGame;
-import server.ServerProtocol;
 
 public class  Game {
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
@@ -30,7 +28,7 @@ public class  Game {
   private int cubesize = 20;
   private AnimationTimer timer;
 
-  public boolean pause = true;
+  public boolean pause = false;
   public boolean gameStarted = false;
   private boolean pauseRequestSent = false;
   private Client client;
@@ -68,38 +66,11 @@ public class  Game {
    * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic is handled.
    */
   private void analyseKeys(double deltaF) {
-    if (isPressed(KeyCode.ENTER)) {
-      if(!pauseRequestSent) {
-        pauseRequestSent = true;
-        pauseTimer.schedule(new TimerTask() {
-          @Override
-          public void run() {
-            setPauseRequestSent();
-          }
-        }, 500);
-        this.client.sendGameCommand(ClientProtocol.REQUEST_PAUSE.toString());
-      }
-    }
-    if(this.pause && !gameStarted) {
-      if (isPressed(KeyCode.SPACE)) {
-        this.client.sendGameCommand(ClientProtocol.START_GAME_LOOP.toString());
-      }
-    }
     if (!this.pause) {
       if (isPressed(KeyCode.SPACE)) {
-        System.out.println("Jump");
-        if (!jumped) {
-          jumped = true;
-          this.client.sendGameCommand(ClientProtocol.REQUEST_JUMP.toString());
-        }
+        this.client.sendGameCommand(ClientProtocol.SPACE_BAR_PRESSED.toString());
       }
     }
-  }
-  /** Sends a ready up command to the server
-   */
-  private void readyUp(){
-    System.out.println("Ready upStarted");
-    this.client.sendGameCommand(ClientProtocol.READY_UP.toString());
   }
 
   /**
@@ -168,8 +139,6 @@ public class  Game {
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
     load_platforms(); // Loads the platforms
-
-    readyUp();
   }
 
   /**
@@ -260,7 +229,6 @@ public class  Game {
         }
 
         if(System.currentTimeMillis() - lastCheck >= 1000) {
-          System.out.println("FPS: " + frames);
           frames = 0;
           lastCheck = System.currentTimeMillis();
         }

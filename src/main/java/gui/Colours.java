@@ -1,6 +1,8 @@
 package gui;
-/** enum for the colours we use in our game */
-import javafx.scene.paint.Color;public enum Colours {
+
+import javafx.scene.paint.Color;
+
+public enum Colours {
   BLACK("#363636"),
   WHITE("#ffffff"),
   YELLOW("#fccf78"),

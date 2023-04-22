@@ -3,17 +3,17 @@ package server;
 import client.LevelData;
 import client.Vector2D;
 import game.Block;
+import game.Level;
 import gui.Colours;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class ServerGame implements Runnable {
   // Pane that contains the game
@@ -26,25 +26,27 @@ public class ServerGame implements Runnable {
   private ArrayList<Node> death_platforms = new ArrayList<>();
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Block[][] grid; // Used to store the grid of blocks, null if no block is present
+  private Level level;
 
   // Clients
   public static ArrayList<Color> blockColours =
-          new ArrayList<>(
-                  Arrays.asList(
-                          Color.valueOf("#f57dc6"),
-                          Color.valueOf("#b3d5f2"),
-                          Color.valueOf("#9ae6ae"),
-                          Color.valueOf("#fccf78")));
+      new ArrayList<>(
+          Arrays.asList(
+              Color.valueOf("#f57dc6"),
+              Color.valueOf("#b3d5f2"),
+              Color.valueOf("#9ae6ae"),
+              Color.valueOf("#fccf78")));
 
   private final HashMap<ClientHandler, Color> clientColours;
 
   // In-Game variables
   private ServerCube player;
+  private boolean gameStarted = false;
   private int gridSize = 50;
   private int cubeSize = 20;
   private boolean jumped;
   private AnimationTimer timer;
-  public boolean pause = true;
+  public boolean pause = false;
   private boolean allClientsReady = false;
   private String[] levelData = LevelData.Level1;
 
@@ -86,33 +88,20 @@ public class ServerGame implements Runnable {
   protected void setPause() {
     pause = !pause;
   }
-
-  /**
-   * Checks for collisions with the white blocks and calls resetsPosition if it collides with one
-   */
-  public void checkForWhiteBlockHit() {
-    for (Node platform : death_platforms) {
-      if (player.rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-        // TODO send message to client to reset position
-        // Statement String = DEATH
-        // System.out.println("DEATH");
-      }
-    }
-  }
   /** Called every frame and handles the game logic */
-  public void update(double deltaF) {
+  public void update(double dt) {
     if (!pause) {
-      this.gameUpdate(deltaF);
+      this.gameUpdate(dt);
     } else {
-      this.pauseUpdate(deltaF);
+      this.pauseUpdate(dt);
     }
   }
 
   /** The update method that is called if the game is not paused. Handles the game logic. */
-  private void gameUpdate(double deltaF) {
-    player.move(player.velocity);
-    player.setPositionTo(player.start_position.getX(), player.start_position.getY());
-    checkForWhiteBlockHit();
+  private void gameUpdate(double dt) {
+    Block[] neighbourBlocks =
+        this.level.getNeighbourBlocks(player.position.getX(), player.position.getY());
+    player.move(neighbourBlocks, dt);
   }
 
   /** The update method that is called if the game is paused. */
@@ -126,79 +115,17 @@ public class ServerGame implements Runnable {
   }
 
   /**
-   * Creates a new rectangle entity
-   *
-   * @param x - x position
-   * @param y - y position
-   * @param w - width
-   * @param h - height
-   * @param color - colour
-   * @return - returns the rectangle entity
-   */
-  private Node createEntity(int x, int y, int w, int h, Color color) {
-    Rectangle entity = new Rectangle(w, h);
-    entity.setTranslateX(x);
-    entity.setTranslateY(y);
-    entity.setFill(color);
-    gameRoot.getChildren().add(entity);
-    return entity;
-  }
-
-  /**
    * Initializes the content of the game Loads the level data and creates the platforms Creates the
    * player Creates the stars Will create the coin to finish the game
    */
   public void initializeContent() {
     gameRoot = new Pane();
-    load_platforms(); // Loads the platforms
-  }
+    this.level = new Level("easy", 50, gameRoot);
 
-  /** Loads the platforms from the level data */
-  private void load_platforms() {
-    // Set the grid size
-    this.grid = new Block[levelData.length][levelData[0].length()];
-
-    for (int i = 0; i < this.levelData.length; i++) { // Creates the platforms
-      String line = this.levelData[i];
-      for (int j = 0; j < line.length(); j++) {
-        switch (line.charAt(j)) {
-          case '0':
-            break;
-          case '1':
-            Node platform1 =
-                createEntity(
-                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.WHITE.getHex());
-            platforms.add(platform1);
-            death_platforms.add(platform1);
-            break;
-          case '2':
-            Node platform2 =
-                createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.PINK.getHex());
-            platforms.add(platform2);
-            break;
-          case '3':
-            Node platform3 =
-                createEntity(
-                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.BLUE1.getHex());
-            platforms.add(platform3);
-            break;
-          case '4':
-            Node platform4 =
-                createEntity(
-                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.GREEN.getHex());
-            platforms.add(platform4);
-            break;
-          case '5':
-            Node platform5 =
-                createEntity(
-                    j * gridSize, i * gridSize, gridSize, gridSize, Colours.YELLOW.getHex());
-            platforms.add(platform5);
-            break;
-          case '7':
-            load_player(new Vector2D((j + 1) * gridSize - cubeSize, (i + 1) * gridSize - cubeSize));
-        }
-      }
-    }
+    Vector2D playerSpawn =
+        new Vector2D(
+            level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
+    load_player(playerSpawn);
   }
 
   /** Loads the player */
@@ -208,11 +135,6 @@ public class ServerGame implements Runnable {
     player.platforms = platforms; // Sets the platforms for the player
     player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
-  }
-
-  /** Make the cube jump */
-  public void jump() {
-    this.player.jump();
   }
 
   /** Starts the game loop */
@@ -226,67 +148,47 @@ public class ServerGame implements Runnable {
   public void run() {
     this.initializeContent();
 
-    double timePerFrame = 1e9 / 60; // 60 FPS
-    double deltaF = 0;
     long previousTime = System.nanoTime();
-    int frames = 0;
-    long lastCheck = System.currentTimeMillis();
-    long now = 0;
-
-    /** Wait for all clients to be ready */
-    while (!allClientsReady) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      allClientsReady = true;
-      for (ClientHandler client : clients) {
-        if (!client.ready) {
-          allClientsReady = false;
-          System.out.println("Client not ready");
-          break;
-        }
-      }
-    }
+    long now = System.nanoTime();
+    int FPS = 60;
+    double dt = 0;
 
     while (this.running) {
       now = System.nanoTime();
-      try {
-        Thread.sleep((long) Math.floor(1e3 / 60));
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+      dt = (now - previousTime) * 1e-9; // Time since last frame in seconds
+
       if (!pause) {
-        deltaF += (System.nanoTime() - previousTime) / timePerFrame;
-        previousTime = System.nanoTime();
-        if (deltaF >= 1) {
-          while (deltaF >= 1) {
-            update(deltaF);
-            frames++;
-            deltaF--;
-          }
+        if (dt > (double) 1 / FPS) {
+          dt = dt > 1 ? 1 : dt; // Limit skipped frames
+
+          previousTime = now;
+
+          update(dt);
+          updateAllClientPositions();
         }
-        updateAllClientPositions();
-        /**
-         * if (System.currentTimeMillis() - lastCheck >= 1000) { System.out.println("FPS: " +
-         * frames); frames = 0; lastCheck = System.currentTimeMillis(); }
-         */
+
       } else {
-        pauseUpdate(deltaF);
-        deltaF += (System.nanoTime() - previousTime) / timePerFrame;
-        previousTime = System.nanoTime();
-        if (deltaF >= 1) {
-          while (deltaF >= 1) {
-            update(deltaF);
-            frames++;
-            deltaF--;
-          }
-        }
+        pauseUpdate(dt);
       }
     }
     Server.getInstance().endGame(this);
-  };
+  }
+
+  /**
+   * A client has pressed the space bar. If the cube isn't moving yet, its speed is initialised.
+   * Otherwise, a jump request is handled.
+   *
+   * @param client - The client that pressed the space bar.
+   */
+  public void spaceBarPressed(ClientHandler client) {
+    if (!gameStarted) {
+      this.player.initialiseSpeed();
+      this.gameStarted = true;
+    }
+    else {
+      this.player.jump();
+    }
+  }
 
   /**
    * @return The name of the game instance concerned.

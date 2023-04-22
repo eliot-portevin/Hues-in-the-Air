@@ -4,6 +4,7 @@ import client.Client;
 import client.Game;
 import client.util.AlertManager;
 import client.util.Chat;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -52,10 +53,10 @@ public class GameController {
   }
 
   /** Starts the game. Is required because otherwise the client is being set too late otherwise */
-    public void startGame() {
-      this.game = new Game(this.client);
-      game.run(this.gamePane);
-    }
+  public void startGame() {
+    this.game = new Game(this.client);
+    game.run(this.gamePane);
+  }
   /** getter for the game */
   public Game getGame() {
     return this.game;
@@ -65,27 +66,26 @@ public class GameController {
     this.client = client;
   }
 
-  /**
-   * Sets the behaviour for detected key presses
-   * and pause the game if escape is pressed
-   */
+  /** Sets the behaviour for detected key presses and pause the game if escape is pressed */
   private void initialiseKeyboard() {
-    backgroundPane.setOnKeyPressed(e -> {
-      if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {
-        if (e.getCode() != KeyCode.ESCAPE) {
-          game.keys.put(e.getCode(), true);
-        }
-      }
-    });
-    backgroundPane.setOnKeyReleased(e -> {
-      if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {
-        if (e.getCode() == KeyCode.ESCAPE) {
-          game.pause = !game.pause;
-        }
-        game.keys.put(e.getCode(), false);
-      }
-    });
-    backgroundPane.requestFocus();
+    backgroundPane.setOnKeyPressed(
+        e -> {
+          if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {
+            if (e.getCode() != KeyCode.ESCAPE) {
+              game.keys.put(e.getCode(), true);
+            }
+          }
+        });
+    backgroundPane.setOnKeyReleased(
+        e -> {
+          if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {
+            if (e.getCode() == KeyCode.ESCAPE) {
+              game.pause = !game.pause;
+            }
+            game.keys.put(e.getCode(), false);
+          }
+        });
+    Platform.runLater(() -> backgroundPane.requestFocus());
   }
 
   /** Creates the chat objects for the right pane. */
@@ -124,9 +124,7 @@ public class GameController {
     this.lobbyTabButton.fire();
   }
 
-  /**
-   * Sets the font size of the tab button based on whether it is selected or not.
-   */
+  /** Sets the font size of the tab button based on whether it is selected or not. */
   private void setTabFontSize(ToggleButton tabButton) {
     tabButton
         .styleProperty()
@@ -136,9 +134,7 @@ public class GameController {
                 lobbyChatPane.widthProperty().divide(tabButton.isSelected() ? 15 : 18)));
   }
 
-  /**
-   * The client has received a message. The message is displayed in the corresponding chat pane.
-   */
+  /** The client has received a message. The message is displayed in the corresponding chat pane. */
   public void receiveMessage(String message, String sender, String privacy) {
     switch (privacy) {
       case "Lobby" -> this.lobbyChatManager.addMessage(message, sender, false);
@@ -146,7 +142,7 @@ public class GameController {
       case "Private" -> {
         if (this.lobbyChatManager.isInFront) {
           this.lobbyChatManager.addMessage(message, sender, true);
-        } else if (this.serverChatManager.isInFront){
+        } else if (this.serverChatManager.isInFront) {
           this.serverChatManager.addMessage(message, sender, true);
         }
       }

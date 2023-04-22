@@ -714,7 +714,6 @@ public class Client extends Application {
 
   /** Sends the game commands to the server */
   protected void sendGameCommand(String command) {
-    System.out.println("Sending game command: " + command);
     this.outputSocket.sendToServer(command);
   }
 

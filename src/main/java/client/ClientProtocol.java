@@ -56,7 +56,7 @@ public enum ClientProtocol {
   /** Signal sent to server upon receiving a PING from the server. */
   CLIENT_PONG(0),
   /** Client wants to jump */
-  REQUEST_JUMP(0),
+  SPACE_BAR_PRESSED(0),
   /** Client wants to pause the game */
   REQUEST_PAUSE(0),
   /** Client game is opened and is ready to start */
