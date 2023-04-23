@@ -60,6 +60,8 @@ public class Level {
         }
       }
     }
+
+    this.grid[400/50][3450/50].setColour(Colours.BLUE1.getHex());
   }
 
   /**

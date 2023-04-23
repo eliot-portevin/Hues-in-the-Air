@@ -80,4 +80,12 @@ public class Block {
   public void setY(int y) {
     this.y = y;
   }
+
+  /**
+   * Sets the colour of the block
+   * @param colour the colour of the block
+   */
+  public void setColour(Color colour) {
+    this.rectangle.setFill(colour);
+  }
 }

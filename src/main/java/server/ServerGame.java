@@ -11,6 +11,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class ServerGame implements Runnable {
   // Pane that contains the game
@@ -116,9 +117,11 @@ public class ServerGame implements Runnable {
    * player Creates the stars Will create the coin to finish the game
    */
   public void initializeContent() {
+    // Create a level and add it to an empty pane
     gameRoot = new Pane();
     this.level = new Level("easy", 50, gameRoot);
 
+    // Spawn player
     Vector2D playerSpawn =
         new Vector2D(
             level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
@@ -129,7 +132,6 @@ public class ServerGame implements Runnable {
   private void load_player(Vector2D position) {
     player = new ServerCube(gameRoot, position, cubeSize, gridSize); // creates the player
     player.start_position = position.clone();
-    player.gridSize = gridSize; // Sets the grid size for the player
   }
 
   /** Starts the game loop */

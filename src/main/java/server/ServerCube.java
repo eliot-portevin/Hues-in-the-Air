@@ -10,6 +10,7 @@ import javafx.scene.shape.Rectangle;
 public class ServerCube {
   // Position, velocity, acceleration
   private final int blocksPerSecond = 6;
+  private final double velocity_constant;
   private final double acceleration_constant;
 
   protected Vector2D position;
@@ -27,7 +28,6 @@ public class ServerCube {
   private final double jumpHeight = 30;
   private boolean canJump = true;
   private final Pane gameRoot;
-  public int gridSize;
   protected Rectangle rectangle = new Rectangle();
   private double y0 = 100000;
   private boolean y0passed;
@@ -39,9 +39,9 @@ public class ServerCube {
   public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
     // Initialise position, velocity and acceleration
     this.position = position;
+    this.velocity_constant = blockSize * blocksPerSecond;
     this.acceleration_constant = blockSize * blocksPerSecond * 4;
-    this.acceleration.setX(0);
-    this.acceleration.setY(acceleration_constant);
+    this.setAccelerationAngle(0);
 
     this.cubeSize = cubeSize;
     this.blockSize = blockSize;
@@ -109,11 +109,9 @@ public class ServerCube {
     if (!jumping) {
       jumping = true;
 
-      Vector2D jumpVector = new Vector2D(Math.sin(accelerationAngle), Math.cos(accelerationAngle));
-      jumpVector.multiplyInPlace(blocksPerSecond * 2);
-      jumpVector.multiplyInPlace(blockSize);
-      jumpVector.multiplyInPlace(-1);
+      Vector2D jumpVector = new Vector2D(Math.sin(Math.toRadians(accelerationAngle)), Math.cos(Math.toRadians(accelerationAngle)));
 
+      jumpVector.multiplyInPlace(- blockSize * blocksPerSecond * 2);
       velocity.addInPlace(jumpVector);
     }
     /*
@@ -202,6 +200,7 @@ public class ServerCube {
             // If the block was to the right of the cube before collision
             if (velocity.getX() > 0) {
               this.position.setX(block.getX() - this.rectangle.getWidth());
+              System.out.println(block.getX() + " " + block.getY());
               this.setAccelerationAngle(90);
             }
             // If the block was to the left of the cube before collision
@@ -279,6 +278,7 @@ public class ServerCube {
   private void setAccelerationAngle(int angle) {
     this.acceleration.setX(Math.sin(Math.toRadians(angle)) * acceleration_constant);
     this.acceleration.setY(Math.cos(Math.toRadians(angle)) * acceleration_constant);
+
     this.accelerationAngle = angle;
   }
 
@@ -286,7 +286,7 @@ public class ServerCube {
    * The cube has entered in contact with a white cube. It is sent back to the start of the level
    * and the level is reset.
    */
-  private void resetLevel() {
+  void resetLevel() {
     this.position.setX(start_position.getX());
     this.position.setY(start_position.getY());
     this.rectangle.setTranslateX(this.position.getX());
