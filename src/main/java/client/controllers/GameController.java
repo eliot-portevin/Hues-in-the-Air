@@ -1,6 +1,7 @@
 package client.controllers;
 
 import client.Client;
+import client.ClientProtocol;
 import client.Game;
 import client.util.AlertManager;
 import client.util.Chat;
@@ -81,6 +82,9 @@ public class GameController {
           if (!(lobbyChatText.isFocused() || serverChatText.isFocused())) {
             if (e.getCode() == KeyCode.ESCAPE) {
               game.pause = !game.pause;
+            }
+            else if (e.getCode() == KeyCode.SPACE) {
+              this.client.sendGameCommand(ClientProtocol.SPACE_BAR_PRESSED.toString());
             }
             game.keys.put(e.getCode(), false);
           }

@@ -18,6 +18,9 @@ public class Block {
   public Block(Color color, int x, int y, int size) {
     this.color = color;
     this.rectangle = new Rectangle(x, y, size, size);
+    if (color != null) {
+      this.rectangle.setFill(color);
+    }
   }
 
   /** Getter for the color of the block */

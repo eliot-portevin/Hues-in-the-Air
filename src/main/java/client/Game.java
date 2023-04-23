@@ -1,10 +1,10 @@
 package client;
 
+import game.Level;
 import gui.Colours;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
@@ -20,19 +20,23 @@ public class  Game {
   private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
   private Pane appRoot = new Pane();
   private Pane gameRoot;
-  private Cube player;
   private int levelWidth;
   private int levelHeight;
   private int gridSize = 50;
   public boolean jumped;
-  private int cubesize = 20;
+  private int cubesize = 49;
   private AnimationTimer timer;
 
-  public boolean pause = false;
-  public boolean gameStarted = false;
   private boolean pauseRequestSent = false;
   private Client client;
   private Timer pauseTimer = new Timer();
+
+  private boolean running = true;
+  public boolean pause = false;
+  public boolean gameStarted = false;
+
+  private Level level;
+  private Cube player;
 
   public Game(Client client) {
     this.client = client;
@@ -67,9 +71,7 @@ public class  Game {
    */
   private void analyseKeys(double deltaF) {
     if (!this.pause) {
-      if (isPressed(KeyCode.SPACE)) {
-        this.client.sendGameCommand(ClientProtocol.SPACE_BAR_PRESSED.toString());
-      }
+      // Do nothing
     }
   }
 
@@ -138,7 +140,13 @@ public class  Game {
     Rectangle bg = new Rectangle(this.gameRoot.getWidth(), this.gameRoot.getHeight()); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
-    load_platforms(); // Loads the platforms
+
+    // Load level
+    this.level = new Level("easy", 50, gameRoot);
+    Vector2D playerSpawn =
+        new Vector2D(
+            level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
+    load_player(playerSpawn);
   }
 
   /**

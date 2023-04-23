@@ -3,16 +3,14 @@ package server;
 import client.Vector2D;
 import game.Block;
 import gui.Colours;
-import java.util.ArrayList;
 import java.util.Timer;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 public class ServerCube {
   // Position, velocity, acceleration
-  private final int blocksPerSecond = 8;
-  private final double gravity_scalar = 10;
+  private final int blocksPerSecond = 4;
+  private final double acceleration_constant;
 
   protected Vector2D position;
   private final double speed = 30;
@@ -28,8 +26,6 @@ public class ServerCube {
   private final double jumpHeight = 30;
   private boolean canJump = true;
   private final Pane gameRoot;
-  public ArrayList<Node> platforms;
-  public ArrayList<Node> death_platforms;
   public int gridSize;
   protected Rectangle rectangle = new Rectangle();
   private double y0 = 100000;
@@ -41,8 +37,9 @@ public class ServerCube {
 
   public ServerCube(Pane gameRoot, Vector2D position, Vector2D size) {
     this.position = position;
+    this.acceleration_constant = size.getX() * blocksPerSecond;
     this.acceleration.setX(0);
-    this.acceleration.setY(size.getX() * blocksPerSecond);
+    this.acceleration.setY(acceleration_constant);
     this.size = size;
 
     this.gameRoot = gameRoot;
@@ -68,14 +65,14 @@ public class ServerCube {
     if (acceleration.getY() > 0 && !y0passed) {
       if (y0 < position.getY()) {
         y0passed = true;
-        acceleration.setY(-gravity_scalar);
+        acceleration.setY(-acceleration_constant);
         velocity.setX(-velocity.getX());
         velocity.setY(-jumpHeight * acceleration.getY());
       }
     } else if (acceleration.getY() < 0 && !y0passed) {
       if (y0 > position.getY()) {
         y0passed = true;
-        acceleration.setY(gravity_scalar);
+        acceleration.setY(acceleration_constant);
         velocity.setX(-velocity.getX());
         velocity.setY(-jumpHeight * acceleration.getY());
       }
@@ -87,14 +84,14 @@ public class ServerCube {
     if (acceleration.getX() > 0 && !y0passed) {
       if (y0 < position.getX()) {
         y0passed = true;
-        acceleration.setX(-gravity_scalar);
+        acceleration.setX(-acceleration_constant);
         velocity.setY(-velocity.getY());
         velocity.setX(-jumpHeight * acceleration.getX());
       }
     } else if (acceleration.getX() < 0 && !y0passed) {
       if (y0 > position.getX()) {
         y0passed = true;
-        acceleration.setX(gravity_scalar);
+        acceleration.setX(acceleration_constant);
         velocity.setY(-velocity.getY());
         velocity.setX(-jumpHeight * acceleration.getX());
       }
@@ -186,7 +183,7 @@ public class ServerCube {
 
     // Move cube in x direction and check for collisions
     this.position.setX(this.position.getX() + velocity.getX() * dt);
-    this.rectangle.setTranslateX((int) this.position.getX());
+    this.rectangle.setTranslateX(this.position.getX());
 
     for (Block block : neighbourBlocks) {
       if (block != null) {
@@ -195,25 +192,35 @@ public class ServerCube {
             .intersects(block.getRectangle().getBoundsInParent())) {
           jumping = false;
 
-          // If the block was to the right of the cube before collision
-          if (velocity.getX() > 0) {
-            this.position.setX(block.getX() - this.rectangle.getWidth() - 1);
-            this.setAccelerationAngle(90);
+          boolean isEdgeCollision = isEdgeCollision(block, true);
+
+          if (!isEdgeCollision) {
+            // If the block was to the right of the cube before collision
+            if (velocity.getX() > 0) {
+              this.position.setX(block.getX() - this.rectangle.getWidth());
+              this.setAccelerationAngle(90);
+            }
+            // If the block was to the left of the cube before collision
+            else if (velocity.getX() < 0) {
+              this.position.setX(block.getX() + block.getRectangle().getWidth());
+              this.setAccelerationAngle(-90);
+            }
+            this.rectangle.setTranslateX(this.position.getX());
+
+            this.velocity.setX(0);
           }
-          // If the block was to the left of the cube before collision
-          else if (velocity.getX() < 0) {
-            this.position.setX(block.getX() + block.getRectangle().getWidth() + 1);
-            this.setAccelerationAngle(-90);
+
+          // Check for collision with white block
+          if (block.getColor().equals(Colours.WHITE.getHex())) {
+            this.resetLevel();
           }
-          this.rectangle.setTranslateX((int) this.position.getX());
-          velocity.setX(0);
         }
       }
     }
 
     // Move cube in y direction and check for collisions
     this.position.setY(this.position.getY() + velocity.getY() * dt);
-    this.rectangle.setTranslateY((int) this.position.getY());
+    this.rectangle.setTranslateY(this.position.getY());
 
     for (Block block : neighbourBlocks) {
       if (block != null) {
@@ -222,19 +229,29 @@ public class ServerCube {
             .intersects(block.getRectangle().getBoundsInParent())) {
           jumping = false;
 
-          // If the block was below the cube before collision
-          if (velocity.getY() > 0) {
-            this.position.setY(block.getY() - rectangle.getHeight() - 1);
-            this.setAccelerationAngle(0);
-          }
-          // If the block was above the cube before collision
-          else if (velocity.getY() < 0) {
-            this.position.setY(block.getY() + block.getRectangle().getHeight() + 1);
-            this.setAccelerationAngle(180);
+          boolean isEdgeCollision = isEdgeCollision(block, false);
+
+          if (!isEdgeCollision) {
+            // If the block was below the cube before collision
+            if (velocity.getY() > 0) {
+              this.position.setY(block.getY() - rectangle.getHeight());
+              this.setAccelerationAngle(0);
+            }
+            // If the block was above the cube before collision
+            else if (velocity.getY() < 0) {
+              this.position.setY(block.getY() + block.getRectangle().getHeight());
+              this.setAccelerationAngle(180);
+            }
+
+            this.rectangle.setTranslateY(this.position.getY());
+
+            velocity.setY(0);
           }
 
-          this.rectangle.setTranslateY((int) this.position.getY());
-          velocity.setY(0);
+          // Check collision with a white block
+          if (block.getColor().equals(Colours.WHITE.getHex())) {
+            this.resetLevel();
+          }
         }
       }
     }
@@ -244,6 +261,10 @@ public class ServerCube {
   public void initialiseSpeed() {
     this.velocity.setX(size.getX() * blocksPerSecond);
     this.velocity.setY(0);
+
+    this.acceleration.setX(0);
+    this.acceleration.setY(size.getX() * blocksPerSecond);
+    this.setAccelerationAngle(0);
   }
 
   /**
@@ -252,8 +273,42 @@ public class ServerCube {
    * @param angle compared to the y-axis
    */
   private void setAccelerationAngle(int angle) {
-    this.acceleration.setX(Math.sin(Math.toRadians(angle)) * size.getX() * blocksPerSecond);
-    this.acceleration.setY(Math.cos(Math.toRadians(angle)) * size.getX() * blocksPerSecond);
+    this.acceleration.setX(Math.sin(Math.toRadians(angle)) * acceleration_constant);
+    this.acceleration.setY(Math.cos(Math.toRadians(angle)) * acceleration_constant);
     this.accelerationAngle = angle;
+  }
+
+  /**
+   * The cube has entered in contact with a white cube. It is sent back to the start of the level
+   * and the level is reset.
+   */
+  private void resetLevel() {
+    /*System.out.println("Resetting level");
+    this.position = start_position;
+    this.rectangle.setTranslateX((int) this.position.getX());
+    this.rectangle.setTranslateY((int) this.position.getY());
+
+    this.initialiseSpeed();
+    this.setAccelerationAngle(0);
+
+    jumping = false;
+
+    ServerGame.getInstance().resetLevel();*/
+  }
+
+  /**
+   * A block has collided with a wall. If that collision was completely on the edge, it is ignored.
+   *
+   * @param block the block that was collided with
+   * @param isX whether the collision was in the x direction
+   * @return whether the collision was on the edge
+   */
+  private boolean isEdgeCollision(Block block, Boolean isX) {
+    if (isX) {
+      return (block.getY() == this.position.getY() + this.size.getY()
+          || block.getY() + block.getRectangle().getHeight() == this.position.getY());
+    }
+    return (block.getX() == this.position.getX() + this.size.getX()
+        || block.getX() + block.getRectangle().getWidth() == this.position.getX());
   }
 }

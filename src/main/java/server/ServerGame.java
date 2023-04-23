@@ -4,16 +4,13 @@ import client.LevelData;
 import client.Vector2D;
 import game.Block;
 import game.Level;
-import gui.Colours;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import javafx.animation.AnimationTimer;
-import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class ServerGame implements Runnable {
   // Pane that contains the game
@@ -21,10 +18,7 @@ public class ServerGame implements Runnable {
 
   // Keys pressed by the players
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
-
-  private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
-  private ArrayList<Node> death_platforms = new ArrayList<>();
-  private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
+  
   private Block[][] grid; // Used to store the grid of blocks, null if no block is present
   private Level level;
 
@@ -41,9 +35,9 @@ public class ServerGame implements Runnable {
 
   // In-Game variables
   private ServerCube player;
-  private boolean gameStarted = false;
+  public boolean gameStarted = false;
   private int gridSize = 50;
-  private int cubeSize = 20;
+  private int cubeSize = 49;
   private boolean jumped;
   private AnimationTimer timer;
   public boolean pause = false;
@@ -54,6 +48,7 @@ public class ServerGame implements Runnable {
   private final ArrayList<ClientHandler> clients;
 
   private final String gameId;
+  public static ServerGame instance;
 
   public ServerGame(
       HashMap<ClientHandler, Color> clientColours,
@@ -63,6 +58,8 @@ public class ServerGame implements Runnable {
     this.clients = clients;
     this.gameId = gameId;
     initializeContent();
+
+    instance = this;
   }
 
   /** Handles the jumprequest from the client */
@@ -130,10 +127,8 @@ public class ServerGame implements Runnable {
 
   /** Loads the player */
   private void load_player(Vector2D position) {
-    player = new ServerCube(gameRoot, position, new Vector2D(20, 20)); // creates the player
+    player = new ServerCube(gameRoot, position, new Vector2D(cubeSize, cubeSize)); // creates the player
     player.start_position = position;
-    player.platforms = platforms; // Sets the platforms for the player
-    player.death_platforms = death_platforms;
     player.gridSize = gridSize; // Sets the grid size for the player
   }
 
@@ -197,7 +192,25 @@ public class ServerGame implements Runnable {
     return gameId;
   }
 
+  /**
+   * A client has left the server. The game is closed.
+   * @param client - The client that left the server.
+   */
   protected void removeClient(ClientHandler client) {
     this.running = false;
+  }
+
+  /**
+   * @return The game instance.
+   */
+  public static ServerGame getInstance() {
+    return instance;
+  }
+
+  /**
+   * The cube has touched a white block. The block position is reset, etc.
+   */
+  public void resetLevel() {
+    this.gameStarted = false;
   }
 }

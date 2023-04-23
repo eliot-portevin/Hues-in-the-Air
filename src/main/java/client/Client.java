@@ -713,7 +713,7 @@ public class Client extends Application {
   }
 
   /** Sends the game commands to the server */
-  protected void sendGameCommand(String command) {
+  public void sendGameCommand(String command) {
     this.outputSocket.sendToServer(command);
   }
 
