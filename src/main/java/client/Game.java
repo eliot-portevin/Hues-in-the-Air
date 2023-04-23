@@ -24,7 +24,7 @@ public class  Game {
   private int levelHeight;
   private int gridSize = 50;
   public boolean jumped;
-  private int cubesize = 49;
+  private int cubesize = 30;
   private AnimationTimer timer;
 
   private boolean pauseRequestSent = false;

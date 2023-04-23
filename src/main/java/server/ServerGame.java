@@ -37,7 +37,7 @@ public class ServerGame implements Runnable {
   private ServerCube player;
   public boolean gameStarted = false;
   private int gridSize = 50;
-  private int cubeSize = 49;
+  private int cubeSize = 30;
   private boolean jumped;
   private AnimationTimer timer;
   public boolean pause = false;
@@ -145,7 +145,7 @@ public class ServerGame implements Runnable {
 
     long previousTime = System.nanoTime();
     long now = System.nanoTime();
-    int FPS = 60;
+    int FPS = 120;
     double dt = 0;
 
     while (this.running) {

@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
 
 public class ServerCube {
   // Position, velocity, acceleration
-  private final int blocksPerSecond = 4;
+  private final int blocksPerSecond = 8;
   private final double acceleration_constant;
 
   protected Vector2D position;
