@@ -15,9 +15,7 @@ import javafx.scene.shape.Rectangle;
 
 public class  Game {
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
-  private ArrayList<Node> platforms = new ArrayList<>(); // Used to store platforms
-  private ArrayList<Node> death_platforms = new ArrayList<>();
-  private ArrayList<Node> stars = new ArrayList<>(); // Used to store collectable stars
+
   private Pane appRoot = new Pane();
   private Pane gameRoot;
   private int levelWidth;
@@ -28,6 +26,7 @@ public class  Game {
   private AnimationTimer timer;
 
   private boolean pauseRequestSent = false;
+  public boolean jumpRequestSent = false;
   private Client client;
   private Timer pauseTimer = new Timer();
 
@@ -71,7 +70,12 @@ public class  Game {
    */
   private void analyseKeys(double deltaF) {
     if (!this.pause) {
-      // Do nothing
+      if (isPressed(KeyCode.SPACE)) {
+        if (!jumpRequestSent) {
+          client.sendGameCommand(ClientProtocol.SPACE_BAR_PRESSED.toString());
+          jumpRequestSent = true;
+        }
+      }
     }
   }
 
@@ -150,43 +154,6 @@ public class  Game {
   }
 
   /**
-   * Loads the platforms from the level data
-   */
-  private void load_platforms() {
-    for (int i=0; i<LevelData.Level1.length; i++) { // Creates the platforms
-      String line = LevelData.Level1[i];
-      for (int j = 0; j < line.length(); j++) {
-        switch (line.charAt(j)) {
-          case '0':
-            break;
-          case '1':
-            Node platform1 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.WHITE.getHex());
-            platforms.add(platform1);
-            death_platforms.add(platform1);
-            break;
-          case '2':
-            Node platform2 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.PINK.getHex());
-            platforms.add(platform2);
-            break;
-          case '3':
-            Node platform3 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.BLUE1.getHex());
-            platforms.add(platform3);
-            break;
-          case '4':
-            Node platform4 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.GREEN.getHex());
-            platforms.add(platform4);
-            break;
-          case '5':
-            Node platform5 = createEntity(j * gridSize, i * gridSize, gridSize, gridSize, Colours.YELLOW.getHex());
-            platforms.add(platform5);
-            break;
-          case '7':
-            load_player(new Vector2D((j+1)*gridSize-cubesize, (i+1)*gridSize-cubesize));
-        }
-      }
-    }
-  }
-  /**
    * Loads the player
    */
   private void load_player(Vector2D position){
@@ -207,8 +174,7 @@ public class  Game {
         gameRoot.setLayoutX(-(offset - 400));
       }
     });
-    player.platforms = platforms; // Sets the platforms for the player
-    player.death_platforms = death_platforms;
+
     player.gridSize = gridSize; // Sets the grid size for the player
   }
 

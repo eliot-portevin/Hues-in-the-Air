@@ -73,4 +73,12 @@ public class Vector2D {
   public boolean equals(Vector2D other) {
     return this.xComponent == other.xComponent && this.yComponent == other.yComponent;
   }
+
+  /**
+   * Return an exact copy of the vector.
+   * @return an exact copy of the vector
+   */
+  public Vector2D clone() {
+    return new Vector2D(this.xComponent, this.yComponent);
+  }
 }

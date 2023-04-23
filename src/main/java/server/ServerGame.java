@@ -62,7 +62,7 @@ public class ServerGame implements Runnable {
     instance = this;
   }
 
-  /** Handles the jumprequest from the client */
+  /** Handles the jump request from the client */
   protected boolean handleJumpRequest(ClientHandler client) {
     if (client.canJump) {
       player.jump();
@@ -127,8 +127,8 @@ public class ServerGame implements Runnable {
 
   /** Loads the player */
   private void load_player(Vector2D position) {
-    player = new ServerCube(gameRoot, position, new Vector2D(cubeSize, cubeSize)); // creates the player
-    player.start_position = position;
+    player = new ServerCube(gameRoot, position, cubeSize, gridSize); // creates the player
+    player.start_position = position.clone();
     player.gridSize = gridSize; // Sets the grid size for the player
   }
 

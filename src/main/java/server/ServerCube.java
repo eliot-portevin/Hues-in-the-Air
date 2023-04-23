@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
 
 public class ServerCube {
   // Position, velocity, acceleration
-  private final int blocksPerSecond = 8;
+  private final int blocksPerSecond = 6;
   private final double acceleration_constant;
 
   protected Vector2D position;
@@ -22,7 +22,8 @@ public class ServerCube {
 
   boolean jumping = true;
 
-  public Vector2D size;
+  public int cubeSize;
+  public int blockSize;
   private final double jumpHeight = 30;
   private boolean canJump = true;
   private final Pane gameRoot;
@@ -35,12 +36,15 @@ public class ServerCube {
   private Vector2D moveBuffer;
   private final Timer timer = new Timer();
 
-  public ServerCube(Pane gameRoot, Vector2D position, Vector2D size) {
+  public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
+    // Initialise position, velocity and acceleration
     this.position = position;
-    this.acceleration_constant = size.getX() * blocksPerSecond;
+    this.acceleration_constant = blockSize * blocksPerSecond * 4;
     this.acceleration.setX(0);
     this.acceleration.setY(acceleration_constant);
-    this.size = size;
+
+    this.cubeSize = cubeSize;
+    this.blockSize = blockSize;
 
     this.gameRoot = gameRoot;
 
@@ -49,7 +53,7 @@ public class ServerCube {
 
   /** Spawns the cube at the given position with given size and adds it to the gameRoot */
   public void spawnCube() {
-    rectangle = new Rectangle(size.getX(), size.getY());
+    rectangle = new Rectangle(cubeSize, cubeSize);
     this.setPositionTo(position.getX(), position.getY());
     gameRoot.getChildren().add(rectangle);
   }
@@ -106,8 +110,8 @@ public class ServerCube {
       jumping = true;
 
       Vector2D jumpVector = new Vector2D(Math.sin(accelerationAngle), Math.cos(accelerationAngle));
-      jumpVector.multiplyInPlace(blocksPerSecond);
-      jumpVector.multiplyInPlace(size.getX());
+      jumpVector.multiplyInPlace(blocksPerSecond * 2);
+      jumpVector.multiplyInPlace(blockSize);
       jumpVector.multiplyInPlace(-1);
 
       velocity.addInPlace(jumpVector);
@@ -259,11 +263,11 @@ public class ServerCube {
 
   /** Makes the cube accelerate to its maximum speed at the beginning of a level. */
   public void initialiseSpeed() {
-    this.velocity.setX(size.getX() * blocksPerSecond);
+    this.velocity.setX(blockSize * blocksPerSecond);
     this.velocity.setY(0);
 
     this.acceleration.setX(0);
-    this.acceleration.setY(size.getX() * blocksPerSecond);
+    this.acceleration.setY(cubeSize * blocksPerSecond);
     this.setAccelerationAngle(0);
   }
 
@@ -283,17 +287,17 @@ public class ServerCube {
    * and the level is reset.
    */
   private void resetLevel() {
-    /*System.out.println("Resetting level");
-    this.position = start_position;
-    this.rectangle.setTranslateX((int) this.position.getX());
-    this.rectangle.setTranslateY((int) this.position.getY());
+    this.position.setX(start_position.getX());
+    this.position.setY(start_position.getY());
+    this.rectangle.setTranslateX(this.position.getX());
+    this.rectangle.setTranslateY(this.position.getY());
 
-    this.initialiseSpeed();
+    this.velocity.setX(0);
+    this.velocity.setY(0);
+
     this.setAccelerationAngle(0);
 
-    jumping = false;
-
-    ServerGame.getInstance().resetLevel();*/
+    ServerGame.getInstance().resetLevel();
   }
 
   /**
@@ -305,10 +309,10 @@ public class ServerCube {
    */
   private boolean isEdgeCollision(Block block, Boolean isX) {
     if (isX) {
-      return (block.getY() == this.position.getY() + this.size.getY()
+      return (block.getY() == this.position.getY() + this.cubeSize
           || block.getY() + block.getRectangle().getHeight() == this.position.getY());
     }
-    return (block.getX() == this.position.getX() + this.size.getX()
+    return (block.getX() == this.position.getX() + this.cubeSize
         || block.getX() + block.getRectangle().getWidth() == this.position.getX());
   }
 }
