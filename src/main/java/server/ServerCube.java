@@ -3,7 +3,6 @@ package server;
 import client.Vector2D;
 import game.Block;
 import gui.Colours;
-import java.util.Timer;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
@@ -14,27 +13,22 @@ public class ServerCube {
   private final double acceleration_constant;
 
   protected Vector2D position;
-  private final double speed = 30;
+  public Vector2D start_position = new Vector2D(0, 0);
   protected Vector2D velocity = new Vector2D(0, 0);
   public Vector2D acceleration = new Vector2D(0, 0);
   private int accelerationAngle = 0;
 
-  boolean initialAcceleration = false;
-
   boolean jumping = true;
 
+  // Cube information
   public int cubeSize;
-  public int blockSize;
-  private final double jumpHeight = 30;
-  private boolean canJump = true;
-  private final Pane gameRoot;
   protected Rectangle rectangle = new Rectangle();
+
+  // Level information
+  private final Pane gameRoot;
+  public int blockSize;
   private double y0 = 100000;
   private boolean y0passed;
-  public Vector2D start_position = new Vector2D(0, 0);
-  private boolean onlyMoveOneDir = false;
-  private Vector2D moveBuffer;
-  private final Timer timer = new Timer();
 
   public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
     // Initialise position, velocity and acceleration
@@ -62,44 +56,6 @@ public class ServerCube {
   public void setPositionTo(double x, double y) {
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
-  }
-
-  /** Rotates Gravitation if cube goes out of bounds if cube is moving in x direction */
-  public void gravityRotationX() {
-    if (acceleration.getY() > 0 && !y0passed) {
-      if (y0 < position.getY()) {
-        y0passed = true;
-        acceleration.setY(-acceleration_constant);
-        velocity.setX(-velocity.getX());
-        velocity.setY(-jumpHeight * acceleration.getY());
-      }
-    } else if (acceleration.getY() < 0 && !y0passed) {
-      if (y0 > position.getY()) {
-        y0passed = true;
-        acceleration.setY(acceleration_constant);
-        velocity.setX(-velocity.getX());
-        velocity.setY(-jumpHeight * acceleration.getY());
-      }
-    }
-  }
-
-  /** Rotates Gravitation if cube goes out of bounds if cube is moving in y direction */
-  public void gravityRotationY() {
-    if (acceleration.getX() > 0 && !y0passed) {
-      if (y0 < position.getX()) {
-        y0passed = true;
-        acceleration.setX(-acceleration_constant);
-        velocity.setY(-velocity.getY());
-        velocity.setX(-jumpHeight * acceleration.getX());
-      }
-    } else if (acceleration.getX() < 0 && !y0passed) {
-      if (y0 > position.getX()) {
-        y0passed = true;
-        acceleration.setX(acceleration_constant);
-        velocity.setY(-velocity.getY());
-        velocity.setX(-jumpHeight * acceleration.getX());
-      }
-    }
   }
 
   /**
@@ -152,26 +108,6 @@ public class ServerCube {
     }
 
      */
-  }
-  /** Moves the cube by the given value in the x direction and updates the position of the cube */
-  public void moveValueX(double value) {
-    this.rectangle.setTranslateX(this.rectangle.getTranslateX() + value);
-    this.position.setX(this.rectangle.getTranslateX());
-  }
-  /** Moves the cube by the given value in the y direction and updates the position of the cube */
-  public void moveValueY(double value) {
-    this.rectangle.setTranslateY(this.rectangle.getTranslateY() + value);
-    this.position.setY(this.rectangle.getTranslateY());
-  }
-
-  /** Called upon collision with a white block, is responsible for the death effects of the cube. */
-  public void death() {
-    rectangle.setFill(Colours.DARK_GREY.getHex());
-  }
-
-  /** only here to prevent the cube from colliding strangely with the walls */
-  private void setOnlyMoveOneDir() {
-    this.onlyMoveOneDir = false;
   }
 
   /**
