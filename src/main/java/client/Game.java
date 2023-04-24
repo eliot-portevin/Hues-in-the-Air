@@ -34,7 +34,7 @@ public class  Game {
   public boolean pause = false;
   public boolean gameStarted = false;
 
-  private Level level;
+  public Level level;
   private Cube player;
 
   public Game(Client client) {
@@ -109,25 +109,6 @@ public class  Game {
     return keys.getOrDefault(keyCode, false);
   }
 
-
-  /**
-   * Creates a new rectangle entity
-   * @param x - x position
-   * @param y - y position
-   * @param w - width
-   * @param h - height
-   * @param color - colour
-   * @return - returns the rectangle entity
-   */
-  private Node createEntity(int x, int y, int w, int h, Color color) {
-    Rectangle entity = new Rectangle(w, h);
-    entity.setTranslateX(x);
-    entity.setTranslateY(y);
-    entity.setFill(color);
-    gameRoot.getChildren().add(entity);
-    return entity;
-  }
-
   /**
    * Initializes the content of the game
    * Loads the level data and creates the platforms
@@ -147,6 +128,7 @@ public class  Game {
 
     // Load level
     this.level = new Level("easy", 50, gameRoot);
+    this.client.requestCriticalBlocks();
     Vector2D playerSpawn =
         new Vector2D(
             level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
@@ -211,4 +193,13 @@ public class  Game {
     this.timer.start();
   }
 
+  /**
+   * Set the colour of a block and its neighbours to a given colour.
+   * @param x the x index in the grid
+   * @param y the y index in the grid
+   * @param colour the colour to set the block to
+   */
+  public void setBlockColour(int x, int y, Color colour) {
+    this.level.setNeighbourColours(x, y, colour);
+  }
 }

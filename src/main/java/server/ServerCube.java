@@ -301,10 +301,10 @@ public class ServerCube {
     this.rectangle.setTranslateX(this.position.getX());
     this.rectangle.setTranslateY(this.position.getY());
 
+    this.setAccelerationAngle(0);
+
     this.velocity.setX(0);
     this.velocity.setY(0);
-
-    this.setAccelerationAngle(0);
 
     ServerGame.getInstance().resetLevel();
   }

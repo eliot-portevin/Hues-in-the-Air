@@ -4,11 +4,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Block {
-  private final Color colour;
+  private Color colour;
   private Rectangle rectangle;
 
   private int x;
   private int y;
+  private int xIdx;
+  private int yIdx;
 
   /**
    * Creates a new block
@@ -21,21 +23,16 @@ public class Block {
     if (colour != null) {
       this.rectangle.setFill(colour);
     }
+
+    this.x = x;
+    this.y = y;
+    this.xIdx = x / size;
+    this.yIdx = y / size;
   }
 
   /** Getter for the color of the block */
   public Color getColour() {
     return colour;
-  }
-
-  /**
-   * Checks if the block collides with a rectangle
-   *
-   * @param rect the rectangle to check collision with
-   * @return true if the block collides with the rectangle
-   */
-  public boolean collideRect(Rectangle rect) {
-    return rectangle.getBoundsInParent().intersects(rect.getBoundsInParent());
   }
 
   /**
@@ -87,5 +84,14 @@ public class Block {
    */
   public void setColour(Color colour) {
     this.rectangle.setFill(colour);
+    this.colour = colour;
+  }
+
+  /**
+   * Returns the index of the block in the level grid
+   * @return the index of the block in the level grid
+   */
+  public int[] getIndex() {
+    return new int[] {xIdx, yIdx};
   }
 }

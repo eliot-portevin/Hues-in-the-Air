@@ -203,6 +203,7 @@ public class ClientHandler implements Runnable {
           case READY_UP -> this.readyUp();
           case SPACE_BAR_PRESSED -> this.spaceBarPressed();
           case REQUEST_PAUSE -> this.requestPause();
+          case REQUEST_CRITICAL_BLOCKS -> this.getLobby().getGame().sendCriticalBlocks();
 
           default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
         }
@@ -335,7 +336,7 @@ public class ClientHandler implements Runnable {
     for (int i = 0; i < lobbyInfo.length; i++) {
       command.append(String.join(" ", lobbyInfo[i]));
       if (i < lobbyInfo.length - 1) {
-        command.append(ServerProtocol.LOBBY_INFO_SEPARATOR);
+        command.append(ServerProtocol.SUBSEPARATOR);
       }
     }
 
@@ -365,7 +366,7 @@ public class ClientHandler implements Runnable {
           .append(game.getGameId())
           .append(" ")
           .append(games.get(game))
-          .append(ServerProtocol.LOBBY_INFO_SEPARATOR);
+          .append(ServerProtocol.SUBSEPARATOR);
     }
 
     this.out.println(command);
@@ -404,6 +405,16 @@ public class ClientHandler implements Runnable {
    * @param command the ServerProtocol command POSITION_UPDATE
    */
   public void positionUpdate(String command) {
+    this.out.println(command);
+  }
+
+  /**
+   * Sends a command to the client to inform them of the position and colour of the critical blocks
+   * in the level.
+   *
+   * @param command the ServerProtocol command {@link ServerProtocol#SEND_CRITICAL_BLOCKS}
+   */
+  public void sendCriticalBlocks(String command) {
     this.out.println(command);
   }
 }

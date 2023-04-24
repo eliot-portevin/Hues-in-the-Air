@@ -255,6 +255,11 @@ public class LobbyController {
 
       // Status
       clientReady.add(clientInfo[1].equals("true") ? "Ready" : "...");
+
+      // Inform the client of their colour
+      if (clientInfo[0].equals(Client.getInstance().getUsername())) {
+        Client.getInstance().setColour(Color.valueOf(clientInfo[2]));
+      }
     }
 
     this.nameList.getItems().setAll(clientNames);

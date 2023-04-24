@@ -3,6 +3,8 @@ package game;
 import client.LevelData;
 import gui.Colours;
 import java.util.ArrayList;
+import java.util.Optional;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
@@ -11,6 +13,8 @@ public class Level {
   private Block[][] grid;
   public int blockWidth;
   public int[] playerSpawnIdx = new int[2];
+
+  private final ArrayList<Block> criticalBlocks = new ArrayList<>();
 
   // Pane on which the level is drawn
   Pane gameRoot;
@@ -41,8 +45,8 @@ public class Level {
           case '0' -> this.grid[i][j] = null;
           case '1' -> this.grid[i][j] =
               new Block(Colours.WHITE.getHex(), j * blockWidth, i * blockWidth, blockWidth);
-          case '2' -> this.grid[i][j] = new Block(Colours.BLUE1.getHex(), j * blockWidth, i * blockWidth, blockWidth);
-          case '7' -> {
+          case '2' -> this.grid[i][j] = new Block(null, j * blockWidth, i * blockWidth, blockWidth);
+          case '3' -> {
             this.playerSpawnIdx[0] = j;
             this.playerSpawnIdx[1] = i;
           }
@@ -87,14 +91,22 @@ public class Level {
    * coloured yet, a colour is randomly chosen and set to it. Its neighbours (up, down, left, right)
    * are there coloured with the same colour.
    */
-  public void setColours(ArrayList<Color> colours) {
+  public void setNeighbourColours(ArrayList<Color> colours) {
     for (int i = 0; i < grid.length; i++) {
       for (int j = 0; j < grid[i].length; j++) {
-        // Get random colour
-        Color colour = colours.get((int) Math.floor(Math.random() * colours.size()));
+        Optional<Block> block = Optional.ofNullable(grid[i][j]);
+        if (block.isPresent()) {
+          if (block.get().getColour() == null) {
+            // Get random colour
+            Color colour = colours.get((int) Math.floor(Math.random() * colours.size()));
 
-        // Set block colour (and adjacent blocks recursively)
-        setColours(j, i, colour);
+            // Set block colour (and adjacent blocks recursively)
+            setNeighbourColours(j, i, colour);
+
+            // Add block to critical blocks in order for it to be sent to client
+            criticalBlocks.add(block.get());
+          }
+        }
       }
     }
   }
@@ -107,23 +119,34 @@ public class Level {
    * @param yIdx the row index of the block
    * @param colour the colour to set the block to
    */
-  private void setColours(int xIdx, int yIdx, Color colour) {
+  public void setNeighbourColours(int xIdx, int yIdx, Color colour) {
     // Recursion return statement
-    /*try {
-      if (grid[yIdx][xIdx].getColour() != null) return;
-      else grid[yIdx][xIdx].setColour(colour);
-    } catch (IndexOutOfBoundsException|NullPointerException e) {
-      return;
-    }
+    boolean indexOutOfBounds =
+        xIdx < 0 || xIdx >= grid[0].length || yIdx < 0 || yIdx >= grid.length;
+    if (indexOutOfBounds) return;
+    if (grid[yIdx][xIdx] == null) return;
+    if (grid[yIdx][xIdx].getColour() != null) return;
 
-    setColours(xIdx-1, yIdx, colour);
-    setColours(xIdx+1, yIdx, colour);
-    setColours(xIdx, yIdx-1, colour);
-    setColours(xIdx, yIdx+1, colour);*/
-    if (grid[yIdx][xIdx] != null) {
-      if (grid[yIdx][xIdx].getColour() == null) {
-        grid[yIdx][xIdx].setColour(colour);
-      }
-    }
+    grid[yIdx][xIdx].setColour(colour);
+
+    int[][] neighbourIndexes = {
+      {xIdx - 1, yIdx}, {xIdx + 1, yIdx}, {xIdx, yIdx - 1}, {xIdx, yIdx + 1}
+    };
+
+    setNeighbourColours(xIdx - 1, yIdx, colour);
+    setNeighbourColours(xIdx + 1, yIdx, colour);
+    setNeighbourColours(xIdx, yIdx - 1, colour);
+    setNeighbourColours(xIdx, yIdx + 1, colour);
+  }
+
+  /**
+   * Returns the blocks in the level which "begin" a platform. If the methods {@link
+   * #setNeighbourColours(int, int, Color)} are called on these blocks, the whole level will be
+   * coloured.
+   *
+   * @return the critical blocks
+   */
+  public ArrayList<Block> getCriticalBlocks() {
+    return criticalBlocks;
   }
 }

@@ -20,10 +20,17 @@ public enum ServerProtocol {
     }
   },
 
-  /** Separator used for lobby lists */
-  LOBBY_INFO_SEPARATOR(0) {
+  /** Separator used to separate subarguments */
+  SUBSEPARATOR(0) {
     public String toString() {
       return "<&.>";
+    }
+  },
+
+  /** Separator used to separate subsubarguments */
+  SUBSUBSEPARATOR(0) {
+    public String toString() {
+      return "<&..>";
     }
   },
 
@@ -77,6 +84,8 @@ public enum ServerProtocol {
   START_GAME_LOOP(0),
   /** Informs the client, that the jump request was successful. */
   JUMP(0),
+  /** Sends the critical blocks and their colour to the client. */
+  SEND_CRITICAL_BLOCKS(1),
   /** Updates the position of the cube for the client. */
   POSITION_UPDATE(2);
 
@@ -88,8 +97,9 @@ public enum ServerProtocol {
   }
 
   /**
-   *Returns the number of arguments needed.
-   * Called from {@link client.ServerIn} to separate the commands by their length
+   * Returns the number of arguments needed. Called from {@link client.ServerIn} to separate the
+   * commands by their length
+   *
    * @return
    */
   public int getNumArgs() {

@@ -11,7 +11,6 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class ServerGame implements Runnable {
   // Pane that contains the game
@@ -19,7 +18,7 @@ public class ServerGame implements Runnable {
 
   // Keys pressed by the players
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
-  
+
   private Block[][] grid; // Used to store the grid of blocks, null if no block is present
   private Level level;
 
@@ -58,7 +57,7 @@ public class ServerGame implements Runnable {
     this.clientColours = clientColours;
     this.clients = clients;
     this.gameId = gameId;
-    initializeContent();
+    initialiseContent();
 
     instance = this;
   }
@@ -116,11 +115,11 @@ public class ServerGame implements Runnable {
    * Initializes the content of the game Loads the level data and creates the platforms Creates the
    * player Creates the stars Will create the coin to finish the game
    */
-  public void initializeContent() {
+  public void initialiseContent() {
     // Create a level and add it to an empty pane
     gameRoot = new Pane();
     this.level = new Level("easy", 50, gameRoot);
-    //this.level.setColours(new ArrayList<>(clientColours.values()));
+    this.level.setNeighbourColours(new ArrayList<>(clientColours.values()));
 
     // Spawn player
     Vector2D playerSpawn =
@@ -144,7 +143,7 @@ public class ServerGame implements Runnable {
   /** Runnable run method. This method is called when the thread is started. */
   @Override
   public void run() {
-    this.initializeContent();
+    this.initialiseContent();
 
     long previousTime = System.nanoTime();
     long now = System.nanoTime();
@@ -182,8 +181,7 @@ public class ServerGame implements Runnable {
     if (!gameStarted) {
       this.player.initialiseSpeed();
       this.gameStarted = true;
-    }
-    else {
+    } else {
       this.player.jump();
     }
   }
@@ -197,6 +195,7 @@ public class ServerGame implements Runnable {
 
   /**
    * A client has left the server. The game is closed.
+   *
    * @param client - The client that left the server.
    */
   protected void removeClient(ClientHandler client) {
@@ -210,10 +209,33 @@ public class ServerGame implements Runnable {
     return instance;
   }
 
-  /**
-   * The cube has touched a white block. The block position is reset, etc.
-   */
+  /** The cube has touched a white block. The block position is reset, etc. */
   public void resetLevel() {
     this.gameStarted = false;
+  }
+
+  /**
+   * Informs all clients of the positions and colours of the critical blocks in the level. Called at the beginning
+   * of the game.
+   */
+  public void sendCriticalBlocks() {
+    ArrayList<Block> blocks = level.getCriticalBlocks();
+
+    StringBuilder command = new StringBuilder(ServerProtocol.SEND_CRITICAL_BLOCKS.toString());
+    command.append(ServerProtocol.SEPARATOR.toString());
+
+    for (Block block : blocks) {
+      command
+          .append(ServerProtocol.SUBSEPARATOR.toString())
+          .append(block.getIndex()[0])
+          .append(ServerProtocol.SUBSUBSEPARATOR.toString())
+          .append(block.getIndex()[1])
+          .append(ServerProtocol.SUBSUBSEPARATOR.toString())
+          .append(block.getColour().toString());
+    }
+
+    for (ClientHandler client : clients) {
+      client.sendCriticalBlocks(command.toString());
+    }
   }
 }

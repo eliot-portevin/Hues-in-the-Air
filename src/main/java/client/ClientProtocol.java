@@ -61,6 +61,8 @@ public enum ClientProtocol {
   REQUEST_PAUSE(0),
   /** Client game is opened and is ready to start */
   READY_UP(0),
+  /** Client has loaded the level successfully, wants to request the critical blocks */
+  REQUEST_CRITICAL_BLOCKS(0),
   /** Client wants to start the game */
   START_GAME_LOOP(0);
 
