@@ -2,7 +2,9 @@ package game;
 
 import client.LevelData;
 import gui.Colours;
+import java.util.ArrayList;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 public class Level {
   // Grid of blocks
@@ -39,8 +41,7 @@ public class Level {
           case '0' -> this.grid[i][j] = null;
           case '1' -> this.grid[i][j] =
               new Block(Colours.WHITE.getHex(), j * blockWidth, i * blockWidth, blockWidth);
-          case '2' -> this.grid[i][j] =
-              new Block(Colours.PINK.getHex(), j * blockWidth, i * blockWidth, blockWidth);
+          case '2' -> this.grid[i][j] = new Block(Colours.BLUE1.getHex(), j * blockWidth, i * blockWidth, blockWidth);
           case '7' -> {
             this.playerSpawnIdx[0] = j;
             this.playerSpawnIdx[1] = i;
@@ -60,13 +61,9 @@ public class Level {
         }
       }
     }
-
-    this.grid[400/50][3450/50].setColour(Colours.BLUE1.getHex());
   }
 
-  /**
-   * Returns the nine blocks neighbouring a position.
-   */
+  /** Returns the nine blocks neighbouring a position. */
   public Block[] getNeighbourBlocks(double x, double y) {
     int xIndex = (int) Math.floor(x / blockWidth);
     int yIndex = (int) Math.floor(y / blockWidth);
@@ -83,5 +80,50 @@ public class Level {
       }
     }
     return neighbours;
+  }
+
+  /**
+   * Iterates through the blocks of the level and sets their colours. If a block hasn't been
+   * coloured yet, a colour is randomly chosen and set to it. Its neighbours (up, down, left, right)
+   * are there coloured with the same colour.
+   */
+  public void setColours(ArrayList<Color> colours) {
+    for (int i = 0; i < grid.length; i++) {
+      for (int j = 0; j < grid[i].length; j++) {
+        // Get random colour
+        Color colour = colours.get((int) Math.floor(Math.random() * colours.size()));
+
+        // Set block colour (and adjacent blocks recursively)
+        setColours(j, i, colour);
+      }
+    }
+  }
+
+  /**
+   * Sets the colours of the blocks in the level. The blocks are coloured in a way that no two
+   * adjacent blocks have the same colour.
+   *
+   * @param xIdx the column index of the block
+   * @param yIdx the row index of the block
+   * @param colour the colour to set the block to
+   */
+  private void setColours(int xIdx, int yIdx, Color colour) {
+    // Recursion return statement
+    /*try {
+      if (grid[yIdx][xIdx].getColour() != null) return;
+      else grid[yIdx][xIdx].setColour(colour);
+    } catch (IndexOutOfBoundsException|NullPointerException e) {
+      return;
+    }
+
+    setColours(xIdx-1, yIdx, colour);
+    setColours(xIdx+1, yIdx, colour);
+    setColours(xIdx, yIdx-1, colour);
+    setColours(xIdx, yIdx+1, colour);*/
+    if (grid[yIdx][xIdx] != null) {
+      if (grid[yIdx][xIdx].getColour() == null) {
+        grid[yIdx][xIdx].setColour(colour);
+      }
+    }
   }
 }

@@ -109,9 +109,12 @@ public class ServerCube {
     if (!jumping) {
       jumping = true;
 
-      Vector2D jumpVector = new Vector2D(Math.sin(Math.toRadians(accelerationAngle)), Math.cos(Math.toRadians(accelerationAngle)));
+      Vector2D jumpVector =
+          new Vector2D(
+              Math.sin(Math.toRadians(accelerationAngle)),
+              Math.cos(Math.toRadians(accelerationAngle)));
 
-      jumpVector.multiplyInPlace(- blockSize * blocksPerSecond * 2);
+      jumpVector.multiplyInPlace(-blockSize * blocksPerSecond * 2);
       velocity.addInPlace(jumpVector);
     }
     /*
@@ -214,7 +217,7 @@ public class ServerCube {
           }
 
           // Check for collision with white block
-          if (block.getColor().equals(Colours.WHITE.getHex())) {
+          if (block.getColour().equals(Colours.WHITE.getHex())) {
             this.resetLevel();
           }
         }
@@ -252,7 +255,7 @@ public class ServerCube {
           }
 
           // Check collision with a white block
-          if (block.getColor().equals(Colours.WHITE.getHex())) {
+          if (block.getColour().equals(Colours.WHITE.getHex())) {
             this.resetLevel();
           }
         }
@@ -276,10 +279,16 @@ public class ServerCube {
    * @param angle compared to the y-axis
    */
   private void setAccelerationAngle(int angle) {
+    int angleDifference = accelerationAngle - angle;
+    this.accelerationAngle = angle;
+
+    if (!(Math.abs(angleDifference) % 180 == 0)) {
+      this.velocity.setX(Math.signum(-this.acceleration.getX()) * velocity_constant);
+      this.velocity.setY(Math.signum(-this.acceleration.getY()) * velocity_constant);
+    }
+
     this.acceleration.setX(Math.sin(Math.toRadians(angle)) * acceleration_constant);
     this.acceleration.setY(Math.cos(Math.toRadians(angle)) * acceleration_constant);
-
-    this.accelerationAngle = angle;
   }
 
   /**

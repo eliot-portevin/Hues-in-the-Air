@@ -120,6 +120,7 @@ public class ServerGame implements Runnable {
     // Create a level and add it to an empty pane
     gameRoot = new Pane();
     this.level = new Level("easy", 50, gameRoot);
+    //this.level.setColours(new ArrayList<>(clientColours.values()));
 
     // Spawn player
     Vector2D playerSpawn =

@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Block {
-  private final Color color;
+  private final Color colour;
   private Rectangle rectangle;
 
   private int x;
@@ -13,19 +13,19 @@ public class Block {
   /**
    * Creates a new block
    *
-   * @param color the color of the block
+   * @param colour the color of the block
    */
-  public Block(Color color, int x, int y, int size) {
-    this.color = color;
+  public Block(Color colour, int x, int y, int size) {
+    this.colour = colour;
     this.rectangle = new Rectangle(x, y, size, size);
-    if (color != null) {
-      this.rectangle.setFill(color);
+    if (colour != null) {
+      this.rectangle.setFill(colour);
     }
   }
 
   /** Getter for the color of the block */
-  public Color getColor() {
-    return color;
+  public Color getColour() {
+    return colour;
   }
 
   /**
