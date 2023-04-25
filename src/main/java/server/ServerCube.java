@@ -1,15 +1,11 @@
 package server;
 
-import client.Client;
-import game.Vector2D;
 import game.Block;
 import game.Colours;
+import game.Vector2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.HashMap;
-import java.util.Objects;
 
 public class ServerCube {
   // Position, velocity, acceleration
@@ -20,11 +16,12 @@ public class ServerCube {
   protected Vector2D position;
   public Vector2D start_position = new Vector2D(0, 0);
   protected Vector2D velocity = new Vector2D(0, 0);
+  private final double maxVelocity;
   public Vector2D acceleration = new Vector2D(0, 0);
   private int accelerationAngle = 0;
 
   private boolean jumping = true;
-  private final Object jumpLock = new Object();
+  private boolean canRotate = false;
   private Color colourCanJump;
 
   // Cube information
@@ -35,13 +32,12 @@ public class ServerCube {
   private final Pane gameRoot;
   public int blockSize;
   private Vector2D rotationPoint;
-  private double y0 = 100000;
-  private boolean y0passed;
 
   public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
     // Initialise position, velocity and acceleration
     this.position = position;
     this.velocity_constant = blockSize * blocksPerSecond;
+    this.maxVelocity = this.velocity_constant * 2;
     this.acceleration_constant = blockSize * blocksPerSecond * 4;
     this.setAccelerationAngle(0);
 
@@ -67,56 +63,32 @@ public class ServerCube {
   }
 
   /**
-   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector.
+   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector. Sets
+   * the rotation point to be halfway to the landing point in the middle of a block.
    */
   public void jump(Color colour) {
     if (!jumping && colour.equals(colourCanJump)) {
+      // Calculate point around which the cube will rotate if necessary (a jump lasts for one second)
+      rotationPoint = new Vector2D(position.getX(), position.getY());
+      rotationPoint.addInPlace(velocity.multiply(0.5));
+      rotationPoint.addInPlace(new Vector2D(
+          Math.signum(acceleration.getX()) * blockSize,
+          Math.signum(acceleration.getY()) * blockSize));
+
+      // Adjust the speed of the cube for it to jump
       Vector2D jumpVector =
           new Vector2D(
               Math.sin(Math.toRadians(accelerationAngle)),
               Math.cos(Math.toRadians(accelerationAngle)));
 
-      jumpVector.multiplyInPlace(-blockSize * blocksPerSecond * 2);
+      jumpVector.multiplyInPlace(-maxVelocity);
 
       velocity.addInPlace(jumpVector);
 
+      // Don't allow the cube to jump again until it has landed
       jumping = true;
+      canRotate = true;
     }
-    /*
-    if (canJump) {
-      if (acceleration.getX() > gravity_scalar / 2) {
-        y0 = position.getX() + gridSize + size.getX();
-        y0passed = false;
-      } else if (acceleration.getX() < -gravity_scalar / 2) {
-        y0 = position.getX() - gridSize;
-        y0passed = false;
-      } else if (acceleration.getY() > gravity_scalar / 2) {
-        y0 = position.getY() + gridSize + size.getY();
-        y0passed = false;
-      } else if (acceleration.getY() < -gravity_scalar / 2) {
-        y0 = position.getY() - gridSize;
-        y0passed = false;
-      }
-      if (velocity.getY() < 1 && velocity.getY() > -1) {
-        rectangle.setTranslateY(Math.signum(acceleration.getY()) * -2 + rectangle.getTranslateY());
-        velocity.setY(-jumpHeight * acceleration.getY());
-      } else {
-        rectangle.setTranslateX(Math.signum(acceleration.getX()) * -2 + rectangle.getTranslateX());
-        velocity.setX(-jumpHeight * acceleration.getX());
-      }
-      canJump = false;
-      timer.schedule(
-          new TimerTask() {
-            @Override
-            public void run() {
-              setOnlyMoveOneDir();
-            }
-          },
-          50);
-      onlyMoveOneDir = true;
-    }
-
-     */
   }
 
   /**
@@ -157,6 +129,7 @@ public class ServerCube {
 
             this.velocity.setX(0);
             jumping = false;
+            canRotate = false;
 
             // Allow the player with this colour to jump
             this.colourCanJump = block.getColour();
@@ -197,6 +170,7 @@ public class ServerCube {
 
             velocity.setY(0);
             jumping = false;
+            canRotate = false;
 
             // Allow the player with this colour to jump
             this.colourCanJump = block.getColour();
@@ -212,7 +186,7 @@ public class ServerCube {
 
     // Check whether the cube has passed the ground coordinates, if that is the case, rotate it
     // around the edge
-    if (this.jumping) {
+    if (this.canRotate) {
       checkForRotation();
     }
   }
@@ -228,7 +202,19 @@ public class ServerCube {
   }
 
   /**
-   * Rotates the gravitational acceleration vector to the given angle.
+   * Rotates the gravitational acceleration vector to the given angle without adjusting the cube velocity.
+   * Called to rotate the cube around an edge as opposed to reset the velocity after a collision.
+   */
+  private void onlySetAccelerationAngle(int angle) {
+    this.accelerationAngle = angle;
+
+    this.acceleration.setX(Math.sin(Math.toRadians(angle)) * acceleration_constant);
+    this.acceleration.setY(Math.cos(Math.toRadians(angle)) * acceleration_constant);
+  }
+
+  /**
+   * Rotates the gravitational acceleration vector to the given angle and adjusts the cube velocity.
+   * Called when the cube has collided with a block.
    *
    * @param angle compared to the y-axis
    */
@@ -285,5 +271,39 @@ public class ServerCube {
    * collision, i.e. it passes the rotation point, the gravitational acceleration is rotated by 90
    * degrees.
    */
-  private void checkForRotation() {}
+  private void checkForRotation() {
+    if (this.rotationPoint == null) {
+      // The cube isn't actually jumping (e.g. at the beginning of the level)
+      return;
+    }
+
+    if (this.accelerationAngle == 0) {
+      if (this.position.getY() > this.rotationPoint.getY()) {
+        this.onlySetAccelerationAngle(180);
+        this.velocity.setX(-this.velocity.getX());
+        this.canRotate = false;
+      }
+    }
+    else if (this.accelerationAngle == 90) {
+      if (this.position.getX() > this.rotationPoint.getX()) {
+        this.onlySetAccelerationAngle(270);
+        this.velocity.setY(-this.velocity.getY());
+        this.canRotate = false;
+      }
+    }
+    else if (this.accelerationAngle == 180) {
+      if (this.position.getY() < this.rotationPoint.getY()) {
+        this.onlySetAccelerationAngle(0);
+        this.velocity.setX(-this.velocity.getX());
+        this.canRotate = false;
+      }
+    }
+    else if (this.accelerationAngle == 270) {
+      if (this.position.getX() < this.rotationPoint.getX()) {
+        this.onlySetAccelerationAngle(90);
+        this.velocity.setY(-this.velocity.getY());
+        this.canRotate = false;
+      }
+    }
+  }
 }
