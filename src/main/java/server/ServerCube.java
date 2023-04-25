@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ServerCube {
   // Position, velocity, acceleration
@@ -23,6 +24,7 @@ public class ServerCube {
   private int accelerationAngle = 0;
 
   private boolean jumping = true;
+  private final Object jumpLock = new Object();
   private Color colourCanJump;
 
   // Cube information
@@ -65,7 +67,7 @@ public class ServerCube {
   }
 
   /**
-   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector
+   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector.
    */
   public void jump(Color colour) {
     if (!jumping && colour.equals(colourCanJump)) {
@@ -75,6 +77,7 @@ public class ServerCube {
               Math.cos(Math.toRadians(accelerationAngle)));
 
       jumpVector.multiplyInPlace(-blockSize * blocksPerSecond * 2);
+
       velocity.addInPlace(jumpVector);
 
       jumping = true;
@@ -137,8 +140,6 @@ public class ServerCube {
         if (this.rectangle
             .getBoundsInParent()
             .intersects(block.getRectangle().getBoundsInParent())) {
-          jumping = false;
-
           boolean isEdgeCollision = isEdgeCollision(block, true);
 
           if (!isEdgeCollision) {
@@ -155,6 +156,7 @@ public class ServerCube {
             this.rectangle.setTranslateX(this.position.getX());
 
             this.velocity.setX(0);
+            jumping = false;
 
             // Allow the player with this colour to jump
             this.colourCanJump = block.getColour();
@@ -177,8 +179,6 @@ public class ServerCube {
         if (this.rectangle
             .getBoundsInParent()
             .intersects(block.getRectangle().getBoundsInParent())) {
-          jumping = false;
-
           boolean isEdgeCollision = isEdgeCollision(block, false);
 
           if (!isEdgeCollision) {
@@ -196,6 +196,7 @@ public class ServerCube {
             this.rectangle.setTranslateY(this.position.getY());
 
             velocity.setY(0);
+            jumping = false;
 
             // Allow the player with this colour to jump
             this.colourCanJump = block.getColour();
