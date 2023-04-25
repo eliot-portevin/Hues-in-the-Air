@@ -1,13 +1,14 @@
 package client;
 
 import game.Level;
-import gui.Colours;
-import java.util.ArrayList;
+import game.Colours;
+
 import java.util.HashMap;
 import java.util.Timer;
 
+import game.LevelData;
+import game.Vector2D;
 import javafx.animation.AnimationTimer;
-import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;

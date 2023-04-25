@@ -1,7 +1,7 @@
 package server;
 
-import client.LevelData;
-import client.Vector2D;
+import game.LevelData;
+import game.Vector2D;
 import game.Block;
 import game.Level;
 import java.util.ArrayList;
@@ -62,14 +62,6 @@ public class ServerGame implements Runnable {
     instance = this;
   }
 
-  /** Handles the jump request from the client */
-  protected boolean handleJumpRequest(ClientHandler client) {
-    if (client.canJump) {
-      player.jump();
-      return true;
-    }
-    return false;
-  }
   /** Updates position on all clients */
   protected void updateAllClientPositions() {
     for (ClientHandler client : clients) {
@@ -182,7 +174,7 @@ public class ServerGame implements Runnable {
       this.player.initialiseSpeed();
       this.gameStarted = true;
     } else {
-      this.player.jump();
+      this.player.jump(clientColours.get(client));
     }
   }
 

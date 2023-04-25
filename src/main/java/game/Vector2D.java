@@ -1,4 +1,4 @@
-package client;
+package game;
 
 /** Represents a 2D Vector and various operations performed on 2D Vectors */
 public class Vector2D {

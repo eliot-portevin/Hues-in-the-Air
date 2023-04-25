@@ -1,10 +1,14 @@
 package server;
 
-import client.Vector2D;
+import client.Client;
+import game.Vector2D;
 import game.Block;
-import gui.Colours;
+import game.Colours;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import java.util.HashMap;
 
 public class ServerCube {
   // Position, velocity, acceleration
@@ -18,7 +22,8 @@ public class ServerCube {
   public Vector2D acceleration = new Vector2D(0, 0);
   private int accelerationAngle = 0;
 
-  boolean jumping = true;
+  private boolean jumping = true;
+  private Color colourCanJump;
 
   // Cube information
   public int cubeSize;
@@ -27,6 +32,7 @@ public class ServerCube {
   // Level information
   private final Pane gameRoot;
   public int blockSize;
+  private Vector2D rotationPoint;
   private double y0 = 100000;
   private boolean y0passed;
 
@@ -61,10 +67,8 @@ public class ServerCube {
   /**
    * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector
    */
-  public void jump() {
-    if (!jumping) {
-      jumping = true;
-
+  public void jump(Color colour) {
+    if (!jumping && colour.equals(colourCanJump)) {
       Vector2D jumpVector =
           new Vector2D(
               Math.sin(Math.toRadians(accelerationAngle)),
@@ -72,6 +76,8 @@ public class ServerCube {
 
       jumpVector.multiplyInPlace(-blockSize * blocksPerSecond * 2);
       velocity.addInPlace(jumpVector);
+
+      jumping = true;
     }
     /*
     if (canJump) {
@@ -139,7 +145,6 @@ public class ServerCube {
             // If the block was to the right of the cube before collision
             if (velocity.getX() > 0) {
               this.position.setX(block.getX() - this.rectangle.getWidth());
-              System.out.println(block.getX() + " " + block.getY());
               this.setAccelerationAngle(90);
             }
             // If the block was to the left of the cube before collision
@@ -150,6 +155,9 @@ public class ServerCube {
             this.rectangle.setTranslateX(this.position.getX());
 
             this.velocity.setX(0);
+
+            // Allow the player with this colour to jump
+            this.colourCanJump = block.getColour();
           }
 
           // Check for collision with white block
@@ -188,6 +196,9 @@ public class ServerCube {
             this.rectangle.setTranslateY(this.position.getY());
 
             velocity.setY(0);
+
+            // Allow the player with this colour to jump
+            this.colourCanJump = block.getColour();
           }
 
           // Check collision with a white block
@@ -196,6 +207,12 @@ public class ServerCube {
           }
         }
       }
+    }
+
+    // Check whether the cube has passed the ground coordinates, if that is the case, rotate it
+    // around the edge
+    if (this.jumping) {
+      checkForRotation();
     }
   }
 
@@ -260,4 +277,12 @@ public class ServerCube {
     return (block.getX() == this.position.getX() + this.cubeSize
         || block.getX() + block.getRectangle().getWidth() == this.position.getX());
   }
+
+  /**
+   * The cube is able to rotate around edges when it is jumping. This is done by taking a "rotation"
+   * point at the moment of the jump; if the cube passes the ground coordinates without any
+   * collision, i.e. it passes the rotation point, the gravitational acceleration is rotated by 90
+   * degrees.
+   */
+  private void checkForRotation() {}
 }

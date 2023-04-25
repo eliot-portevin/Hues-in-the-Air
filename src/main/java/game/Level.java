@@ -1,7 +1,5 @@
 package game;
 
-import client.LevelData;
-import gui.Colours;
 import java.util.ArrayList;
 import java.util.Optional;
 

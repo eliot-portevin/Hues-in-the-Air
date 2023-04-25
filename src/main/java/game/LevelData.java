@@ -1,4 +1,4 @@
-package client;
+package game;
 /** Stores the level data. */
 public class LevelData {
     /** The level data. */

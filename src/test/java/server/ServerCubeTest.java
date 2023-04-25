@@ -1,10 +1,8 @@
 package server;
 
-import client.Vector2D;
+import game.Vector2D;
 import javafx.scene.layout.Pane;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ServerCubeTest {
 
