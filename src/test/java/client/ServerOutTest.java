@@ -1,7 +1,5 @@
-package clientTests;
+package client;
 
-import client.Client;
-import client.ServerOut;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
