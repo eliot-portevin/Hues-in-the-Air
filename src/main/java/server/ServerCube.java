@@ -7,16 +7,21 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/** The cube instance which the server works with. */
 public class ServerCube {
   // Position, velocity, acceleration
   private final int blocksPerSecond = 6;
   private final double velocity_constant;
   private final double acceleration_constant;
 
+  /** The current position of the cube. */
   protected Vector2D position;
+  /** The spawn position of the cube. */
   public Vector2D start_position = new Vector2D(0, 0);
+  /** The velocity which the cube currently has. */
   protected Vector2D velocity = new Vector2D(0, 0);
   private final double maxVelocity;
+  /** The acceleration which the cube is currently experiencing. */
   public Vector2D acceleration = new Vector2D(0, 0);
   private int accelerationAngle = 0;
 
@@ -25,14 +30,25 @@ public class ServerCube {
   private Color colourCanJump;
 
   // Cube information
+  /** The size of the cube in pixels. */
   public int cubeSize;
+  /** The rectangle which represents the cube. Used to detect collisions. */
   protected Rectangle rectangle = new Rectangle();
 
   // Level information
   private final Pane gameRoot;
+  /** The size of a block in pixels. */
   public int blockSize;
   private Vector2D rotationPoint;
 
+  /**
+   * Creates a new cube.
+   *
+   * @param gameRoot A virtual game root which the cube and blocks will be added to
+   * @param position The position of the cube
+   * @param cubeSize The size of the cube
+   * @param blockSize The size of a block
+   */
   public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
     // Initialise position, velocity and acceleration
     this.position = position;
@@ -56,24 +72,33 @@ public class ServerCube {
     gameRoot.getChildren().add(rectangle);
   }
 
-  /** Sets position of the cube to the given x and y */
+  /**
+   * Sets position of the cube to the given x and y.
+   *
+   * @param x the x position to set the cube to
+   * @param y the y position to set the cube to
+   */
   public void setPositionTo(double x, double y) {
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
   }
 
   /**
-   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector. Sets
-   * the rotation point to be halfway to the landing point in the middle of a block.
+   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector.
+   * Sets the rotation point to be halfway to the landing point in the middle of a block.
+   *
+   * @param colour the colour of the player who requested a jump
    */
   public void jump(Color colour) {
     if (!jumping && colour.equals(colourCanJump)) {
-      // Calculate point around which the cube will rotate if necessary (a jump lasts for one second)
+      // Calculate point around which the cube will rotate if necessary (a jump lasts for one
+      // second)
       rotationPoint = new Vector2D(position.getX(), position.getY());
       rotationPoint.addInPlace(velocity.multiply(0.5));
-      rotationPoint.addInPlace(new Vector2D(
-          Math.signum(acceleration.getX()) * blockSize,
-          Math.signum(acceleration.getY()) * blockSize));
+      rotationPoint.addInPlace(
+          new Vector2D(
+              Math.signum(acceleration.getX()) * blockSize,
+              Math.signum(acceleration.getY()) * blockSize));
 
       // Adjust the speed of the cube for it to jump
       Vector2D jumpVector =
@@ -123,7 +148,7 @@ public class ServerCube {
             // If the block was to the left of the cube before collision
             else if (velocity.getX() < 0) {
               this.position.setX(block.getX() + block.getRectangle().getWidth());
-              this.setAccelerationAngle(-90);
+              this.setAccelerationAngle(270);
             }
             this.rectangle.setTranslateX(this.position.getX());
 
@@ -202,8 +227,9 @@ public class ServerCube {
   }
 
   /**
-   * Rotates the gravitational acceleration vector to the given angle without adjusting the cube velocity.
-   * Called to rotate the cube around an edge as opposed to reset the velocity after a collision.
+   * Rotates the gravitational acceleration vector to the given angle without adjusting the cube
+   * velocity. Called to rotate the cube around an edge as opposed to reset the velocity after a
+   * collision.
    */
   private void onlySetAccelerationAngle(int angle) {
     this.accelerationAngle = angle;
@@ -283,22 +309,19 @@ public class ServerCube {
         this.velocity.setX(-this.velocity.getX());
         this.canRotate = false;
       }
-    }
-    else if (this.accelerationAngle == 90) {
+    } else if (this.accelerationAngle == 90) {
       if (this.position.getX() > this.rotationPoint.getX()) {
         this.onlySetAccelerationAngle(270);
         this.velocity.setY(-this.velocity.getY());
         this.canRotate = false;
       }
-    }
-    else if (this.accelerationAngle == 180) {
+    } else if (this.accelerationAngle == 180) {
       if (this.position.getY() < this.rotationPoint.getY()) {
         this.onlySetAccelerationAngle(0);
         this.velocity.setX(-this.velocity.getX());
         this.canRotate = false;
       }
-    }
-    else if (this.accelerationAngle == 270) {
+    } else if (this.accelerationAngle == 270) {
       if (this.position.getX() < this.rotationPoint.getX()) {
         this.onlySetAccelerationAngle(90);
         this.velocity.setY(-this.velocity.getY());

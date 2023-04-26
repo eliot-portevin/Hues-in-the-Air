@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
 
+/** The controller for the menu window. */
 public class MenuHomeController {
   @FXML private VBox homeTab;
 

@@ -2,14 +2,16 @@ package game;
 
 import java.util.ArrayList;
 import java.util.Optional;
-
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+/** The level class which loads a level from a string and handles the logic for the level. */
 public class Level {
   // Grid of blocks
   private Block[][] grid;
+  /** The width of a block. */
   public int blockWidth;
+  /** The position at which the player spawns. */
   public int[] playerSpawnIdx = new int[2];
 
   private final ArrayList<Block> criticalBlocks = new ArrayList<>();
@@ -17,6 +19,12 @@ public class Level {
   // Pane on which the level is drawn
   Pane gameRoot;
 
+  /**
+   * Creates a new level.
+   * @param difficulty the difficulty of the level
+   * @param blockWidth the width of a block
+   * @param gameRoot the pane on which the level is drawn
+   */
   public Level(String difficulty, int blockWidth, Pane gameRoot) {
     this.blockWidth = blockWidth;
     this.gameRoot = gameRoot;
@@ -65,7 +73,14 @@ public class Level {
     }
   }
 
-  /** Returns the nine blocks neighbouring a position. */
+  /**
+   * Returns the nine blocks neighbouring a position.
+   *
+   * @param x The x position of the block
+   * @param y The y position of the block
+   *
+   * @return The nine blocks neighbouring the block at the given position
+   */
   public Block[] getNeighbourBlocks(double x, double y) {
     int xIndex = (int) Math.floor(x / blockWidth);
     int yIndex = (int) Math.floor(y / blockWidth);
@@ -88,6 +103,8 @@ public class Level {
    * Iterates through the blocks of the level and sets their colours. If a block hasn't been
    * coloured yet, a colour is randomly chosen and set to it. Its neighbours (up, down, left, right)
    * are there coloured with the same colour.
+   *
+   * @param colours The colours that can be used to colour the blocks
    */
   public void setNeighbourColours(ArrayList<Color> colours) {
     for (int i = 0; i < grid.length; i++) {

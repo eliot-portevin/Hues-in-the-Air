@@ -82,6 +82,8 @@ public enum ServerProtocol {
   TOGGLE_PAUSE(0),
   /** Informs clients that the game is starting. */
   START_GAME_LOOP(0),
+  /** The game has been closed. Inform the clients that they can go back to their lobby screen. */
+  GAME_ENDED(0),
   /** Informs the client, that the jump request was successful. */
   JUMP(0),
   /** Sends the critical blocks and their colour to the client. */
@@ -101,7 +103,7 @@ public enum ServerProtocol {
    * Returns the number of arguments needed. Called from {@link client.ServerIn} to separate the
    * commands by their length
    *
-   * @return
+   * @return The number of arguments needed to send the command.
    */
   public int getNumArgs() {
     return this.numArgs;

@@ -1,9 +1,8 @@
 package client.controllers;
 
 import client.Client;
-import java.util.Arrays;
-
 import client.util.AlertManager;
+import java.util.Arrays;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/** The controller for the login window. */
 public class LoginController {
 
   // Grid panes
@@ -40,6 +40,7 @@ public class LoginController {
   // Error message
   @FXML private HBox alertPane;
   @FXML private Label alert;
+  /** The alert manager for the login pane */
   public AlertManager alertManager;
 
   /**
@@ -72,8 +73,9 @@ public class LoginController {
     button.setOnMouseEntered(e -> Client.getInstance().clickSound());
 
     this.button.setOnAction(
-        e -> Client.getInstance()
-            .connect(textUsername.getText(), textIp.getText(), textPort.getText()));
+        e ->
+            Client.getInstance()
+                .connect(textUsername.getText(), textIp.getText(), textPort.getText()));
   }
 
   /**
@@ -97,8 +99,7 @@ public class LoginController {
         e -> {
           if (e.getCode().toString().equals("TAB")) {
             button.requestFocus();
-          }
-          else if (e.getCode().toString().equals("ENTER")) {
+          } else if (e.getCode().toString().equals("ENTER")) {
             button.fire();
           }
         });
@@ -106,8 +107,7 @@ public class LoginController {
         e -> {
           if (e.getCode().toString().equals("TAB")) {
             textUsername.requestFocus();
-          }
-          else if (e.getCode().toString().equals("ENTER")) {
+          } else if (e.getCode().toString().equals("ENTER")) {
             button.fire();
           }
         });
@@ -172,7 +172,7 @@ public class LoginController {
   public void fillFields(String[] args) {
     TextField[] textFields = {textIp, textPort, textUsername};
 
-    for (int i=0; i<args.length; i++) {
+    for (int i = 0; i < args.length; i++) {
       textFields[i].setText(args[i]);
     }
 

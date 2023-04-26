@@ -14,6 +14,10 @@ import java.util.Arrays;
 
 import static client.Client.bebasItalics;
 
+/**
+ * Manages the chat. Contains a TextFlow and a TextField. The TextField is used to type messages, and
+ * the TextFlow is used to display messages.
+ */
 public class Chat {
   private final String chatType;
 
@@ -21,6 +25,9 @@ public class Chat {
   private final TextFlow chat;
   private final ScrollPane scrollPane;
 
+  /**
+   * Whether the chat is in front of the other elements. If true, the chat will be displayed in front.
+   */
   public Boolean isInFront = false;
 
   private final int fontSize = 20;
@@ -29,6 +36,9 @@ public class Chat {
    * Constructor for Chat
    *
    * @param chatType The type of chat, either "lobby" or "server"
+   * @param chatText The TextField where the user types the message
+   * @param chat The TextFlow where the messages are displayed
+   * @param scrollPane The ScrollPane where the TextFlow is displayed
    */
   public Chat(String chatType, TextField chatText, TextFlow chat, ScrollPane scrollPane) {
     switch (chatType) {
@@ -118,6 +128,9 @@ public class Chat {
   /**
    * Appends a received message to the chat in the correct format. Called from the concerned
    * controller when a message is received.
+   * @param message The message to be added
+   * @param sender The sender of the message
+   * @param isPrivate Whether the message is private or not
    */
   public void addMessage(String message, String sender, Boolean isPrivate) {
     Text text =
@@ -137,6 +150,7 @@ public class Chat {
   /**
    * Fills the chat text field with a message and focuses on it. E.g. when a user clicks on a
    * username in the lobby, the chat text field will be filled with the username.
+   * @param message The message to be filled in the chat text field
    */
   public void fillTextField(String message) {
     this.chatText.setText(message);

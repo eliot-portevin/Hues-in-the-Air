@@ -30,6 +30,10 @@ import org.apache.logging.log4j.Logger;
 import server.Server;
 import server.ServerProtocol;
 
+/**
+ * The client class. This class creates a window and handles the connection to the server. It also
+ * handles the GUI and the controllers.
+ */
 public class Client extends Application {
 
   // Status of client
@@ -38,9 +42,10 @@ public class Client extends Application {
   int noAnswerCounter = 0;
   int receivedNullCounter = 0;
   boolean shuttingDown = false;
+  /** The instance of the client. Set upon startup. */
   public static Client instance;
-
   boolean loginScreen = true;
+
   boolean menuScreen = false;
   boolean lobbyScreen = false;
   boolean gameScreen = false;
@@ -58,13 +63,18 @@ public class Client extends Application {
   private ServerOut outputSocket;
 
   // Controllers
+  /** The login controller */
   private LoginController loginController;
+  /** The menu controller */
   private MenuController menuController;
+  /** The lobby controller */
   private LobbyController lobbyController;
+  /** The game controller */
   public GameController gameController;
 
-  // Username
+  /** The username of the client */
   protected String username = null;
+  /** The colour of the client */
   private Color colour = null;
 
   // GUI
@@ -75,10 +85,13 @@ public class Client extends Application {
   // Sound
   private MediaPlayer clickPlayer;
 
-  // Logger
+  /** The logger for the client */
   public Logger LOGGER;
 
-  // Fonts
+  /**
+   * The italics font used in the application. It cannot be loaded in css files, so it is loaded
+   * here
+   */
   public static final javafx.scene.text.Font bebasItalics =
       javafx.scene.text.Font.loadFont(
           Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Italics.otf"))
@@ -243,7 +256,7 @@ public class Client extends Application {
    *
    * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load())
    */
-  private void loadLobbyScreen() throws IOException {
+  void loadLobbyScreen() throws IOException {
     this.LOGGER.info("Loading lobby screen.");
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
     this.root = loader.load();
@@ -358,7 +371,11 @@ public class Client extends Application {
       this.outputSocket.sendToServer(command);
     }
   }
-  /** Starts the client and sets the IP and the port */
+  /**
+   * Starts the client and sets the IP and the port
+   *
+   * @param args the IP and the port of the server
+   */
   public static void start(String[] args) {
     String[] serverInfo = args[0].split(":");
     if (serverInfo.length != 2) {
@@ -379,7 +396,11 @@ public class Client extends Application {
     }
   }
 
-  /** Sets the username of the client. Inform when the username is already set to that one */
+  /**
+   * Sets the username of the client. Inform when the username is already set to that one
+   *
+   * @param username the username to set
+   */
   public void setUsername(String username) {
     if (this.menuScreen) {
       if (username.equals(this.username)) {
@@ -403,7 +424,11 @@ public class Client extends Application {
     LOGGER.info("Requested username change from " + this.username + " to " + username + ".");
   }
 
-  /** This client wants to send a public message to all clients (broadcast). */
+  /**
+   * This client wants to send a public message to all clients (broadcast).
+   *
+   * @param message the message to send
+   */
   public void sendPublicMessage(String message) {
     try {
       String command =
@@ -415,7 +440,11 @@ public class Client extends Application {
     }
   }
 
-  /** This client wants to send a private message to another client (whisper chat). */
+  /**
+   * This client wants to send a private message to another client (whisper chat).
+   *
+   * @param message the message to send
+   */
   public void sendPrivateMessage(String message) {
     String[] split = message.split(" ", 2);
     if (split.length <= 1) {
@@ -453,6 +482,8 @@ public class Client extends Application {
    * This client wants to send a message to the other clients in the lobby.
    *
    * <p>Protocol format: SEND_MESSAGE_LOBBY&#60;SEPARATOR&#62;message
+   *
+   * @param message the message to send
    */
   public void sendLobbyMessage(String message) {
     String command =
@@ -565,7 +596,11 @@ public class Client extends Application {
     }
   }
 
-  /** If the client is in a lobby, their list of clients in the lobby is updated. */
+  /**
+   * If the client is in a lobby, their list of clients in the lobby is updated.
+   *
+   * @param clientList The list of clients in the lobby in the format from the server command
+   */
   protected void updateLobbyList(String clientList) {
     if (this.isInLobby) {
       this.lobbyController.updateLobbyList(
@@ -593,8 +628,8 @@ public class Client extends Application {
   }
 
   /**
-   * The client has loaded the level successfully and wants to know the critical blocks in order
-   * to colour the level.
+   * The client has loaded the level successfully and wants to know the critical blocks in order to
+   * colour the level.
    */
   protected void requestCriticalBlocks() {
     String command = ClientProtocol.REQUEST_CRITICAL_BLOCKS.toString();
@@ -689,6 +724,8 @@ public class Client extends Application {
   /**
    * The client has received confirmation from the server that they have entered a lobby. Proceeds
    * to load the lobby screen.
+   *
+   * @param lobbyName The name of the lobby that was entered
    */
   public void enterLobby(String lobbyName) {
     LOGGER.info("Entered lobby " + lobbyName + ".");
@@ -720,7 +757,11 @@ public class Client extends Application {
     }
   }
 
-  /** Sends the game commands to the server */
+  /**
+   * Sends the game commands to the server
+   *
+   * @param command The command to be sent to the server
+   */
   public void sendGameCommand(String command) {
     this.outputSocket.sendToServer(command);
   }
@@ -743,7 +784,11 @@ public class Client extends Application {
     this.clickPlayer.setVolume(volume);
   }
 
-  /** Sets the username with the String gotten */
+  /**
+   * Sets the username with the String gotten
+   *
+   * @param username The username to be set
+   */
   public void usernameSetTo(String username) {
     if (this.username != null) {
       if (this.menuScreen) {
@@ -759,16 +804,23 @@ public class Client extends Application {
 
   /** Starts the game loop */
   public void startGameLoop() {
-    this.gameController.getGame().pause = false;
     this.gameController.getGame().gameStarted = true;
   }
 
-  /** returns the username as a String */
+  /**
+   * Returns the username as a String
+   *
+   * @return The username of the client
+   */
   public String getUsername() {
     return this.username;
   }
 
-  /** returns the lobbyName as a String */
+  /**
+   * Returns the lobbyName as a String
+   *
+   * @return The name of the lobby
+   */
   public String getLobbyName() {
     return this.lobbyName;
   }

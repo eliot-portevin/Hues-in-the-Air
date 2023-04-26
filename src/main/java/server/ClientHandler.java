@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/** Handles the connection to a single client. */
 public class ClientHandler implements Runnable {
 
   // The client's socket
@@ -26,6 +27,7 @@ public class ClientHandler implements Runnable {
   // The server: used to access the list of clients
   private final Server server;
 
+  /** The boolean used for the while loop in the run() method. */
   protected boolean running = true;
 
   // Client values
@@ -34,12 +36,12 @@ public class ClientHandler implements Runnable {
 
   private final Logger LOGGER;
 
-  // Variables required for the game
-  // TODO: replace with false and add check to set correct players canJump to true
-  public boolean canJump = true;
-  public boolean ready = false;
-
-  /** Is in charge of a single client. */
+  /** Is in charge of a single client.
+   * @param clientSocket The client's socket
+   * @param server The server
+   *
+   * @throws IOException If getInputStream() or getOutputStream() fails
+   * */
   public ClientHandler(Socket clientSocket, Server server) throws IOException {
     this.client = clientSocket;
     this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -96,14 +98,6 @@ public class ClientHandler implements Runnable {
     for (ClientHandler client : this.server.getClientHandlers()) {
       client.out.println(output);
     }
-  }
-
-  /**
-   * Sets the ready status of the client to true. The game only starts when the ready status of all
-   * clients is set to true
-   */
-  protected void readyUp() {
-    this.ready = true;
   }
 
   /**
@@ -200,16 +194,15 @@ public class ClientHandler implements Runnable {
             if (this.lobby != null) this.lobby.removeClient(this);
           }
           case START_GAME_LOOP -> this.startGameLoop();
-          case READY_UP -> this.readyUp();
           case SPACE_BAR_PRESSED -> this.spaceBarPressed();
-          case REQUEST_PAUSE -> this.requestPause();
           case REQUEST_CRITICAL_BLOCKS -> this.getLobby().getGame().sendCriticalBlocks();
+          case REQUEST_END_GAME -> this.getLobby().getGame().endGame();
 
-          default -> System.out.println("[CLIENT_HANDLER] Unknown command: " + protocol);
+          default -> LOGGER.error("ClientHandler " + this.username + " sent an invalid command: " + command[0]);
         }
       }
-    } catch (IllegalArgumentException e) {
-      System.out.println("[CLIENT_HANDLER] Unknown command: " + command[0]);
+    } catch (IllegalArgumentException|NullPointerException e) {
+      LOGGER.error("ClientHandler " + this.username + " sent an invalid command: " + command[0]);
     }
   }
 
@@ -228,7 +221,9 @@ public class ClientHandler implements Runnable {
     this.noAnswerCounter = 0;
   }
 
-  /** Returns the username */
+  /** Returns the username.
+   * @return the username of the client
+   * */
   protected String getUsername() {
     return this.username;
   }
@@ -272,6 +267,8 @@ public class ClientHandler implements Runnable {
   /**
    * Upon entry of a lobby (handled by {@link Server#joinLobby(String, String, ClientHandler)}), the
    * client is informed of the success of the operation.
+   *
+   * @param lobby The lobby the client has entered
    */
   protected void enterLobby(Lobby lobby) {
     this.lobby = lobby;
@@ -294,7 +291,9 @@ public class ClientHandler implements Runnable {
 
   /**
    * return this.lobby Is called from the server when a Client disconnects, so it can be removed
-   * from the lobby
+   * from the lobby.
+   *
+   * @return The lobby the client is in
    */
   protected Lobby getLobby() {
     return this.lobby;
@@ -355,6 +354,9 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
+  /**
+   * Sends the list of all games that have been played or are being played to the client.
+   */
   public void updateGameList() {
     Map<ServerGame, Boolean> games = this.server.getGames();
 
@@ -381,18 +383,6 @@ public class ClientHandler implements Runnable {
     this.lobby.getGame().spaceBarPressed(this);
   }
 
-  /**
-   * Called when the client has requested to toggle pause. The game is paused, and a protocol
-   * command is sent back to all clients in the lobby to toggle pause on their end.
-   */
-  private void requestPause() {
-    System.out.println("Request pause Executed");
-    this.lobby.getGame().setPause();
-    for (ClientHandler client : this.lobby.getClientHandlers()) {
-      client.out.println(ServerProtocol.TOGGLE_PAUSE);
-    }
-  }
-
   /** Sends StartGameLoop command to the client associated with this ClientHandler */
   public void startClientGameLoop() {
     String command = ClientProtocol.START_GAME_LOOP.toString();
@@ -416,5 +406,13 @@ public class ClientHandler implements Runnable {
    */
   public void sendCriticalBlocks(String command) {
     this.out.println(command);
+  }
+
+  /**
+   * Informs the client that the game has ended. The client can then exit the game screen and go back to the
+   * lobby.
+   */
+  public void gameEnded() {
+    this.out.println(ServerProtocol.GAME_ENDED);
   }
 }

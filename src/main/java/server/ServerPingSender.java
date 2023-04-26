@@ -2,6 +2,10 @@ package server;
 
 import java.util.ArrayList;
 
+/**
+ * The class which sends a ping to the client every 300ms. If the client doesn't respond to 3 pings,
+ * the server removes the client.
+ */
 public class ServerPingSender implements Runnable {
 
   ArrayList<ClientHandler> clients;

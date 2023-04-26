@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+/** The controller for the games tab in the menu window. */
 public class MenuGameController {
 
   @FXML private VBox gamesTab;
@@ -18,13 +19,15 @@ public class MenuGameController {
   @FXML private ListView<String> gameStatusList;
   @FXML private ListView<String> scoreList;
 
+  /**
+   * Initializes the controller class. This method is automatically called after the fxml file has
+   * been loaded.
+   */
   public void initialize() {
     this.initialiseLists();
   }
 
-  /**
-   * Initialises the list views in the games tab.
-   */
+  /** Initialises the list views in the games tab. */
   private void initialiseLists() {
     gameStatusList.setCellFactory(
         l ->
@@ -40,18 +43,20 @@ public class MenuGameController {
                 }
               }
             });
-    scoreList.setCellFactory(l -> new ListCell<>() {
-      @Override
-      protected void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty || item == null) {
-          setText(null);
-        } else {
-          setText(item);
-          setAlignment(Pos.CENTER);
-        }
-      }
-    });
+    scoreList.setCellFactory(
+        l ->
+            new ListCell<>() {
+              @Override
+              protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                  setText(null);
+                } else {
+                  setText(item);
+                  setAlignment(Pos.CENTER);
+                }
+              }
+            });
   }
 
   /**

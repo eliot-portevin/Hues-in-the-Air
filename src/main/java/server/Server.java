@@ -5,10 +5,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The server class. This class is responsible for managing the server. It contains a list of all
+ * clients, a list of all lobbies and a list of all games. It also contains a ServerSocket which is
+ * used to listen for client connections.
+ */
 public class Server implements Runnable {
 
   private final int PORT;
@@ -24,10 +28,16 @@ public class Server implements Runnable {
   private boolean noClientConnected = true;
 
   private static Server instance;
+  /** The logger for the server. */
   protected final Logger LOGGER;
 
+  /** The maximum amount of characters a username can have. */
   public static final int MAX_NAME_LENGTH = 24;
 
+  /**
+   * Creates a new server.
+   * @param PORT The port which the server will listen on
+   */
   public Server(int PORT) {
     this.PORT = PORT;
     this.LOGGER = LogManager.getLogger(Server.class);
@@ -92,6 +102,8 @@ public class Server implements Runnable {
    * Called from {@link ClientHandler} when a client disconnects ({@link
    * client.ClientProtocol#EXIT}). Removes the client from the list of clients, from its lobby and
    * interrupts the client's dedicated thread.
+   *
+   * @param client The client that disconnected
    */
   protected void removeClient(ClientHandler client) {
     client.running = false;
@@ -138,7 +150,9 @@ public class Server implements Runnable {
   }
 
   /**
-   * Used by {@link ClientHandler} to list the clientHandlers
+   * Used by {@link ClientHandler} to list the clientHandlers.
+   *
+   * @return The list of clientHandlers
    */
   protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clientHandlers;
@@ -155,6 +169,7 @@ public class Server implements Runnable {
    * Returns the name of the client for given username
    *
    * @param username of the client
+   * @return The name of the client
    */
   protected ClientHandler getClientHandler(String username) {
     for (ClientHandler client : this.clientHandlers) {
@@ -234,8 +249,8 @@ public class Server implements Runnable {
   }
 
   /**
-   * Sends a message to all clients in the server containing the list of all games and their
-   * status (running or finished).
+   * Sends a message to all clients in the server containing the list of all games and their status
+   * (running or finished).
    */
   private void updateGameList() {
     synchronized (this.clientHandlers) {
@@ -277,6 +292,7 @@ public class Server implements Runnable {
   /**
    * Called from {@link Lobby} when a game has been started. Adds the game to the list of games and
    * sends a message to all clients in the server containing the list of all games.
+   *
    * @param game The game instance that has been started
    */
   protected void addGame(ServerGame game) {
@@ -287,10 +303,16 @@ public class Server implements Runnable {
   /**
    * Called from {@link ServerGame} when a game has ended. Sets the game to finished and sends a
    * message to all clients in the server containing the list of all games.
+   *
    * @param game The game instance that has ended
    */
   protected void endGame(ServerGame game) {
     this.games.put(game, false);
+
+    for (ClientHandler client : game.getPlayers()) {
+      client.gameEnded();
+    }
+
     this.updateGameList();
   }
 }

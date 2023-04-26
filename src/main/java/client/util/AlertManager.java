@@ -9,12 +9,22 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+/**
+ * Manages the alert label. This label is used to display messages to the client, such as confirmation
+ * of a successful action or an error.
+ */
 public class AlertManager {
 
   private final HBox alertPane;
   private final Label alert;
   private FadeTransition alertTransition;
 
+  /**
+   * Creates a new AlertManager.
+   *
+   * @param alertPane The pane containing the alert label
+   * @param alert The alert label
+   */
   public AlertManager(HBox alertPane, Label alert) {
     this.alertPane = alertPane;
     this.alert = alert;

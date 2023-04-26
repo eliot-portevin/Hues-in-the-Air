@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/** The lobby class which handles the logic for a lobby. */
 public class Lobby {
   private final String name;
   private final String password;
@@ -20,7 +21,7 @@ public class Lobby {
   private ServerGame game;
   private boolean isInGame = false;
   int gamesPlayed = 0;
-  
+
   /**
    * Creates a new lobby.
    *
@@ -39,7 +40,7 @@ public class Lobby {
    * @param clientPwd The password of the client
    */
   protected void addClient(ClientHandler client, String clientPwd) {
-    if (clientPwd.equals(this.password)) {
+    if (clientPwd.equals(this.password) && !this.isInGame) {
       if (this.getNumPlayers() < 4) {
         synchronized (this.clients) {
           this.clients.add(client);
@@ -82,9 +83,14 @@ public class Lobby {
       LOGGER.info("Client " + client.getUsername() + " left lobby " + this.name);
     }
     this.updateLobbyList();
+    this.checkReady();
   }
 
-  /** Returns the name of the lobby. Used to add and remove clients of it. */
+  /**
+   * Returns the name of the lobby. Used to add and remove clients of it.
+   *
+   * @return the name of the lobby
+   */
   public String getName() {
     return name;
   }
@@ -105,13 +111,19 @@ public class Lobby {
 
   /**
    * Returns the number of players. Used to see whether the lobby is full or not. Used by the
-   * server:if the lobby is empty, it is deleted.
+   * server: if the lobby is empty, it is deleted.
+   *
+   * @return the number of players in the lobby
    */
   protected int getNumPlayers() {
     return this.clients.size();
   }
 
-  /** Returns the name of the clientHandlers in the lobby */
+  /**
+   * Returns the name of the clientHandlers in the lobby.
+   *
+   * @return the name of the clientHandlers in the lobby
+   */
   protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clients;
   }
@@ -123,7 +135,12 @@ public class Lobby {
     }
   }
 
-  /** Called from {@link ClientHandler} when a client toggles their ready status. */
+  /**
+   * Called from {@link ClientHandler} when a client toggles their ready status.
+   *
+   * @param client the client that toggled their ready status
+   * @param isReady the new ready status of the client
+   */
   public void toggleClientReady(ClientHandler client, boolean isReady) {
     if (!isInLobby(client.getUsername())) {
       LOGGER.warn(
@@ -159,24 +176,28 @@ public class Lobby {
     // The game instance starts itself
     String gameId = this.getName() + "_" + gamesPlayed;
     this.game = new ServerGame(this.clientColours, getClientHandlers(), gameId);
-    
+
     Thread gameThread = new Thread(game);
     gameThread.start();
-    
-    for(ClientHandler client : this.getClientHandlers()) {
+
+    for (ClientHandler client : this.getClientHandlers()) {
       client.startGame();
     }
-    
+
     Server.getInstance().addGame(this.game);
     this.isInGame = true;
   }
 
-  /** Getter for the game */
+  /** Getter for the game.
+   * @return the game
+   * */
   protected ServerGame getGame() {
     return this.game;
   }
 
-  /** Returns the lobby list as a string containing all the information about the lobby. */
+  /** Returns the lobby list as a string containing all the information about the lobby.
+   * @return the lobby list as a string
+   * */
   public String listLobby() {
     String command = ServerProtocol.UPDATE_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
 
@@ -193,9 +214,11 @@ public class Lobby {
     return command;
   }
 
-  /** Sends a game command to all clients in the lobby. */
+  /** Sends a game command to all clients in the lobby.
+   * @param command the command to send
+   * */
   public void sendGameCommandToAllClients(String command) {
-    for(ClientHandler client : this.getClientHandlers()) {
+    for (ClientHandler client : this.getClientHandlers()) {
       client.startClientGameLoop();
     }
   }

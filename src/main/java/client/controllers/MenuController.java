@@ -13,10 +13,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 
+/** The controller for the menu window. */
 public class MenuController {
   // Sub-controllers
   @FXML private MenuHomeController homeTabController;
   @FXML private MenuGameController gamesTabController;
+  /** The settings controller */
   public MenuSettingsController settingsTabController;
 
   // Tab windows
@@ -40,10 +42,16 @@ public class MenuController {
 
   @FXML private HBox alertPane;
   @FXML private Label alert;
+  /** The alert manager for the menu pane */
   public AlertManager alertManager;
 
+  /** The instance of the MenuController */
   public static MenuController instance;
 
+  /**
+   * Initializes the controller class. This method is automatically called after the fxml file has
+   * been loaded.
+   */
   @FXML
   public void initialize() {
     this.initialiseChat();
