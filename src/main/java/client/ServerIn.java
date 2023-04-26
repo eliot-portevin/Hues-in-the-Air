@@ -116,6 +116,7 @@ public class ServerIn implements Runnable {
                 case POSITION_UPDATE -> this.client.gameController.getGame().updatePosition(command[1], command[2]);
                 case TOGGLE_PAUSE -> this.client.gameController.getGame().setPause();
                 case SEND_CRITICAL_BLOCKS -> this.client.gameController.setBlockColours(command[1]);
+                case LOAD_LEVEL -> this.client.gameController.loadLevel(command[1]);
               }
             }
           });
