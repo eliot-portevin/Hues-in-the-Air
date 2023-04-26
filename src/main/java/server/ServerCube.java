@@ -1,350 +1,309 @@
 package server;
 
-import gui.Colours;
-import javafx.scene.Node;
+import game.Block;
+import game.Colours;
+import game.Vector2D;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import client.Vector2D;
 public class ServerCube {
-    protected Vector2D position;
-    public Vector2D size;
-    private final double jumpHeight = 30;
-    private boolean canJump = true;
-    private final Pane gameRoot;
-    public ArrayList<Node> platforms;
-    public ArrayList<Node> death_platforms;
-    public int gridSize;
-    protected Rectangle rectangle = new Rectangle();
-    private final double gravity_scalar = 0.3;
-    private final double speed = 3;
-    public Vector2D g = new Vector2D(0, gravity_scalar);
-    protected Vector2D velocity = new Vector2D(speed, 0);
-    private double y0 = 100000;
-    private boolean y0passed;
-    public Vector2D start_position = new Vector2D(0, 0);
-    private boolean onlyMoveOneDir = false;
-    private Vector2D moveBuffer;
-    private final Timer timer = new Timer();
+  // Position, velocity, acceleration
+  private final int blocksPerSecond = 6;
+  private final double velocity_constant;
+  private final double acceleration_constant;
 
+  protected Vector2D position;
+  public Vector2D start_position = new Vector2D(0, 0);
+  protected Vector2D velocity = new Vector2D(0, 0);
+  private final double maxVelocity;
+  public Vector2D acceleration = new Vector2D(0, 0);
+  private int accelerationAngle = 0;
 
-    public ServerCube(Pane gameRoot, Vector2D position, Vector2D size) {
-        this.position = position;
-        this.size = size;
-        this.gameRoot = gameRoot;
-        spawnCube();
-    }
+  private boolean jumping = true;
+  private boolean canRotate = false;
+  private Color colourCanJump;
 
-    /**
-     * Spawns the cube at the given position with given size and adds it to the gameRoot
-     */
-    public void spawnCube() {
-        rectangle = new Rectangle(size.getX(), size.getY());
-        this.setPositionTo(position.getX(), position.getY());
-        gameRoot.getChildren().add(rectangle);
-    }
+  // Cube information
+  public int cubeSize;
+  protected Rectangle rectangle = new Rectangle();
 
-    /**
-     * Sets position of the cube to the given x and y
-     */
-    public void setPositionTo(double x, double y) {
-        this.rectangle.setTranslateX(x);
-        this.rectangle.setTranslateY(y);
+  // Level information
+  private final Pane gameRoot;
+  public int blockSize;
+  private Vector2D rotationPoint;
+
+  public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
+    // Initialise position, velocity and acceleration
+    this.position = position;
+    this.velocity_constant = blockSize * blocksPerSecond;
+    this.maxVelocity = this.velocity_constant * 2;
+    this.acceleration_constant = blockSize * blocksPerSecond * 4;
+    this.setAccelerationAngle(0);
+
+    this.cubeSize = cubeSize;
+    this.blockSize = blockSize;
+
+    this.gameRoot = gameRoot;
+
+    spawnCube();
+  }
+
+  /** Spawns the cube at the given position with given size and adds it to the gameRoot */
+  public void spawnCube() {
+    rectangle = new Rectangle(cubeSize, cubeSize);
+    this.setPositionTo(position.getX(), position.getY());
+    gameRoot.getChildren().add(rectangle);
+  }
+
+  /** Sets position of the cube to the given x and y */
+  public void setPositionTo(double x, double y) {
+    this.rectangle.setTranslateX(x);
+    this.rectangle.setTranslateY(y);
+  }
+
+  /**
+   * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector. Sets
+   * the rotation point to be halfway to the landing point in the middle of a block.
+   */
+  public void jump(Color colour) {
+    if (!jumping && colour.equals(colourCanJump)) {
+      // Calculate point around which the cube will rotate if necessary (a jump lasts for one second)
+      rotationPoint = new Vector2D(position.getX(), position.getY());
+      rotationPoint.addInPlace(velocity.multiply(0.5));
+      rotationPoint.addInPlace(new Vector2D(
+          Math.signum(acceleration.getX()) * blockSize,
+          Math.signum(acceleration.getY()) * blockSize));
+
+      // Adjust the speed of the cube for it to jump
+      Vector2D jumpVector =
+          new Vector2D(
+              Math.sin(Math.toRadians(accelerationAngle)),
+              Math.cos(Math.toRadians(accelerationAngle)));
+
+      jumpVector.multiplyInPlace(-maxVelocity);
+
+      velocity.addInPlace(jumpVector);
+
+      // Don't allow the cube to jump again until it has landed
+      jumping = true;
+      canRotate = true;
     }
-    /**
-     * Sets Gravity and velocity correctly when gravitation pulls the cube to the right
-     */
-    public void setGravityAndVelocityRight() {
-        canJump = true;
-        velocity.setX(0);
-        if (g.getX() == gravity_scalar) {
-            velocity.setX(0);
-            if (velocity.getY() > 0) {
-                velocity.setY(speed);
-            } else {
-                velocity.setY(-speed);
-            }
-        } else if (g.getX() == -gravity_scalar) {
-            g.setX(gravity_scalar);
-        } else if (g.getY() == gravity_scalar) {
-            g.setY(0);
-            g.setX(gravity_scalar);
-            velocity.setY(-speed);
-        } else if (g.getY() == -gravity_scalar) {
-            g.setY(0);
-            g.setX(gravity_scalar);
-            velocity.setY(speed);
-        }
-    }
-    /**
-     * Sets Gravity and velocity correctly when gravitation pulls the cube to the left
-     */
-    public void setGravityAndVelocityLeft() {
-        canJump = true;
-        velocity.setX(0);
-        if (g.getX() == -gravity_scalar) {
-            if (velocity.getY() > 0) {
-                velocity.setY(speed);
-            } else {
-                velocity.setY(-speed);
-            }
-        } else if (g.getX() == gravity_scalar) {
-            g.setX(-gravity_scalar);
-        } else if (g.getY() == gravity_scalar) {
-            g.setY(0);
-            g.setX(-gravity_scalar);
-            velocity.setY(-speed);
-        } else if (g.getY() == -gravity_scalar) {
-            g.setY(0);
-            g.setX(-gravity_scalar);
-            velocity.setY(speed);
-        }
-    }
-    /**
-     * Sets Gravity and velocity correctly when gravitation pulls the cube up
-     */
-    public void setGravityAndVelocityUp() {
-        canJump = true;
-        velocity.setY(0);
-        if (g.getY() == -gravity_scalar) {
+  }
+
+  /**
+   * Moves the cube by its current velocity and checks for collisions with the given neighbour
+   * blocks. If a collision is detected the cube is moved back to the position before the collision
+   * and the velocity is set to 0 in the direction of the collision.
+   *
+   * @param neighbourBlocks the blocks to check for collisions with
+   * @param dt the time since the last frame in seconds
+   */
+  public void move(Block[] neighbourBlocks, double dt) {
+    // Update the velocity according to acceleration
+    this.velocity.addInPlace(acceleration.multiply(dt));
+
+    // Move cube in x direction and check for collisions
+    this.position.setX(this.position.getX() + velocity.getX() * dt);
+    this.rectangle.setTranslateX(this.position.getX());
+
+    for (Block block : neighbourBlocks) {
+      if (block != null) {
+        if (this.rectangle
+            .getBoundsInParent()
+            .intersects(block.getRectangle().getBoundsInParent())) {
+          boolean isEdgeCollision = isEdgeCollision(block, true);
+
+          if (!isEdgeCollision) {
+            // If the block was to the right of the cube before collision
             if (velocity.getX() > 0) {
-                velocity.setX(speed);
-            } else {
-                velocity.setX(-speed);
+              this.position.setX(block.getX() - this.rectangle.getWidth());
+              this.setAccelerationAngle(90);
             }
-        } else if (g.getY() == gravity_scalar) {
-            g.setY(-gravity_scalar);
-        } else if (g.getX() == gravity_scalar) {
-            g.setX(0);
-            g.setY(-gravity_scalar);
-            velocity.setX(-speed);
-        } else if (g.getX() == -gravity_scalar) {
-            g.setX(0);
-            g.setY(-gravity_scalar);
-            velocity.setX(speed);
+            // If the block was to the left of the cube before collision
+            else if (velocity.getX() < 0) {
+              this.position.setX(block.getX() + block.getRectangle().getWidth());
+              this.setAccelerationAngle(-90);
+            }
+            this.rectangle.setTranslateX(this.position.getX());
+
+            this.velocity.setX(0);
+            jumping = false;
+            canRotate = false;
+
+            // Allow the player with this colour to jump
+            this.colourCanJump = block.getColour();
+          }
+
+          // Check for collision with white block
+          if (block.getColour().equals(Colours.WHITE.getHex())) {
+            this.resetLevel();
+          }
         }
+      }
     }
-    /**
-     * Sets Gravity and velocity correctly when gravitation pulls the cube down
-     */
-    public void setGravityAndVelocityDown() {
-        canJump = true;
-        velocity.setY(0);
-        if (g.getY() == gravity_scalar) {
-            if (velocity.getX() > 0) {
-                velocity.setX(speed);
-            } else {
-                velocity.setX(-speed);
+
+    // Move cube in y direction and check for collisions
+    this.position.setY(this.position.getY() + velocity.getY() * dt);
+    this.rectangle.setTranslateY(this.position.getY());
+
+    for (Block block : neighbourBlocks) {
+      if (block != null) {
+        if (this.rectangle
+            .getBoundsInParent()
+            .intersects(block.getRectangle().getBoundsInParent())) {
+          boolean isEdgeCollision = isEdgeCollision(block, false);
+
+          if (!isEdgeCollision) {
+            // If the block was below the cube before collision
+            if (velocity.getY() > 0) {
+              this.position.setY(block.getY() - rectangle.getHeight());
+              this.setAccelerationAngle(0);
             }
-        } else if (g.getY() == -gravity_scalar) {
-            g.setY(gravity_scalar);
-        } else if (g.getX() == gravity_scalar) {
-            g.setX(0);
-            g.setY(gravity_scalar);
-            velocity.setX(-speed);
-        } else if (g.getX() == -gravity_scalar) {
-            g.setX(0);
-            g.setY(gravity_scalar);
-            velocity.setX(speed);
+            // If the block was above the cube before collision
+            else if (velocity.getY() < 0) {
+              this.position.setY(block.getY() + block.getRectangle().getHeight());
+              this.setAccelerationAngle(180);
+            }
+
+            this.rectangle.setTranslateY(this.position.getY());
+
+            velocity.setY(0);
+            jumping = false;
+            canRotate = false;
+
+            // Allow the player with this colour to jump
+            this.colourCanJump = block.getColour();
+          }
+
+          // Check collision with a white block
+          if (block.getColour().equals(Colours.WHITE.getHex())) {
+            this.resetLevel();
+          }
         }
-    }
-    /**
-     * Rotates Gravitation if cube goes out of bounds if cube is moving in x direction
-     */
-    public void gravityRotationX(){
-        if (g.getY() > 0 && !y0passed) {
-            if (y0 < position.getY()) {
-                y0passed = true;
-                g.setY(-gravity_scalar);
-                velocity.setX(-velocity.getX());
-                velocity.setY(-jumpHeight*g.getY());
-            }
-        } else if (g.getY() < 0 && !y0passed) {
-            if (y0 > position.getY()) {
-                y0passed = true;
-                g.setY(gravity_scalar);
-                velocity.setX(-velocity.getX());
-                velocity.setY(-jumpHeight*g.getY());
-            }
-        }
+      }
     }
 
-    /**
-     * Rotates Gravitation if cube goes out of bounds if cube is moving in y direction
-     */
-    public void gravityRotationY(){
-        if (g.getX() > 0 && !y0passed) {
-            if (y0 < position.getX()) {
-                y0passed = true;
-                g.setX(-gravity_scalar);
-                velocity.setY(-velocity.getY());
-                velocity.setX(-jumpHeight*g.getX());
-            }
-        } else if (g.getX() < 0 && !y0passed) {
-            if (y0 > position.getX()) {
-                y0passed = true;
-                g.setX(gravity_scalar);
-                velocity.setY(-velocity.getY());
-                velocity.setX(-jumpHeight*g.getX());
-            }
-        }
+    // Check whether the cube has passed the ground coordinates, if that is the case, rotate it
+    // around the edge
+    if (this.canRotate) {
+      checkForRotation();
     }
-    /**
-     * Checks if the cube is colliding with anything, if not it moves the cube by 1 pixel steps in x direction and checks again
-     * If the cube is colliding with something it stops the cube from clipping into the object and sets the velocity in that direction to 0 and sets canJump to true
-     * On collision the cubes gravity is also set to the opposite of the normal of the surface it is colliding with
-     */
-    public void moveX(double value) {
-        boolean movingRight = value > 0;
-        if(!canJump){
-            gravityRotationX();
-            moveValueX(value);
+  }
 
-            for(Node platform : platforms){
-                if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())){
-                    if(movingRight){
-                        if (rectangle.getTranslateX() + size.getX()+value >= platform.getTranslateX()){
-                            if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize){
-                                rectangle.setTranslateX(platform.getTranslateX()-size.getX());
-                                setGravityAndVelocityRight();
-                            }
-                        }
-                    } else {
-                        if (rectangle.getTranslateX() + value <= platform.getTranslateX() + gridSize){
-                            if (rectangle.getTranslateY() + size.getY() != platform.getTranslateY() && rectangle.getTranslateY() != platform.getTranslateY() + gridSize){
-                                rectangle.setTranslateX(platform.getTranslateX() + gridSize);
-                                setGravityAndVelocityLeft();
-                            }
-                        }
-                    }
-                }
-            }
-        } else{
-            moveValueX(value);
-        }
+  /** Makes the cube accelerate to its maximum speed at the beginning of a level. */
+  public void initialiseSpeed() {
+    this.velocity.setX(blockSize * blocksPerSecond);
+    this.velocity.setY(0);
+
+    this.acceleration.setX(0);
+    this.acceleration.setY(cubeSize * blocksPerSecond);
+    this.setAccelerationAngle(0);
+  }
+
+  /**
+   * Rotates the gravitational acceleration vector to the given angle without adjusting the cube velocity.
+   * Called to rotate the cube around an edge as opposed to reset the velocity after a collision.
+   */
+  private void onlySetAccelerationAngle(int angle) {
+    this.accelerationAngle = angle;
+
+    this.acceleration.setX(Math.sin(Math.toRadians(angle)) * acceleration_constant);
+    this.acceleration.setY(Math.cos(Math.toRadians(angle)) * acceleration_constant);
+  }
+
+  /**
+   * Rotates the gravitational acceleration vector to the given angle and adjusts the cube velocity.
+   * Called when the cube has collided with a block.
+   *
+   * @param angle compared to the y-axis
+   */
+  private void setAccelerationAngle(int angle) {
+    int angleDifference = accelerationAngle - angle;
+    this.accelerationAngle = angle;
+
+    if (!(Math.abs(angleDifference) % 180 == 0)) {
+      this.velocity.setX(Math.signum(-this.acceleration.getX()) * velocity_constant);
+      this.velocity.setY(Math.signum(-this.acceleration.getY()) * velocity_constant);
     }
 
-    /**
-     * Checks if the cube is colliding with anything, if not it moves the cube by 1 pixel steps in y direction and checks again
-     * If the cube is colliding with something it stops the cube from clipping into the object and sets the velocity in that direction to 0 and sets canJump to true
-     * On collision the cubes gravity is also set to the opposite of the normal of the surface it is colliding with
-     */
-    public void moveY(double value) {
+    this.acceleration.setX(Math.sin(Math.toRadians(angle)) * acceleration_constant);
+    this.acceleration.setY(Math.cos(Math.toRadians(angle)) * acceleration_constant);
+  }
 
-        boolean movingDown = value > 0;
-        if(!canJump){
-            gravityRotationY();
-            moveValueY(value);
-            for(Node platform : platforms) {
-                if (rectangle.getBoundsInParent().intersects(platform.getBoundsInParent())) {
-                    if (movingDown) {
-                        if (rectangle.getTranslateY() + size.getY()+value >= platform.getTranslateY()) {
-                            if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
-                                rectangle.setTranslateY(platform.getTranslateY() - size.getY());
-                                setGravityAndVelocityDown();
-                            }
-                        }
-                    } else {
-                        if (rectangle.getTranslateY() + value <= platform.getTranslateY() + gridSize) {
-                            if (rectangle.getTranslateX() + size.getX() != platform.getTranslateX() && rectangle.getTranslateX() != platform.getTranslateX() + gridSize) {
-                                rectangle.setTranslateY(platform.getTranslateY() + gridSize);
-                                setGravityAndVelocityUp();
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            moveValueY(value);
-        }
+  /**
+   * The cube has entered in contact with a white cube. It is sent back to the start of the level
+   * and the level is reset.
+   */
+  void resetLevel() {
+    this.position.setX(start_position.getX());
+    this.position.setY(start_position.getY());
+    this.rectangle.setTranslateX(this.position.getX());
+    this.rectangle.setTranslateY(this.position.getY());
+
+    this.setAccelerationAngle(0);
+
+    this.velocity.setX(0);
+    this.velocity.setY(0);
+
+    ServerGame.getInstance().resetLevel();
+  }
+
+  /**
+   * A block has collided with a wall. If that collision was completely on the edge, it is ignored.
+   *
+   * @param block the block that was collided with
+   * @param isX whether the collision was in the x direction
+   * @return whether the collision was on the edge
+   */
+  private boolean isEdgeCollision(Block block, Boolean isX) {
+    if (isX) {
+      return (block.getY() == this.position.getY() + this.cubeSize
+          || block.getY() + block.getRectangle().getHeight() == this.position.getY());
     }
+    return (block.getX() == this.position.getX() + this.cubeSize
+        || block.getX() + block.getRectangle().getWidth() == this.position.getX());
+  }
 
-    /**
-     * updates the velocity of the cube and moves it by the given velocity
-     */
-    public void move(Vector2D velocity) {
-        if (!canJump) {
-            this.velocity.setY(velocity.getY()+g.getY());
-            this.velocity.setX(velocity.getX()+g.getX());
-            if (onlyMoveOneDir){
-                if (g.getX() < 0.1 && g.getX() > -0.1){
-                    moveY(velocity.getY());
-                } else {
-                    moveX(velocity.getX());
-                }
-            } else {
-                moveX(velocity.getX());
-                moveY(velocity.getY());
-            }
-        } else {
-            moveX(velocity.getX());
-            moveY(velocity.getY());
-        }
-
+  /**
+   * The cube is able to rotate around edges when it is jumping. This is done by taking a "rotation"
+   * point at the moment of the jump; if the cube passes the ground coordinates without any
+   * collision, i.e. it passes the rotation point, the gravitational acceleration is rotated by 90
+   * degrees.
+   */
+  private void checkForRotation() {
+    if (this.rotationPoint == null) {
+      // The cube isn't actually jumping (e.g. at the beginning of the level)
+      return;
     }
 
-    /**
-     * Makes the cube jump by setting the velocity of the cube to the opposite of the gravity vector
-     */
-    public void jump() {
-        if (canJump) {
-            if(g.getX() > gravity_scalar/2) {
-                y0 = position.getX() + gridSize + size.getX();
-                y0passed = false;
-            } else if(g.getX() < -gravity_scalar/2) {
-                y0 = position.getX() - gridSize;
-                y0passed = false;
-            } else if(g.getY() > gravity_scalar/2) {
-                y0 = position.getY() + gridSize + size.getY();
-                y0passed = false;
-            } else if(g.getY() < -gravity_scalar/2) {
-                y0 = position.getY() - gridSize;
-                y0passed = false;
-            }
-            if (velocity.getY() < 1 && velocity.getY() > -1) {
-                rectangle.setTranslateY(Math.signum(g.getY()) * -2 + rectangle.getTranslateY());
-                velocity.setY(-jumpHeight*g.getY());
-            } else {
-                rectangle.setTranslateX(Math.signum(g.getX()) * -2 + rectangle.getTranslateX());
-                velocity.setX(-jumpHeight*g.getX());
-            }
-            canJump = false;
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    setOnlyMoveOneDir();
-                }
-            }, 50);
-            onlyMoveOneDir = true;
-        }
+    if (this.accelerationAngle == 0) {
+      if (this.position.getY() > this.rotationPoint.getY()) {
+        this.onlySetAccelerationAngle(180);
+        this.velocity.setX(-this.velocity.getX());
+        this.canRotate = false;
+      }
     }
-    /** Moves the cube by the given value in the x direction and updates the position of the cube
-     */
-    public void moveValueX(double value){
-        this.rectangle.setTranslateX(this.rectangle.getTranslateX() + value);
-        this.position.setX(this.rectangle.getTranslateX());
+    else if (this.accelerationAngle == 90) {
+      if (this.position.getX() > this.rotationPoint.getX()) {
+        this.onlySetAccelerationAngle(270);
+        this.velocity.setY(-this.velocity.getY());
+        this.canRotate = false;
+      }
     }
-    /** Moves the cube by the given value in the y direction and updates the position of the cube
-     */
-    public void moveValueY(double value){
-        this.rectangle.setTranslateY(this.rectangle.getTranslateY() + value);
-        this.position.setY(this.rectangle.getTranslateY());
+    else if (this.accelerationAngle == 180) {
+      if (this.position.getY() < this.rotationPoint.getY()) {
+        this.onlySetAccelerationAngle(0);
+        this.velocity.setX(-this.velocity.getX());
+        this.canRotate = false;
+      }
     }
-
-    /**
-     * Called upon collision with a white block, is responsible for the death effects of the cube.
-     */
-    public void death() {
-        rectangle.setFill(Colours.DARK_GREY.getHex());
+    else if (this.accelerationAngle == 270) {
+      if (this.position.getX() < this.rotationPoint.getX()) {
+        this.onlySetAccelerationAngle(90);
+        this.velocity.setY(-this.velocity.getY());
+        this.canRotate = false;
+      }
     }
-
-    /** only here to prevent the cube from colliding strangely with the walls
-     */
-    private void setOnlyMoveOneDir() {
-        this.onlyMoveOneDir = false;
-    }
+  }
 }

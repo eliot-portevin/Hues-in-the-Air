@@ -22,6 +22,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +65,7 @@ public class Client extends Application {
 
   // Username
   protected String username = null;
+  private Color colour = null;
 
   // GUI
   // Window
@@ -269,7 +271,6 @@ public class Client extends Application {
     this.stage.getScene().setRoot(this.root);
 
     // Set controller
-    System.out.println("Game controller:");
     this.gameController = loader.getController();
     this.gameController.setClient(this);
     this.gameController.startGame();
@@ -568,7 +569,7 @@ public class Client extends Application {
   protected void updateLobbyList(String clientList) {
     if (this.isInLobby) {
       this.lobbyController.updateLobbyList(
-          clientList.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+          clientList.split(ServerProtocol.SUBSEPARATOR.toString()));
     }
   }
 
@@ -580,16 +581,23 @@ public class Client extends Application {
    */
   protected void updateGameList(String gameList) {
     if (this.menuScreen) {
-      String[] games = gameList.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString());
+      String[] games = gameList.split(ServerProtocol.SUBSEPARATOR.toString());
       this.menuController.setGameList(games);
     }
   }
 
-  /**
-   * The client has entered the menu screen and wants to update all the lists available to them.
-   */
+  /** The client has entered the menu screen and wants to update all the lists available to them. */
   protected void requestMenuLists() {
     String command = ClientProtocol.GET_FULL_MENU_LISTS.toString();
+    this.outputSocket.sendToServer(command);
+  }
+
+  /**
+   * The client has loaded the level successfully and wants to know the critical blocks in order
+   * to colour the level.
+   */
+  protected void requestCriticalBlocks() {
+    String command = ClientProtocol.REQUEST_CRITICAL_BLOCKS.toString();
     this.outputSocket.sendToServer(command);
   }
 
@@ -643,7 +651,7 @@ public class Client extends Application {
   public void updateLobbyInfo(String command) {
     if (this.menuScreen) {
       ArrayList<ArrayList<String>> lobbyInfos = new ArrayList<>();
-      for (String lobbyInfo : command.split(ServerProtocol.LOBBY_INFO_SEPARATOR.toString())) {
+      for (String lobbyInfo : command.split(ServerProtocol.SUBSEPARATOR.toString())) {
         // Split the lobby info into the lobby name and the clients
         String[] split = lobbyInfo.split(" ");
         ArrayList<String> lobbyInfoList = new ArrayList<>(Arrays.asList(split));
@@ -713,8 +721,7 @@ public class Client extends Application {
   }
 
   /** Sends the game commands to the server */
-  protected void sendGameCommand(String command) {
-    System.out.println("Sending game command: " + command);
+  public void sendGameCommand(String command) {
     this.outputSocket.sendToServer(command);
   }
 
@@ -764,5 +771,23 @@ public class Client extends Application {
   /** returns the lobbyName as a String */
   public String getLobbyName() {
     return this.lobbyName;
+  }
+
+  /**
+   * Informs the client that their colour (in lobby) has been set. Called from LobbyController.
+   *
+   * @param colour The colour that the client has been set to
+   */
+  public void setColour(Color colour) {
+    this.colour = colour;
+  }
+
+  /**
+   * Returns the colour which has been assigned to the client from the server (in lobby).
+   *
+   * @return The colour of the client
+   */
+  public Color getColour() {
+    return this.colour;
   }
 }

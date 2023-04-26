@@ -189,7 +189,7 @@ public class Lobby {
                         + this.clientsReady.get(c)
                         + " "
                         + this.clientColours.get(c))
-            .collect(Collectors.joining(ServerProtocol.LOBBY_INFO_SEPARATOR.toString()));
+            .collect(Collectors.joining(ServerProtocol.SUBSEPARATOR.toString()));
     return command;
   }
 

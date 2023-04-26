@@ -1,6 +1,7 @@
 package client;
 
-import gui.Colours;
+import game.Colours;
+import game.Vector2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
