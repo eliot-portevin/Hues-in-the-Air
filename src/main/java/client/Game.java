@@ -154,8 +154,8 @@ public class Game {
                                // terrain accordingly
               int offset = newValue.intValue();
 
-              if (offset > 400 && offset < levelHeight - 400) {
-                gameRoot.setLayoutX(-(offset - 400));
+              if (offset > 200 && offset < levelHeight - 200) {
+                gameRoot.setLayoutX(-(offset - 200));
               }
             });
 
