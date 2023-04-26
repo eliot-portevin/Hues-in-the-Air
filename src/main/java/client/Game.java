@@ -22,6 +22,8 @@ public class Game {
   private int levelWidth;
   private int levelHeight;
   private int gridSize = 50;
+  private double cameraMarginWidth;
+  private double cameraMarginHeight;
   /** Whether the cube is jumping or not. */
   public boolean jumped;
 
@@ -107,6 +109,8 @@ public class Game {
     gameRoot = new Pane();
     levelWidth = LevelData.Level1[0].length() * gridSize;
     levelHeight = LevelData.Level1.length * gridSize;
+    cameraMarginWidth = cubeSize*10;
+    cameraMarginHeight = cubeSize*5;
 
     Rectangle bg =
         new Rectangle(
@@ -137,10 +141,10 @@ public class Game {
                 old,
                 newValue) -> { // Listens for changes in the player's x position and moves the
                                // terrain accordingly
-              int offset = newValue.intValue();
+              int offsetX = newValue.intValue();
 
-              if (offset > 400 && offset < levelWidth - 400) {
-                gameRoot.setLayoutX(-(offset - 400));
+              if (offsetX > cameraMarginWidth && offsetX < levelWidth - cameraMarginWidth) {
+                gameRoot.setLayoutX(-(offsetX - cameraMarginWidth));
               }
             });
 
@@ -152,10 +156,10 @@ public class Game {
                 old,
                 newValue) -> { // Listens for changes in the player's Y position and moves the
                                // terrain accordingly
-              int offset = newValue.intValue();
+              int offsetY = newValue.intValue();
 
-              if (offset > 200 && offset < levelHeight - 200) {
-                gameRoot.setLayoutX(-(offset - 200));
+              if (offsetY > cameraMarginHeight && offsetY < levelHeight - cameraMarginHeight) {
+                gameRoot.setLayoutX(-(offsetY - cameraMarginHeight));
               }
             });
 
