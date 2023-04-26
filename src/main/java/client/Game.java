@@ -2,7 +2,6 @@ package client;
 
 import game.Colours;
 import game.Level;
-import game.LevelData;
 import game.Vector2D;
 import java.util.HashMap;
 import java.util.Timer;
@@ -24,6 +23,7 @@ public class Game {
   private int gridSize = 50;
   private double cameraMarginWidth;
   private double cameraMarginHeight;
+  private Vector2D playerScreenPosition;
   /** Whether the cube is jumping or not. */
   public boolean jumped;
 
@@ -42,19 +42,23 @@ public class Game {
 
   /** The level that is currently being played. */
   public Level level;
+
   private Cube player;
 
   /**
    * Creates a new game.
+   *
    * @param client the client that is playing the game
    */
   public Game(Client client) {
     this.client = client;
   }
 
-  /** Called every frame and handles the game logic.
+  /**
+   * Called every frame and handles the game logic.
+   *
    * @param deltaF the time between the last frame and the current frame
-   * */
+   */
   public void update(double deltaF) {
     // Possibility to add a pause method
     this.gameUpdate(deltaF);
@@ -68,6 +72,7 @@ public class Game {
   /**
    * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic
    * is handled.
+   *
    * @param deltaF the time between the last frame and the current frame
    */
   private void analyseKeys(double deltaF) {
@@ -102,15 +107,26 @@ public class Game {
   /**
    * Initializes the content of the game Loads the level data and creates the platforms Creates the
    * player Creates the stars Will create the coin to finish the game.
+   *
    * @param backgroundPane the pane that the game is displayed on
    */
-  public void initializeContent(Pane backgroundPane) {
+  public void initialiseContent(Pane backgroundPane) {
     this.appRoot = backgroundPane;
     gameRoot = new Pane();
-    levelWidth = LevelData.Level1[0].length() * gridSize;
-    levelHeight = LevelData.Level1.length * gridSize;
-    cameraMarginWidth = cubeSize*10;
-    cameraMarginHeight = cubeSize*5;
+    playerScreenPosition =
+        new Vector2D(
+            this.appRoot.getWidth() / 2,
+            this.appRoot.getHeight() / 2); // Sets the player's position
+    this.appRoot
+        .widthProperty()
+        .addListener(
+            (obs, old, newValues) -> playerScreenPosition.setX(newValues.doubleValue() / 2));
+    this.appRoot
+        .heightProperty()
+        .addListener(
+            (obs, old, newValues) -> playerScreenPosition.setY(newValues.doubleValue() / 2));
+    cameraMarginWidth = cubeSize * 10;
+    cameraMarginHeight = cubeSize * 5;
 
     Rectangle bg =
         new Rectangle(
@@ -140,12 +156,8 @@ public class Game {
             (obs,
                 old,
                 newValue) -> { // Listens for changes in the player's x position and moves the
-                               // terrain accordingly
-              int offsetX = newValue.intValue();
-
-              if (offsetX > cameraMarginWidth && offsetX < levelWidth - cameraMarginWidth) {
-                gameRoot.setLayoutX(-(offsetX - cameraMarginWidth));
-              }
+              // camera
+              updateCameraPosition();
             });
 
     player
@@ -155,12 +167,8 @@ public class Game {
             (obs,
                 old,
                 newValue) -> { // Listens for changes in the player's Y position and moves the
-                               // terrain accordingly
-              int offsetY = newValue.intValue();
-
-              if (offsetY > cameraMarginHeight && offsetY < levelHeight - cameraMarginHeight) {
-                gameRoot.setLayoutX(-(offsetY - cameraMarginHeight));
-              }
+              // camera
+              updateCameraPosition();
             });
 
     player.blockSize = gridSize; // Sets the grid size for the player
@@ -172,7 +180,7 @@ public class Game {
    * @param pane the pane to launch the application in
    */
   public void run(Pane pane) {
-    this.initializeContent(pane);
+    this.initialiseContent(pane);
 
     this.timer =
         new AnimationTimer() {
@@ -212,5 +220,15 @@ public class Game {
    */
   public void setBlockColour(int x, int y, Color colour) {
     this.level.setNeighbourColours(x, y, colour);
+  }
+
+  /** The player has moved. Get the position at which the level should be drawn. */
+  private void updateCameraPosition() {
+    Vector2D offset =
+        new Vector2D(player.rectangle.getTranslateX(), player.rectangle.getTranslateY());
+    offset.multiplyInPlace(-1);
+    offset.addInPlace(playerScreenPosition);
+    gameRoot.setLayoutX(offset.getX());
+    gameRoot.setLayoutY(offset.getY());
   }
 }
