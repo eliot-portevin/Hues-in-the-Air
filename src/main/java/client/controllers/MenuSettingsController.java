@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 
+/** The controller for the menu window. */
 public class MenuSettingsController {
   @FXML private VBox settingsTab;
 
@@ -28,6 +29,10 @@ public class MenuSettingsController {
   private double lastMusicVolume = 1;
   private double lastSfxVolume = 1;
 
+  /**
+   * Initializes the controller class. This method is automatically called after the fxml file has
+   * been loaded.
+   */
   public void initialize() {
     this.setFontBehaviour();
 

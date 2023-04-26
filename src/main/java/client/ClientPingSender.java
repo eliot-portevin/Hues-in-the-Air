@@ -1,5 +1,6 @@
 package client;
 
+/** Class that sends pings to the server. */
 public class ClientPingSender implements Runnable {
 
   Client client;
@@ -7,6 +8,7 @@ public class ClientPingSender implements Runnable {
 
   /**
    * Initialises the ClientPingSender by setting the client
+   * @param client The client to send pings to
    */
   public ClientPingSender(Client client) {
     this.client = client;

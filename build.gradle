@@ -75,3 +75,8 @@ jar {
 javadoc {
     options.encoding = "UTF-8"
 }
+
+tasks.register('build-cs108') {
+    dependsOn(jar)
+    dependsOn(javadoc)
+}

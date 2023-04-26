@@ -1,9 +1,8 @@
 package server;
 
-import game.LevelData;
-import game.Vector2D;
 import game.Block;
 import game.Level;
+import game.Vector2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,17 +11,18 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+/** The class which handles the logic of the game for the server. */
 public class ServerGame implements Runnable {
   // Pane that contains the game
   private Pane gameRoot;
 
-  // Keys pressed by the players
+  /** The keys which are currently being pressed by players */
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
   private Block[][] grid; // Used to store the grid of blocks, null if no block is present
   private Level level;
 
-  // Clients
+  /** The colours which can be given to players */
   public static ArrayList<Color> blockColours =
       new ArrayList<>(
           Arrays.asList(
@@ -35,21 +35,26 @@ public class ServerGame implements Runnable {
 
   // In-Game variables
   private ServerCube player;
-  public boolean gameStarted = false;
-  private int gridSize = 50;
-  private int cubeSize = 30;
+  /** Whether the cube is currently moving */
+  public boolean cubeMoving = false;
+  private final int gridSize = 50;
+  private final int cubeSize = 30;
   private boolean jumped;
   private AnimationTimer timer;
-  public boolean pause = false;
-  private boolean allClientsReady = false;
-  private String[] levelData = LevelData.Level1;
 
   private Boolean running = true;
   private final ArrayList<ClientHandler> clients;
 
   private final String gameId;
+  /** The instance of the game */
   public static ServerGame instance;
 
+  /** Creates a new game
+   *
+   * @param clientColours The clients and their respective colours
+   * @param clients The clients
+   * @param gameId The number of the game
+   */
   public ServerGame(
       HashMap<ClientHandler, Color> clientColours,
       ArrayList<ClientHandler> clients,
@@ -66,24 +71,20 @@ public class ServerGame implements Runnable {
   protected void updateAllClientPositions() {
     for (ClientHandler client : clients) {
       client.positionUpdate(
-          ServerProtocol.POSITION_UPDATE.toString()
+          ServerProtocol.POSITION_UPDATE
               + ServerProtocol.SEPARATOR.toString()
               + player.position.getX()
-              + ServerProtocol.SEPARATOR.toString()
+              + ServerProtocol.SEPARATOR
               + player.position.getY());
     }
   }
-  /** Toggles pause state */
-  protected void setPause() {
-    pause = !pause;
-  }
-  /** Called every frame and handles the game logic */
+
+  /** Called every frame and handles the game logic
+   * @param dt The time since the last frame
+   * */
   public void update(double dt) {
-    if (!pause) {
-      this.gameUpdate(dt);
-    } else {
-      this.pauseUpdate(dt);
-    }
+    // Potentially add pause update if wished
+    this.gameUpdate(dt);
   }
 
   /** The update method that is called if the game is not paused. Handles the game logic. */
@@ -91,16 +92,6 @@ public class ServerGame implements Runnable {
     Block[] neighbourBlocks =
         this.level.getNeighbourBlocks(player.position.getX(), player.position.getY());
     player.move(neighbourBlocks, dt);
-  }
-
-  /** The update method that is called if the game is paused. */
-  private void pauseUpdate(double deltaF) {
-    // Todo: Add pause menu and pause logic
-  }
-
-  /** Sets whether the game is paused or not. */
-  public void setPause(boolean pause) {
-    this.pause = pause;
   }
 
   /**
@@ -129,7 +120,6 @@ public class ServerGame implements Runnable {
   /** Starts the game loop */
   public void startGameLoop() {
     this.running = true;
-    this.pause = false;
   }
 
   /** Runnable run method. This method is called when the thread is started. */
@@ -138,29 +128,25 @@ public class ServerGame implements Runnable {
     this.initialiseContent();
 
     long previousTime = System.nanoTime();
-    long now = System.nanoTime();
+    long now;
     int FPS = 120;
-    double dt = 0;
+    double dt;
 
     while (this.running) {
       now = System.nanoTime();
       dt = (now - previousTime) * 1e-9; // Time since last frame in seconds
 
-      if (!pause) {
-        if (dt > (double) 1 / FPS) {
-          dt = dt > 1 ? 1 : dt; // Limit skipped frames
+      if (dt > (double) 1 / FPS) {
+        dt = dt > 1 ? 1 : dt; // Limit skipped frames
 
-          previousTime = now;
+        previousTime = now;
 
-          update(dt);
-          updateAllClientPositions();
-        }
-
-      } else {
-        pauseUpdate(dt);
+        update(dt);
+        updateAllClientPositions();
       }
     }
-    Server.getInstance().endGame(this);
+    
+    this.endGame();
   }
 
   /**
@@ -170,9 +156,9 @@ public class ServerGame implements Runnable {
    * @param client - The client that pressed the space bar.
    */
   public void spaceBarPressed(ClientHandler client) {
-    if (!gameStarted) {
+    if (!cubeMoving) {
       this.player.initialiseSpeed();
-      this.gameStarted = true;
+      this.cubeMoving = true;
     } else {
       this.player.jump(clientColours.get(client));
     }
@@ -203,7 +189,7 @@ public class ServerGame implements Runnable {
 
   /** The cube has touched a white block. The block position is reset, etc. */
   public void resetLevel() {
-    this.gameStarted = false;
+    this.cubeMoving = false;
   }
 
   /**
@@ -214,20 +200,36 @@ public class ServerGame implements Runnable {
     ArrayList<Block> blocks = level.getCriticalBlocks();
 
     StringBuilder command = new StringBuilder(ServerProtocol.SEND_CRITICAL_BLOCKS.toString());
-    command.append(ServerProtocol.SEPARATOR.toString());
+    command.append(ServerProtocol.SEPARATOR);
 
     for (Block block : blocks) {
       command
-          .append(ServerProtocol.SUBSEPARATOR.toString())
+          .append(ServerProtocol.SUBSEPARATOR)
           .append(block.getIndex()[0])
-          .append(ServerProtocol.SUBSUBSEPARATOR.toString())
+          .append(ServerProtocol.SUBSUBSEPARATOR)
           .append(block.getIndex()[1])
-          .append(ServerProtocol.SUBSUBSEPARATOR.toString())
+          .append(ServerProtocol.SUBSUBSEPARATOR)
           .append(block.getColour().toString());
     }
 
     for (ClientHandler client : clients) {
       client.sendCriticalBlocks(command.toString());
     }
+  }
+
+  /**
+   * Closes the game loop and informs the server that the game has ended. The server then proceeds to
+   * remove the game from its list of games and to inform the clients that the game has ended.
+   */
+  protected void endGame() {
+    this.running = false;
+    Server.getInstance().endGame(this);
+  }
+
+  /**
+   * @return The ClientHandlers of the players in the game.
+   */
+  protected ArrayList<ClientHandler> getPlayers() {
+    return this.clients;
   }
 }

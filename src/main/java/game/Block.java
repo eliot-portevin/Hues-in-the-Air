@@ -3,6 +3,9 @@ package game;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Represents a block in the game
+ */
 public class Block {
   private Color colour;
   private Rectangle rectangle;
@@ -16,6 +19,9 @@ public class Block {
    * Creates a new block
    *
    * @param colour the color of the block
+   * @param x the x position of the block
+   * @param y the y position of the block
+   * @param size the size of the block
    */
   public Block(Color colour, int x, int y, int size) {
     this.colour = colour;
@@ -30,7 +36,9 @@ public class Block {
     this.yIdx = y / size;
   }
 
-  /** Getter for the color of the block */
+  /** Getter for the color of the block
+   * @return the color of the block
+   * */
   public Color getColour() {
     return colour;
   }

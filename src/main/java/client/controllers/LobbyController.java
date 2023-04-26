@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 
+/** The controller for the lobby window. */
 public class LobbyController {
   // Chat
   @FXML private GridPane backgroundPane;
@@ -40,8 +41,12 @@ public class LobbyController {
 
   @FXML private HBox alertPane;
   @FXML private Label alert;
+  /** The alert manager for the lobby pane */
   public AlertManager alertManager;
 
+  /**
+   * Initializes the controller class.
+   */
   public void initialize() {
     this.initialiseChats();
     this.setChatTabsBehaviour();
@@ -68,6 +73,9 @@ public class LobbyController {
               new ListCell<>() {
                 @Override
                 protected void updateItem(HBox item, boolean empty) {
+                  // Remove previous list elements
+                  getChildren().clear();
+
                   super.updateItem(item, empty);
                   if (empty || item == null || item.getChildren().size() != 2) {
                     setText(null);
@@ -94,6 +102,9 @@ public class LobbyController {
             new ListCell<>() {
               @Override
               protected void updateItem(String item, boolean empty) {
+                // Remove previous list elements
+                getChildren().clear();
+
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                   setText(null);

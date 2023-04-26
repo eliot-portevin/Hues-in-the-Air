@@ -23,32 +23,24 @@ public enum ClientProtocol {
 
   /** Send a chat message to lobby */
   SEND_LOBBY_MESSAGE(1),
-
   /** This client wants to send a private message to another client. */
   SEND_PRIVATE_MESSAGE(2),
-
   /** Send a chat message to the whole server */
   SEND_PUBLIC_MESSAGE(1),
-
   /** Client is exiting the program. */
   EXIT(0),
-
   /** Client wants to join a lobby */
   JOIN_LOBBY(2),
-
   /** Client wants to create a lobby */
   CREATE_LOBBY(2),
-  /**
-   * Client wants to exit the lobby
-   */
+  /** Client wants to exit the lobby */
   EXIT_LOBBY(0),
-
   /** Client wants a full list of all lobbies and players in the lobby. Called upon startup. */
   GET_FULL_SERVER_LIST(0),
-
-  /** Client has opened the menu screen and wants to get the lists of clients/lobbies/games*/
+  /** Client has opened the menu screen and wants to get the lists of clients/lobbies/games */
   GET_FULL_MENU_LISTS(0),
-
+  /** The client is in the lobby and wishes to receive the list of clients in their lobby. */
+  GET_FULL_LOBBY_LIST(0),
   /** Client wants to toggle their ready status to true or false. */
   TOGGLE_READY_STATUS(1),
   /** Signal regularly sent from client to server to confirm connection. */
@@ -63,6 +55,8 @@ public enum ClientProtocol {
   READY_UP(0),
   /** Client has loaded the level successfully, wants to request the critical blocks */
   REQUEST_CRITICAL_BLOCKS(0),
+  /** Client has pressed the quit game button, requests that the game be ended. */
+  REQUEST_END_GAME(0),
   /** Client wants to start the game */
   START_GAME_LOOP(0);
 
@@ -70,15 +64,15 @@ public enum ClientProtocol {
 
   /**
    * Initialises the ClientProtocol with the required number of arguments
-   * @param numArgs
+   *
+   * @param numArgs - The number of arguments required
    */
   ClientProtocol(int numArgs) {
     this.numArgs = numArgs;
   }
 
   /**
-   * Returns the number of arguments required
-   * @return
+   * @return the number of arguments required
    */
   public int getNumArgs() {
     return this.numArgs;

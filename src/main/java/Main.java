@@ -5,13 +5,16 @@ import server.ServerMain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Main class of the project. Launches a server or a client depending on the arguments passed to it.
+ */
 public class Main {
 
   private static final Logger LOGGER = LogManager.getLogger(Main.class);
 
   /**
    * Main class of the project. Uses a Logger to save what's happening when it runs.
-   * @param args
+   * @param args The arguments passed to the program
    */
   public static void main(String[] args) {
     if (args.length >= 1) {

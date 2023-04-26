@@ -1,14 +1,13 @@
 package client;
 
-import javafx.application.Platform;
-import server.ServerProtocol;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import javafx.application.Platform;
+import server.ServerProtocol;
 
 /** Handles the input from the server */
 public class ServerIn implements Runnable {
@@ -17,10 +16,16 @@ public class ServerIn implements Runnable {
   private final BufferedReader in;
   private final Client client;
 
+  /** Used for the while loop in the run method */
   protected Boolean running = true;
 
   /**
-   * Creates an instance of ServerConnection
+   * Creates an instance of ServerConnection.
+   *
+   * @param serverSocket The socket to the server
+   * @param client The client which has created this instance
+   *
+   * @throws IOException If an I/O error occurs when creating the input stream, the socket is closed.
    */
   public ServerIn(Socket serverSocket, Client client) throws IOException {
     this.serverSocket = serverSocket;
@@ -28,9 +33,7 @@ public class ServerIn implements Runnable {
     this.client = client;
   }
 
-  /**
-   * From the Runnable interface. Runs the ServerIn thread to receive commands from the server
-   */
+  /** From the Runnable interface. Runs the ServerIn thread to receive commands from the server */
   @Override
   public void run() {
     try {
@@ -113,9 +116,19 @@ public class ServerIn implements Runnable {
                   this.client.gameController.getGame().jumped = false;
                 }
                 case START_GAME_LOOP -> this.client.startGameLoop();
-                case POSITION_UPDATE -> this.client.gameController.getGame().updatePosition(command[1], command[2]);
-                case TOGGLE_PAUSE -> this.client.gameController.getGame().setPause();
+                case POSITION_UPDATE -> this.client
+                    .gameController
+                    .getGame()
+                    .updatePosition(command[1], command[2]);
                 case SEND_CRITICAL_BLOCKS -> this.client.gameController.setBlockColours(command[1]);
+                case GAME_ENDED -> {
+                  try {
+                    this.client.loadLobbyScreen();
+                  } catch (IOException e) {
+                    client.LOGGER.error("Couldn't load lobby screen. Shutting down.");
+                    client.exit();
+                  }
+                }
               }
             }
           });
