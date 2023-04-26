@@ -2,6 +2,8 @@ package game;
 
 import java.util.ArrayList;
 import java.util.Optional;
+
+import client.LevelReader;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
@@ -21,15 +23,16 @@ public class Level {
 
   /**
    * Creates a new level.
-   * @param difficulty the difficulty of the level
+   * @param levelPath the path to the level
    * @param blockWidth the width of a block
    * @param gameRoot the pane on which the level is drawn
    */
-  public Level(String difficulty, int blockWidth, Pane gameRoot) {
+  public Level(String levelPath, int blockWidth, Pane gameRoot) {
     this.blockWidth = blockWidth;
     this.gameRoot = gameRoot;
 
-    loadLevel(String.join("\n", LevelData.Level1));
+    String levelString = LevelReader.readLevel(levelPath);
+    loadLevel(levelString);
   }
 
   /**

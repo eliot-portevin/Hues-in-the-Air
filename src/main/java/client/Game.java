@@ -113,9 +113,11 @@ public class Game {
             this.gameRoot.getWidth(), this.gameRoot.getHeight()); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
+  }
 
-    // Load level
-    this.level = new Level("easy", 50, gameRoot);
+  /** The client has received the level path from the server and can now load the level. */
+  public void loadLevel(String levelPath) {
+    this.level = new Level(levelPath, 50, gameRoot);
     this.client.requestCriticalBlocks();
     Vector2D playerSpawn =
         new Vector2D(
