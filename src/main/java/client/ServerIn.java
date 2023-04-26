@@ -24,8 +24,8 @@ public class ServerIn implements Runnable {
    *
    * @param serverSocket The socket to the server
    * @param client The client which has created this instance
-   *
-   * @throws IOException If an I/O error occurs when creating the input stream, the socket is closed.
+   * @throws IOException If an I/O error occurs when creating the input stream, the socket is
+   *     closed.
    */
   public ServerIn(Socket serverSocket, Client client) throws IOException {
     this.serverSocket = serverSocket;
@@ -118,8 +118,9 @@ public class ServerIn implements Runnable {
                     .getGame()
                     .updatePosition(command[1], command[2]);
                 case SEND_CRITICAL_BLOCKS -> {
-                  assert this.client.gameController != null;
-                  this.client.gameController.setBlockColours(command[1]);
+                  if (this.client.gameController != null) {
+                    this.client.gameController.setBlockColours(command[1]);
+                  }
                 }
                 case GAME_ENDED -> {
                   try {

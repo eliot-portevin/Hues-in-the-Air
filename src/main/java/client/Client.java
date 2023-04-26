@@ -809,9 +809,9 @@ public class Client extends Application {
 
   /** Loads a level in the game screen */
   public void loadLevel(String levelPath) {
-    assert this.gameController != null;
-
-    this.gameController.loadLevel(levelPath);
+    if (this.gameController != null) {
+      this.gameController.loadLevel(levelPath);
+    }
   }
 
   /**
