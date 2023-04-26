@@ -91,7 +91,7 @@ public enum ServerProtocol {
   /** Updates the position of the cube for the client. */
   POSITION_UPDATE(2),
   /** Tells the client to load new level */
-  LOAD_LEVEL(2);
+  LOAD_LEVEL(1);
   private final int numArgs;
 
   /** Initialises the command */

@@ -36,12 +36,13 @@ public class ClientHandler implements Runnable {
 
   private final Logger LOGGER;
 
-  /** Is in charge of a single client.
+  /**
+   * Is in charge of a single client.
+   *
    * @param clientSocket The client's socket
    * @param server The server
-   *
    * @throws IOException If getInputStream() or getOutputStream() fails
-   * */
+   */
   public ClientHandler(Socket clientSocket, Server server) throws IOException {
     this.client = clientSocket;
     this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -198,10 +199,11 @@ public class ClientHandler implements Runnable {
           case REQUEST_CRITICAL_BLOCKS -> this.getLobby().getGame().sendCriticalBlocks();
           case REQUEST_END_GAME -> this.getLobby().getGame().endGame();
 
-          default -> LOGGER.error("ClientHandler " + this.username + " sent an invalid command: " + command[0]);
+          default -> LOGGER.error(
+              "ClientHandler " + this.username + " sent an invalid command: " + command[0]);
         }
       }
-    } catch (IllegalArgumentException|NullPointerException e) {
+    } catch (IllegalArgumentException | NullPointerException e) {
       LOGGER.error("ClientHandler " + this.username + " sent an invalid command: " + command[0]);
     }
   }
@@ -221,9 +223,11 @@ public class ClientHandler implements Runnable {
     this.noAnswerCounter = 0;
   }
 
-  /** Returns the username.
+  /**
+   * Returns the username.
+   *
    * @return the username of the client
-   * */
+   */
   protected String getUsername() {
     return this.username;
   }
@@ -354,9 +358,7 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
-  /**
-   * Sends the list of all games that have been played or are being played to the client.
-   */
+  /** Sends the list of all games that have been played or are being played to the client. */
   public void updateGameList() {
     Map<ServerGame, Boolean> games = this.server.getGames();
 
@@ -409,10 +411,20 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * Informs the client that the game has ended. The client can then exit the game screen and go back to the
-   * lobby.
+   * Informs the client that the game has ended. The client can then exit the game screen and go
+   * back to the lobby.
    */
   public void gameEnded() {
     this.out.println(ServerProtocol.GAME_ENDED);
+  }
+
+  /**
+   * Informs the client of the path of the level to load. Called upon game start and when a new
+   * level is loaded.
+   *
+   * @param levelPath The path of the level to load
+   */
+  public void sendLevelPath(String levelPath) {
+    this.out.println(ServerProtocol.LOAD_LEVEL.toString() + ServerProtocol.SEPARATOR + levelPath);
   }
 }

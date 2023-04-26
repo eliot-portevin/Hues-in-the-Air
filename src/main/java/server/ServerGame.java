@@ -108,6 +108,7 @@ public class ServerGame implements Runnable {
     // Create a level and add it to an empty pane
     gameRoot = new Pane();
     String levelPath = this.getRandomLevelPath();
+    this.sendLevelPath(levelPath);
     this.level = new Level(levelPath, 50, gameRoot);
     this.level.setNeighbourColours(new ArrayList<>(clientColours.values()));
 
@@ -225,6 +226,16 @@ public class ServerGame implements Runnable {
   }
 
   /**
+   * Sends the path of the current level to all clients.
+   * @param levelPath The path of the level.
+   */
+  private void sendLevelPath(String levelPath) {
+    for (ClientHandler client : clients) {
+      client.sendLevelPath(levelPath);
+    }
+  }
+
+  /**
    * Closes the game loop and informs the server that the game has ended. The server then proceeds to
    * remove the game from its list of games and to inform the clients that the game has ended.
    */
@@ -274,6 +285,7 @@ public class ServerGame implements Runnable {
       }
     }
 
-    return path;
+    //return path;
+    return getClass().getResource("/levels/easy/level1.csv").getPath();
   }
 }

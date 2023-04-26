@@ -807,6 +807,13 @@ public class Client extends Application {
     this.gameController.getGame().gameStarted = true;
   }
 
+  /** Loads a level in the game screen */
+  public void loadLevel(String levelPath) {
+    assert this.gameController != null;
+
+    this.gameController.loadLevel(levelPath);
+  }
+
   /**
    * Returns the username as a String
    *

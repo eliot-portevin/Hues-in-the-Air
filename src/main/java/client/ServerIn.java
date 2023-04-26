@@ -112,15 +112,15 @@ public class ServerIn implements Runnable {
                     this.client.exit();
                   }
                 }
-                case JUMP -> {
-                  this.client.gameController.getGame().jumped = false;
-                }
                 case START_GAME_LOOP -> this.client.startGameLoop();
                 case POSITION_UPDATE -> this.client
                     .gameController
                     .getGame()
                     .updatePosition(command[1], command[2]);
-                case SEND_CRITICAL_BLOCKS -> this.client.gameController.setBlockColours(command[1]);
+                case SEND_CRITICAL_BLOCKS -> {
+                  assert this.client.gameController != null;
+                  this.client.gameController.setBlockColours(command[1]);
+                }
                 case GAME_ENDED -> {
                   try {
                     this.client.loadLobbyScreen();
@@ -129,7 +129,7 @@ public class ServerIn implements Runnable {
                     client.exit();
                   }
                 }
-                case LOAD_LEVEL -> this.client.gameController.loadLevel(command[1]);
+                case LOAD_LEVEL -> this.client.loadLevel(command[1]);
               }
             }
           });

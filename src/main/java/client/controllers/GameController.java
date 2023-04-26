@@ -222,11 +222,10 @@ public class GameController {
 
   /** The server has sent the list of critical blocks required to colour the whole level. The whole level
    * is coloured accordingly.
-   * @param path The path to the level data file
+   * @param levelPath The levelPath to the level data file
    */
-  public void loadLevel(String path){
-    // TODO: loadclient level
-    System.out.println("Loading level: " + path);
+  public void loadLevel(String levelPath){
+    this.game.loadLevel(levelPath);
   }
 
 }
