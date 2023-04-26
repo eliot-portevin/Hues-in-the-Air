@@ -286,6 +286,6 @@ public class ServerGame implements Runnable {
     }
 
     //return path;
-    return getClass().getResource("/levels/easy/level1.csv").getPath();
+    return getClass().getResource("/levels/easy/example.csv").getPath();
   }
 }
