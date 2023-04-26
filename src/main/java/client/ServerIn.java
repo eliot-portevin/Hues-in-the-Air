@@ -129,6 +129,7 @@ public class ServerIn implements Runnable {
                     client.exit();
                   }
                 }
+                case LOAD_LEVEL -> this.client.gameController.loadLevel(command[1]);
               }
             }
           });

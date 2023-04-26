@@ -89,8 +89,9 @@ public enum ServerProtocol {
   /** Sends the critical blocks and their colour to the client. */
   SEND_CRITICAL_BLOCKS(1),
   /** Updates the position of the cube for the client. */
-  POSITION_UPDATE(2);
-
+  POSITION_UPDATE(2),
+  /** Tells the client to load new level */
+  LOAD_LEVEL(2);
   private final int numArgs;
 
   /** Initialises the command */
