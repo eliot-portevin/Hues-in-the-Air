@@ -64,7 +64,7 @@ public class ClientHandler implements Runnable {
    * @param server The server
    * @throws IOException If getInputStream() or getOutputStream() fails
    */
-  public ClientHandler(final Socket clientSocket, Server server) throws IOException {
+  public ClientHandler(final Socket clientSocket, Serv/**/er server) throws IOException {
     this.client = clientSocket;
     this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
     this.out = new PrintWriter(client.getOutputStream(), true);
@@ -160,8 +160,8 @@ public class ClientHandler implements Runnable {
             + ServerProtocol.SEPARATOR
             + message;
 
-    for (ClientHandler client : this.server.getClientHandlers()) {
-      client.out.println(output);
+    for (ClientHandler c : this.server.getClientHandlers()) {
+      c.out.println(output);
     }
   }
 
@@ -319,20 +319,20 @@ public class ClientHandler implements Runnable {
    * Called when the client has sent a new username in.
    * If the username is already taken, a random
    * suffix is added to the username and the method is called recursively.
-   * @param username new username of the client
+   * @param newUsername new username of the client
    */
-  private void setUsername(final String username) {
-    ClientHandler client = this.server.getClientHandler(username);
+  private void setUsername(final String newUsername) {
+    ClientHandler clientHandler = this.server.getClientHandler(newUsername);
 
-    if (client == null) {
+    if (clientHandler == null) {
       if (this.username == null) {
-        this.LOGGER.info("Connected client with username " + username + ".");
+        this.LOGGER.info("Connected client with username " + newUsername + ".");
       } else {
         this.LOGGER.info("Client " + this.username
-                + " changed username to " + username + ".");
+                + " changed username to " + newUsername + ".");
       }
 
-      this.username = username;
+      this.username = newUsername;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString()
                   + ServerProtocol.SEPARATOR + this.username;
@@ -346,7 +346,7 @@ public class ClientHandler implements Runnable {
               " the Strong", " the Mighty", " the Magnificent"
       };
       int random = (int) (Math.random() * suffixes.length);
-      String output = username + suffixes[random];
+      String output = newUsername + suffixes[random];
       setUsername(output.replaceAll(" ", "_"));
     }
   }

@@ -36,6 +36,7 @@ public class Server implements Runnable {
 
   /**
    * Creates a new server.
+   *
    * @param PORT The port which the server will listen on
    */
   public Server(int PORT) {
