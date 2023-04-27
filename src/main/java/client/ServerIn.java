@@ -9,14 +9,14 @@ import java.util.Arrays;
 import javafx.application.Platform;
 import server.ServerProtocol;
 
-/** Handles the input from the server */
+/** Handles the input from the server. */
 public class ServerIn implements Runnable {
 
   private final Socket serverSocket;
   private final BufferedReader in;
   private final Client client;
 
-  /** Used for the while loop in the run method */
+  /** Used for the while loop in the run method. */
   protected Boolean running = true;
 
   /**
@@ -131,6 +131,7 @@ public class ServerIn implements Runnable {
                   }
                 }
                 case LOAD_LEVEL -> this.client.loadLevel(command[1]);
+                default -> client.LOGGER.error("ServerIn: Unknown protocol: " + command[0]);
               }
             }
           });

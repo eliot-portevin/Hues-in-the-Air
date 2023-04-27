@@ -120,6 +120,7 @@ public class LobbyController {
                 }
               }
             });
+    Client.getInstance().requestLobbyList();
   }
 
   /** Binds the font size of the labels to the size of the window. */

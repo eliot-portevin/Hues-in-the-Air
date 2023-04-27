@@ -636,6 +636,14 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
+  /** The client has loaded the lobby screen successfully and would like to know which clients are in their
+   * lobby.
+   */
+  public void requestLobbyList() {
+    String command = ClientProtocol.GET_FULL_LOBBY_LIST.toString();
+    this.outputSocket.sendToServer(command);
+  }
+
   /**
    * Inform the server when the toggle.isReady is true
    *
