@@ -15,42 +15,90 @@ import org.apache.logging.log4j.Logger;
 /** Handles the connection to a single client. */
 public class ClientHandler implements Runnable {
 
-  // The client's socket
+  /** The client's socket. */
   private final Socket client;
-  boolean clientConnected = true;
-  int noAnswerCounter = 0;
+  /** The client is connected. */
+  private boolean clientConnected = true;
+  /** The number of times there is no answer. */
+  private int noAnswerCounter = 0;
 
-  // Input and output streams
+  /** Input stream. */
   private final BufferedReader in;
+  /** Output stream. */
   private final PrintWriter out;
 
-  // The server: used to access the list of clients
+  /** The server: used to access the list of clients. */
   private final Server server;
+  /** The ClientHandler is running. */
+  private boolean running = true;
 
-  /** The boolean used for the while loop in the run() method. */
-  protected boolean running = true;
-
-  // Client values
+  /** The Clients username. */
   private String username;
+  /** The Lobby in which the Client is. */
   private Lobby lobby;
-
+  /** Logger from the log4j2 library. */
   private final Logger LOGGER;
 
-  /** Is in charge of a single client.
+  /**
+   * Is in charge of a single client.
+   *
    * @param clientSocket The client's socket
    * @param server The server
-   *
    * @throws IOException If getInputStream() or getOutputStream() fails
-   * */
-  public ClientHandler(Socket clientSocket, Server server) throws IOException {
+   */
+  public ClientHandler(final Socket clientSocket, Server server) throws IOException {
     this.client = clientSocket;
     this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
     this.out = new PrintWriter(client.getOutputStream(), true);
     this.server = server;
     this.LOGGER = LogManager.getLogger(getClass());
   }
+
   /**
-   * Handles the client's input. If the client sends "exit", the server shuts down. If the client
+   * @return if client is connected
+   */
+  public boolean getClientConnected() {
+    return this.clientConnected;
+  }
+
+  /**
+   * Sets if the client is connected.
+   *
+   * @param isConnected if the Client is connected
+   */
+  public void setClientConnected(final boolean isConnected) {
+    this.clientConnected = isConnected;
+  }
+
+  /**
+   * Return the number of times there's no answer.
+   *
+   * @return noAnswerCounter
+   */
+  public int getNoAnswerCounter() {
+    return this.noAnswerCounter;
+  }
+
+  /**
+   * Sets the number of times there is no answer.
+   *
+   * @param noAnswer number of times there is no answer
+   */
+  public void setNoAnswerCounter(final int noAnswer) {
+    this.noAnswerCounter = noAnswer;
+  }
+
+  /**
+   * Sets the ClientHandler to run.
+   *
+   * @param running if the Client is running
+   */
+  public void setRunning(final boolean running) {
+    this.running = running;
+  }
+
+  /**
+   * Handles the client's input. If the client sends "exit", the server shuts down.If the client
    * sends "say", the server broadcasts the message to all clients.
    */
   @Override
@@ -76,7 +124,7 @@ public class ClientHandler implements Runnable {
     String command = ServerProtocol.SERVER_PING.toString();
     this.out.println(command);
   }
-  /** Sends a Server_PONG message to the client (meant as a response to the CLIENT_PING message) */
+  /** Sends a Server_PONG message to the client. (meant as a response to the CLIENT_PING message) */
   protected void pong() {
     String command = ServerProtocol.SERVER_PONG.toString();
     this.out.println(command);
@@ -85,9 +133,10 @@ public class ClientHandler implements Runnable {
   /**
    * The client linked to this ClientHandler wants to send a message to all clients on the server.
    *
-   * <p>See {@link ServerProtocol#SEND_PUBLIC_MESSAGE}
+   * @param message the message to be sent
+   *     <p>See {@link ServerProtocol#SEND_PUBLIC_MESSAGE}
    */
-  private void sendPublicMessage(String message) {
+  private void sendPublicMessage(final String message) {
     String output =
         ServerProtocol.SEND_PUBLIC_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
@@ -95,8 +144,8 @@ public class ClientHandler implements Runnable {
             + ServerProtocol.SEPARATOR
             + message;
 
-    for (ClientHandler client : this.server.getClientHandlers()) {
-      client.out.println(output);
+    for (ClientHandler c : this.server.getClientHandlers()) {
+      c.out.println(output);
     }
   }
 
@@ -104,9 +153,11 @@ public class ClientHandler implements Runnable {
    * The client linked to this ClientHandler wants to send a message to another client on the
    * server.
    *
-   * <p>See {@link ServerProtocol#SEND_PRIVATE_MESSAGE}
+   * @param recipient the one that receives the message
+   * @param message the message to be sent
+   *     <p>See {@link ServerProtocol#SEND_PRIVATE_MESSAGE}
    */
-  private void sendPrivateMessage(String recipient, String message) {
+  private void sendPrivateMessage(final String recipient, final String message) {
     String output =
         ServerProtocol.SEND_PRIVATE_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
@@ -136,7 +187,7 @@ public class ClientHandler implements Runnable {
    *
    * @param message The message to send
    */
-  private void sendLobbyMessage(String message) {
+  private void sendLobbyMessage(final String message) {
     String command =
         ServerProtocol.SEND_LOBBY_MESSAGE.toString()
             + ServerProtocol.SEPARATOR
@@ -149,7 +200,11 @@ public class ClientHandler implements Runnable {
     }
   }
 
-  /** Receives commands from the client. */
+  /**
+   * Receives commands from the client.
+   *
+   * @return the command in a String
+   */
   private String receiveFromClient() {
     try {
       return this.in.readLine();
@@ -163,9 +218,11 @@ public class ClientHandler implements Runnable {
   /**
    * Called from {@link #receiveFromClient()}.
    *
-   * <p>Goes over the different commands of {@link ClientProtocol} and calls the appropriate method.
+   * @param command to execute
+   *     <p>Goes over the different commands of {@link ClientProtocol} and calls the appropriate
+   *     method.
    */
-  private void protocolSwitch(String[] command) {
+  private void protocolSwitch(final String[] command) {
     try {
       ClientProtocol protocol = ClientProtocol.valueOf(command[0]);
 
@@ -189,6 +246,7 @@ public class ClientHandler implements Runnable {
             this.updateLobbyList();
             this.updateGameList();
           }
+          case GET_FULL_LOBBY_LIST -> this.lobby.updateLobbyList();
           case TOGGLE_READY_STATUS -> this.setToggleReady(command[1]);
           case EXIT_LOBBY -> {
             if (this.lobby != null) this.lobby.removeClient(this);
@@ -198,10 +256,11 @@ public class ClientHandler implements Runnable {
           case REQUEST_CRITICAL_BLOCKS -> this.getLobby().getGame().sendCriticalBlocks();
           case REQUEST_END_GAME -> this.getLobby().getGame().endGame();
 
-          default -> LOGGER.error("ClientHandler " + this.username + " sent an invalid command: " + command[0]);
+          default -> LOGGER.error(
+              "ClientHandler " + this.username + " sent an invalid command: " + command[0]);
         }
       }
-    } catch (IllegalArgumentException|NullPointerException e) {
+    } catch (IllegalArgumentException | NullPointerException e) {
       LOGGER.error("ClientHandler " + this.username + " sent an invalid command: " + command[0]);
     }
   }
@@ -221,33 +280,41 @@ public class ClientHandler implements Runnable {
     this.noAnswerCounter = 0;
   }
 
-  /** Returns the username.
+  /**
+   * Returns the username.
+   *
    * @return the username of the client
-   * */
+   */
   protected String getUsername() {
     return this.username;
   }
 
-  /** The client has clicked the ready button. */
-  private void setToggleReady(String isReady) {
+  /**
+   * The client has clicked the ready button.
+   *
+   * @param isReady the client is ready
+   */
+  private void setToggleReady(final String isReady) {
     this.lobby.toggleClientReady(this, Boolean.parseBoolean(isReady));
   }
 
   /**
    * Called when the client has sent a new username in. If the username is already taken, a random
    * suffix is added to the username and the method is called recursively.
+   *
+   * @param newUsername new username of the client
    */
-  private void setUsername(String username) {
-    ClientHandler client = this.server.getClientHandler(username);
+  private void setUsername(final String newUsername) {
+    ClientHandler clientHandler = this.server.getClientHandler(newUsername);
 
-    if (client == null) {
+    if (clientHandler == null) {
       if (this.username == null) {
-        this.LOGGER.info("Connected client with username " + username + ".");
+        this.LOGGER.info("Connected client with username " + newUsername + ".");
       } else {
-        this.LOGGER.info("Client " + this.username + " changed username to " + username + ".");
+        this.LOGGER.info("Client " + this.username + " changed username to " + newUsername + ".");
       }
 
-      this.username = username;
+      this.username = newUsername;
       String message =
           ServerProtocol.USERNAME_SET_TO.toString() + ServerProtocol.SEPARATOR + this.username;
       this.out.println(message);
@@ -259,7 +326,7 @@ public class ClientHandler implements Runnable {
         " the Great", " the Wise", " the Brave", " the Strong", " the Mighty", " the Magnificent"
       };
       int random = (int) (Math.random() * suffixes.length);
-      String output = username + suffixes[random];
+      String output = newUsername + suffixes[random];
       setUsername(output.replaceAll(" ", "_"));
     }
   }
@@ -270,7 +337,7 @@ public class ClientHandler implements Runnable {
    *
    * @param lobby The lobby the client has entered
    */
-  protected void enterLobby(Lobby lobby) {
+  protected void enterLobby(final Lobby lobby) {
     this.lobby = lobby;
     this.out.println(
         ServerProtocol.LOBBY_JOINED.toString() + ServerProtocol.SEPARATOR + lobby.getName());
@@ -290,10 +357,9 @@ public class ClientHandler implements Runnable {
   }
 
   /**
-   * return this.lobby Is called from the server when a Client disconnects, so it can be removed
-   * from the lobby.
+   * Is called from the server when a Client disconnects, so it can be removed from the lobby.
    *
-   * @return The lobby the client is in
+   * @return Lobby the client is in
    */
   protected Lobby getLobby() {
     return this.lobby;
@@ -304,7 +370,7 @@ public class ClientHandler implements Runnable {
    *
    * @param clients The list of clients to send
    */
-  protected void sendClientList(ArrayList<ClientHandler> clients) {
+  protected void sendClientList(final ArrayList<ClientHandler> clients) {
     String command =
         ServerProtocol.UPDATE_LOBBY_LIST.toString()
             + ServerProtocol.SEPARATOR
@@ -324,7 +390,10 @@ public class ClientHandler implements Runnable {
     this.lobby = null;
   }
 
-  /** Updates the lobbyList and prints it out */
+  /**
+   * Sends the list of lobbies in the server and their clients to the client. The client uses this
+   * information in the menu.
+   */
   public void updateLobbyList() {
     String[][] lobbyInfo = this.server.listLobbies();
 
@@ -342,7 +411,10 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
-  /** Updates the list of the clients */
+  /**
+   * Sends the list of all clients connected to the server to the client. The client uses this
+   * information in the menu.
+   */
   public void updateClientList() {
     ArrayList<ClientHandler> clients = this.server.getClientHandlers();
 
@@ -354,9 +426,7 @@ public class ClientHandler implements Runnable {
     this.out.println(command);
   }
 
-  /**
-   * Sends the list of all games that have been played or are being played to the client.
-   */
+  /** Sends the list of all games that have been played or are being played to the client. */
   public void updateGameList() {
     Map<ServerGame, Boolean> games = this.server.getGames();
 
@@ -383,18 +453,18 @@ public class ClientHandler implements Runnable {
     this.lobby.getGame().spaceBarPressed(this);
   }
 
-  /** Sends StartGameLoop command to the client associated with this ClientHandler */
+  /** Sends StartGameLoop command to the client associated with this ClientHandler. */
   public void startClientGameLoop() {
     String command = ClientProtocol.START_GAME_LOOP.toString();
     this.out.println(command);
   }
 
   /**
-   * Sends a command to the client to update the position of the player
+   * Sends a command to the client to update the position of the player.
    *
    * @param command the ServerProtocol command POSITION_UPDATE
    */
-  public void positionUpdate(String command) {
+  public void positionUpdate(final String command) {
     this.out.println(command);
   }
 
@@ -404,15 +474,25 @@ public class ClientHandler implements Runnable {
    *
    * @param command the ServerProtocol command {@link ServerProtocol#SEND_CRITICAL_BLOCKS}
    */
-  public void sendCriticalBlocks(String command) {
+  public void sendCriticalBlocks(final String command) {
     this.out.println(command);
   }
 
   /**
-   * Informs the client that the game has ended. The client can then exit the game screen and go back to the
-   * lobby.
+   * Informs the client that the game has ended. The client can then exit the game screen and go
+   * back to the lobby.
    */
   public void gameEnded() {
     this.out.println(ServerProtocol.GAME_ENDED);
+  }
+
+  /**
+   * Informs the client of the path of the level to load. Called upon game start and when a new
+   * level is loaded.
+   *
+   * @param levelPath The path of the level to load
+   */
+  public void sendLevelPath(String levelPath) {
+    this.out.println(ServerProtocol.LOAD_LEVEL.toString() + ServerProtocol.SEPARATOR + levelPath);
   }
 }

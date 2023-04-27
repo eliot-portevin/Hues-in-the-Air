@@ -36,6 +36,7 @@ public class Server implements Runnable {
 
   /**
    * Creates a new server.
+   *
    * @param PORT The port which the server will listen on
    */
   public Server(int PORT) {
@@ -106,7 +107,7 @@ public class Server implements Runnable {
    * @param client The client that disconnected
    */
   protected void removeClient(ClientHandler client) {
-    client.running = false;
+    client.setRunning(false);
     Optional<Lobby> lobby = Optional.ofNullable(client.getLobby());
     lobby.ifPresent(value -> value.removeClient(client));
     this.clientThreads.get(this.clientHandlers.indexOf(client)).interrupt();

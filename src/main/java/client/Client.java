@@ -265,6 +265,9 @@ public class Client extends Application {
     // Set controller
     this.lobbyController = loader.getController();
 
+    // Reset the toggle status in case the user was in a game before
+    this.sendToggleReady(false);
+
     this.menuScreen = false;
     this.isInLobby = true;
     this.lobbyScreen = true;
@@ -636,6 +639,14 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
+  /** The client has loaded the lobby screen successfully and would like to know which clients are in their
+   * lobby.
+   */
+  public void requestLobbyList() {
+    String command = ClientProtocol.GET_FULL_LOBBY_LIST.toString();
+    this.outputSocket.sendToServer(command);
+  }
+
   /**
    * Inform the server when the toggle.isReady is true
    *
@@ -653,8 +664,8 @@ public class Client extends Application {
    *
    * @param isReady whether the client is ready or not
    */
-  public void setToggleReady(String isReady) {
-    this.lobbyController.setToggleReady(isReady);
+  public void setToggleReady(boolean isReady) {
+    this.lobbyController.setToggleReady(String.valueOf(isReady));
   }
 
   /**
@@ -805,6 +816,13 @@ public class Client extends Application {
   /** Starts the game loop */
   public void startGameLoop() {
     this.gameController.getGame().gameStarted = true;
+  }
+
+  /** Loads a level in the game screen */
+  public void loadLevel(String levelPath) {
+    if (this.gameController != null) {
+      this.gameController.loadLevel(levelPath);
+    }
   }
 
   /**

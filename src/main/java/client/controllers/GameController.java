@@ -219,4 +219,15 @@ public class GameController {
       this.game.setBlockColour(x, y, colour);
     }
   }
+
+  /** The server has sent the list of critical blocks required to colour the whole level. The whole level
+   * is coloured accordingly.
+   * @param levelPath The levelPath to the level data file
+   */
+  public void loadLevel(String levelPath){
+    this.game.loadLevel(levelPath);
+  }
+
 }
+
+

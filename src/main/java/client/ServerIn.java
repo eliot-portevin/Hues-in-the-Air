@@ -9,14 +9,14 @@ import java.util.Arrays;
 import javafx.application.Platform;
 import server.ServerProtocol;
 
-/** Handles the input from the server */
+/** Handles the input from the server. */
 public class ServerIn implements Runnable {
 
   private final Socket serverSocket;
   private final BufferedReader in;
   private final Client client;
 
-  /** Used for the while loop in the run method */
+  /** Used for the while loop in the run method. */
   protected Boolean running = true;
 
   /**
@@ -24,8 +24,8 @@ public class ServerIn implements Runnable {
    *
    * @param serverSocket The socket to the server
    * @param client The client which has created this instance
-   *
-   * @throws IOException If an I/O error occurs when creating the input stream, the socket is closed.
+   * @throws IOException If an I/O error occurs when creating the input stream, the socket is
+   *     closed.
    */
   public ServerIn(Socket serverSocket, Client client) throws IOException {
     this.serverSocket = serverSocket;
@@ -103,7 +103,7 @@ public class ServerIn implements Runnable {
                 case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
                 case UPDATE_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
                 case UPDATE_GAME_LIST -> this.client.updateGameList(command[1]);
-                case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
+                case TOGGLE_READY_STATUS -> this.client.setToggleReady(Boolean.parseBoolean(command[1]));
                 case START_GAME -> {
                   try {
                     this.client.loadGameScreen();
@@ -112,15 +112,17 @@ public class ServerIn implements Runnable {
                     this.client.exit();
                   }
                 }
-                case JUMP -> {
-                  this.client.gameController.getGame().jumped = false;
-                }
                 case START_GAME_LOOP -> this.client.startGameLoop();
                 case POSITION_UPDATE -> this.client
                     .gameController
                     .getGame()
                     .updatePosition(command[1], command[2]);
-                case SEND_CRITICAL_BLOCKS -> this.client.gameController.setBlockColours(command[1]);
+                case LOAD_LEVEL -> this.client.loadLevel(command[1]);
+                case SEND_CRITICAL_BLOCKS -> {
+                  if (this.client.gameController != null) {
+                    this.client.gameController.setBlockColours(command[1]);
+                  }
+                }
                 case GAME_ENDED -> {
                   try {
                     this.client.loadLobbyScreen();
@@ -129,6 +131,7 @@ public class ServerIn implements Runnable {
                     client.exit();
                   }
                 }
+                default -> client.LOGGER.error("ServerIn: Unknown protocol: " + command[0]);
               }
             }
           });

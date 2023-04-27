@@ -1,5 +1,6 @@
 package game;
 
+import client.LevelReader;
 import java.util.ArrayList;
 import java.util.Optional;
 import javafx.scene.layout.Pane;
@@ -21,15 +22,17 @@ public class Level {
 
   /**
    * Creates a new level.
-   * @param difficulty the difficulty of the level
+   *
+   * @param levelPath the path to the level
    * @param blockWidth the width of a block
    * @param gameRoot the pane on which the level is drawn
    */
-  public Level(String difficulty, int blockWidth, Pane gameRoot) {
+  public Level(String levelPath, int blockWidth, Pane gameRoot) {
     this.blockWidth = blockWidth;
     this.gameRoot = gameRoot;
 
-    loadLevel(String.join("\n", LevelData.Level1));
+    String levelString = LevelReader.readLevel(levelPath);
+    loadLevel(levelString);
   }
 
   /**
@@ -78,7 +81,6 @@ public class Level {
    *
    * @param x The x position of the block
    * @param y The y position of the block
-   *
    * @return The nine blocks neighbouring the block at the given position
    */
   public Block[] getNeighbourBlocks(double x, double y) {
@@ -106,7 +108,7 @@ public class Level {
    *
    * @param colours The colours that can be used to colour the blocks
    */
-  public void setNeighbourColours(ArrayList<Color> colours) {
+  public void setBlockColours(ArrayList<Color> colours) {
     for (int i = 0; i < grid.length; i++) {
       for (int j = 0; j < grid[i].length; j++) {
         Optional<Block> block = Optional.ofNullable(grid[i][j]);
@@ -127,8 +129,8 @@ public class Level {
   }
 
   /**
-   * Sets the colours of the blocks in the level. The blocks are coloured in a way that no two
-   * adjacent blocks have the same colour.
+   * Takes a block as input. Sets this block's colour and iterates recursively through its
+   * neighbours (up, down, left, right) and sets their colours to the same colour.
    *
    * @param xIdx the column index of the block
    * @param yIdx the row index of the block

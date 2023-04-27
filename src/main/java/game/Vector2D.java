@@ -127,4 +127,14 @@ public class Vector2D {
   public Vector2D clone() {
     return new Vector2D(this.xComponent, this.yComponent);
   }
+
+  /**
+   * Subtracts two vectors and returns a new vector with the appropriate magnitudes
+   * @param otherVector the vector to subtract from this vector
+   * @return the new vector
+   */
+  public Vector2D subtract(Vector2D otherVector) {
+    return new Vector2D(
+        this.xComponent - otherVector.xComponent, this.yComponent - otherVector.yComponent);
+  }
 }

@@ -2,7 +2,6 @@ package client;
 
 import game.Colours;
 import game.Level;
-import game.LevelData;
 import game.Vector2D;
 import java.util.HashMap;
 import java.util.Timer;
@@ -22,6 +21,9 @@ public class Game {
   private int levelWidth;
   private int levelHeight;
   private int gridSize = 50;
+  private double cameraMarginWidth;
+  private double cameraMarginHeight;
+  private Vector2D playerScreenPosition;
   /** Whether the cube is jumping or not. */
   public boolean jumped;
 
@@ -40,19 +42,23 @@ public class Game {
 
   /** The level that is currently being played. */
   public Level level;
+
   private Cube player;
 
   /**
    * Creates a new game.
+   *
    * @param client the client that is playing the game
    */
   public Game(Client client) {
     this.client = client;
   }
 
-  /** Called every frame and handles the game logic.
+  /**
+   * Called every frame and handles the game logic.
+   *
    * @param deltaF the time between the last frame and the current frame
-   * */
+   */
   public void update(double deltaF) {
     // Possibility to add a pause method
     this.gameUpdate(deltaF);
@@ -66,6 +72,7 @@ public class Game {
   /**
    * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic
    * is handled.
+   *
    * @param deltaF the time between the last frame and the current frame
    */
   private void analyseKeys(double deltaF) {
@@ -100,22 +107,39 @@ public class Game {
   /**
    * Initializes the content of the game Loads the level data and creates the platforms Creates the
    * player Creates the stars Will create the coin to finish the game.
+   *
    * @param backgroundPane the pane that the game is displayed on
    */
-  public void initializeContent(Pane backgroundPane) {
+  public void initialiseContent(Pane backgroundPane) {
     this.appRoot = backgroundPane;
     gameRoot = new Pane();
-    levelWidth = LevelData.Level1[0].length() * gridSize;
-    levelHeight = LevelData.Level1.length * gridSize;
+
+    // The camera is always centered on the player (middle of the screen)
+    playerScreenPosition =
+        new Vector2D(
+            this.appRoot.getWidth() / 2,
+            this.appRoot.getHeight() / 2); // Sets the player's position
+    this.appRoot
+        .widthProperty()
+        .addListener(
+            (obs, old, newValues) -> playerScreenPosition.setX(newValues.doubleValue() / 2));
+    this.appRoot
+        .heightProperty()
+        .addListener(
+            (obs, old, newValues) -> playerScreenPosition.setY(newValues.doubleValue() / 2));
+    cameraMarginWidth = cubeSize * 10;
+    cameraMarginHeight = cubeSize * 5;
 
     Rectangle bg =
         new Rectangle(
             this.gameRoot.getWidth(), this.gameRoot.getHeight()); // Creates the background
     bg.setFill(Colours.BLACK.getHex()); // Sets the background colour
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
+  }
 
-    // Load level
-    this.level = new Level("easy", 50, gameRoot);
+  /** The client has received the level path from the server and can now load the level. */
+  public void loadLevel(String levelPath) {
+    this.level = new Level(levelPath, 50, gameRoot);
     this.client.requestCriticalBlocks();
     Vector2D playerSpawn =
         new Vector2D(
@@ -134,12 +158,8 @@ public class Game {
             (obs,
                 old,
                 newValue) -> { // Listens for changes in the player's x position and moves the
-                               // terrain accordingly
-              int offset = newValue.intValue();
-
-              if (offset > 400 && offset < levelWidth - 400) {
-                gameRoot.setLayoutX(-(offset - 400));
-              }
+              // camera
+              updateCameraPosition();
             });
 
     player
@@ -149,12 +169,8 @@ public class Game {
             (obs,
                 old,
                 newValue) -> { // Listens for changes in the player's Y position and moves the
-                               // terrain accordingly
-              int offset = newValue.intValue();
-
-              if (offset > 400 && offset < levelHeight - 400) {
-                gameRoot.setLayoutX(-(offset - 400));
-              }
+              // camera
+              updateCameraPosition();
             });
 
     player.blockSize = gridSize; // Sets the grid size for the player
@@ -166,7 +182,7 @@ public class Game {
    * @param pane the pane to launch the application in
    */
   public void run(Pane pane) {
-    this.initializeContent(pane);
+    this.initialiseContent(pane);
 
     this.timer =
         new AnimationTimer() {
@@ -206,5 +222,15 @@ public class Game {
    */
   public void setBlockColour(int x, int y, Color colour) {
     this.level.setNeighbourColours(x, y, colour);
+  }
+
+  /** The player has moved. Get the position at which the level should be drawn. */
+  private void updateCameraPosition() {
+    Vector2D offset =
+        new Vector2D(player.rectangle.getTranslateX(), player.rectangle.getTranslateY());
+    offset.multiplyInPlace(-1);
+    offset.addInPlace(playerScreenPosition);
+    gameRoot.setLayoutX(offset.getX());
+    gameRoot.setLayoutY(offset.getY());
   }
 }

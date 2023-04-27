@@ -3,9 +3,13 @@ package server;
 import game.Block;
 import game.Level;
 import game.Vector2D;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
+
 import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
@@ -21,6 +25,7 @@ public class ServerGame implements Runnable {
 
   private Block[][] grid; // Used to store the grid of blocks, null if no block is present
   private Level level;
+  private final int[] difficultyProbabilities = {50, 35, 15};
 
   /** The colours which can be given to players */
   public static ArrayList<Color> blockColours =
@@ -62,7 +67,6 @@ public class ServerGame implements Runnable {
     this.clientColours = clientColours;
     this.clients = clients;
     this.gameId = gameId;
-    initialiseContent();
 
     instance = this;
   }
@@ -99,10 +103,18 @@ public class ServerGame implements Runnable {
    * player Creates the stars Will create the coin to finish the game
    */
   public void initialiseContent() {
-    // Create a level and add it to an empty pane
+    System.out.println("initialising content");
+    // Create empty pane to which the game will virtually be added
     gameRoot = new Pane();
-    this.level = new Level("easy", 50, gameRoot);
-    this.level.setNeighbourColours(new ArrayList<>(clientColours.values()));
+
+    // Load a random level
+    String levelPath = this.getRandomLevelPath();
+    this.sendLevelPath(levelPath);
+
+    // Load the level
+    this.level = new Level(levelPath, 50, gameRoot);
+    this.level.setBlockColours(new ArrayList<>(clientColours.values()));
+    this.sendCriticalBlocks();
 
     // Spawn player
     Vector2D playerSpawn =
@@ -218,6 +230,16 @@ public class ServerGame implements Runnable {
   }
 
   /**
+   * Sends the path of the current level to all clients.
+   * @param levelPath The path of the level.
+   */
+  private void sendLevelPath(String levelPath) {
+    for (ClientHandler client : clients) {
+      client.sendLevelPath(levelPath);
+    }
+  }
+
+  /**
    * Closes the game loop and informs the server that the game has ended. The server then proceeds to
    * remove the game from its list of games and to inform the clients that the game has ended.
    */
@@ -231,5 +253,43 @@ public class ServerGame implements Runnable {
    */
   protected ArrayList<ClientHandler> getPlayers() {
     return this.clients;
+  }
+
+  /**
+   * Gets a random level path from the level's folder.
+   * @return The path to the level.
+   */
+  private String getRandomLevelPath() {
+    boolean found = false;
+    String path = null;
+    String difficulty = null;
+
+    while (!found) {
+      int random = (int) (Math.random() * 100);
+
+      if (random < difficultyProbabilities[0]) {
+        difficulty = "easy/";
+      }
+      else if (random < difficultyProbabilities[1]) {
+        difficulty = "medium/";
+      }
+      else {
+        difficulty = "hard/";
+      }
+
+      File dir = new File(Objects.requireNonNull(getClass().getResource("/levels/" + difficulty)).getPath());
+      File[] files = dir.listFiles((dir1, name) -> name.endsWith(".csv"));
+
+      if (files != null) {
+        if (files.length > 0) {
+          int randomFile = (int) (Math.random() * files.length);
+          path = files[randomFile].getPath();
+          found = true;
+        }
+      }
+    }
+
+    //return path;
+    return getClass().getResource("/levels/easy/example.csv").getPath();
   }
 }

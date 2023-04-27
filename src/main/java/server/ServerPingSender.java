@@ -28,6 +28,7 @@ public class ServerPingSender implements Runnable {
    * Sends a ping to the client every 300ms. If the client doesn't respond to 3 pings, the server
    * removes the client.
    */
+  @SuppressWarnings("checkstyle:SimplifyBooleanExpression")
   public void run() {
     while (this.running) {
       try {
@@ -36,15 +37,15 @@ public class ServerPingSender implements Runnable {
 
         for (int i = 0; i < this.clients.size(); i++) {
           client = this.clients.get(i);
-          if (client.clientConnected) {
-            client.clientConnected = false;
+          if (client.getClientConnected() == true) {
+            client.setClientConnected(false);
             client.ping();
           } else {
-            if (client.noAnswerCounter > 3) {
+            if (client.getNoAnswerCounter() > 3) {
               server.removeClient(client);
             } else {
-              client.noAnswerCounter++;
-              client.clientConnected = true;
+              client.setNoAnswerCounter(client.getNoAnswerCounter() + 1);
+              client.setClientConnected(true);
             }
           }
         }
