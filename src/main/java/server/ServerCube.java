@@ -2,6 +2,7 @@ package server;
 
 import game.Block;
 import game.Colours;
+import game.GameConstants;
 import game.Vector2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -10,9 +11,9 @@ import javafx.scene.shape.Rectangle;
 /** The cube instance which the server works with. */
 public class ServerCube {
   // Position, velocity, acceleration
-  private final int blocksPerSecond = 6;
-  private final double velocity_constant;
-  private final double acceleration_constant;
+  final int blocksPerSecond = GameConstants.BLOCKS_PER_SECOND.getValue();
+  final double velocity_constant;
+  final double acceleration_constant;
 
   /** The current position of the cube. */
   protected Vector2D position;
@@ -23,7 +24,7 @@ public class ServerCube {
   private final double maxVelocity;
   /** The acceleration which the cube is currently experiencing. */
   public Vector2D acceleration = new Vector2D(0, 0);
-  private int accelerationAngle = 0;
+  int accelerationAngle = 0;
 
   private boolean jumping = true;
   private boolean canRotate = false;
@@ -52,13 +53,13 @@ public class ServerCube {
   public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
     // Initialise position, velocity and acceleration
     this.position = position;
-    this.velocity_constant = blockSize * blocksPerSecond;
+    this.velocity_constant = GameConstants.VELOCITY_CONSTANT.getValue();
     this.maxVelocity = this.velocity_constant * 2;
-    this.acceleration_constant = blockSize * blocksPerSecond * 4;
+    this.acceleration_constant = GameConstants.ACCELERATION_CONSTANT.getValue();
     this.setAccelerationAngle(0);
 
-    this.cubeSize = cubeSize;
-    this.blockSize = blockSize;
+    this.cubeSize = GameConstants.CUBE_SIZE.getValue();
+    this.blockSize = GameConstants.GRID_SIZE.getValue();
 
     this.gameRoot = gameRoot;
 
@@ -81,6 +82,32 @@ public class ServerCube {
   public void setPositionTo(double x, double y) {
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
+    this.position.setX(x);
+    this.position.setY(y);
+  }
+
+  /**
+   * Returns the position vector of the cube
+   * @return position of the cube
+   */
+  public Vector2D getPosition() {
+    return position;
+  }
+
+  /**
+   * Returns the velocity vector of the cube
+   * @return velocity of the cube
+   */
+  public Vector2D getVelocity() {
+    return velocity;
+  }
+
+  /**
+   * Returns the acceleration vector of the cube
+   * @return acceleration of the cube
+   */
+  public Vector2D getAcceleration() {
+    return acceleration;
   }
 
   /**
@@ -218,11 +245,9 @@ public class ServerCube {
 
   /** Makes the cube accelerate to its maximum speed at the beginning of a level. */
   public void initialiseSpeed() {
-    this.velocity.setX(blockSize * blocksPerSecond);
+    this.velocity.setX(this.velocity_constant);
     this.velocity.setY(0);
 
-    this.acceleration.setX(0);
-    this.acceleration.setY(cubeSize * blocksPerSecond);
     this.setAccelerationAngle(0);
   }
 
@@ -231,7 +256,7 @@ public class ServerCube {
    * velocity. Called to rotate the cube around an edge as opposed to reset the velocity after a
    * collision.
    */
-  private void onlySetAccelerationAngle(int angle) {
+  void onlySetAccelerationAngle(int angle) {
     this.accelerationAngle = angle;
 
     this.acceleration.setX(Math.sin(Math.toRadians(angle)) * acceleration_constant);
@@ -244,7 +269,7 @@ public class ServerCube {
    *
    * @param angle compared to the y-axis
    */
-  private void setAccelerationAngle(int angle) {
+  void setAccelerationAngle(int angle) {
     int angleDifference = accelerationAngle - angle;
     this.accelerationAngle = angle;
 
@@ -272,7 +297,7 @@ public class ServerCube {
     this.velocity.setX(0);
     this.velocity.setY(0);
 
-    ServerGame.getInstance().resetLevel();
+    if(ServerGame.getInstance() != null) ServerGame.getInstance().resetLevel();
   }
 
   /**
