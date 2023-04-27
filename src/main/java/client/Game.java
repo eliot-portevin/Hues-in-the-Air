@@ -113,6 +113,8 @@ public class Game {
   public void initialiseContent(Pane backgroundPane) {
     this.appRoot = backgroundPane;
     gameRoot = new Pane();
+
+    // The camera is always centered on the player (middle of the screen)
     playerScreenPosition =
         new Vector2D(
             this.appRoot.getWidth() / 2,

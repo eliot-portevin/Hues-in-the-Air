@@ -5,7 +5,6 @@ import game.Level;
 import game.Vector2D;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,7 +67,6 @@ public class ServerGame implements Runnable {
     this.clientColours = clientColours;
     this.clients = clients;
     this.gameId = gameId;
-    initialiseContent();
 
     instance = this;
   }
@@ -105,12 +103,18 @@ public class ServerGame implements Runnable {
    * player Creates the stars Will create the coin to finish the game
    */
   public void initialiseContent() {
-    // Create a level and add it to an empty pane
+    System.out.println("initialising content");
+    // Create empty pane to which the game will virtually be added
     gameRoot = new Pane();
+
+    // Load a random level
     String levelPath = this.getRandomLevelPath();
     this.sendLevelPath(levelPath);
+
+    // Load the level
     this.level = new Level(levelPath, 50, gameRoot);
-    this.level.setNeighbourColours(new ArrayList<>(clientColours.values()));
+    this.level.setBlockColours(new ArrayList<>(clientColours.values()));
+    this.sendCriticalBlocks();
 
     // Spawn player
     Vector2D playerSpawn =

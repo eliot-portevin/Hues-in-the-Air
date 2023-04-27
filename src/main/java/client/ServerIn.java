@@ -103,7 +103,7 @@ public class ServerIn implements Runnable {
                 case UPDATE_CLIENT_LIST -> this.client.updateClientInfo(command[1]);
                 case UPDATE_LOBBY_LIST -> this.client.updateLobbyList(command[1]);
                 case UPDATE_GAME_LIST -> this.client.updateGameList(command[1]);
-                case TOGGLE_READY_STATUS -> this.client.setToggleReady(command[1]);
+                case TOGGLE_READY_STATUS -> this.client.setToggleReady(Boolean.parseBoolean(command[1]));
                 case START_GAME -> {
                   try {
                     this.client.loadGameScreen();
@@ -117,6 +117,7 @@ public class ServerIn implements Runnable {
                     .gameController
                     .getGame()
                     .updatePosition(command[1], command[2]);
+                case LOAD_LEVEL -> this.client.loadLevel(command[1]);
                 case SEND_CRITICAL_BLOCKS -> {
                   if (this.client.gameController != null) {
                     this.client.gameController.setBlockColours(command[1]);
@@ -130,7 +131,6 @@ public class ServerIn implements Runnable {
                     client.exit();
                   }
                 }
-                case LOAD_LEVEL -> this.client.loadLevel(command[1]);
                 default -> client.LOGGER.error("ServerIn: Unknown protocol: " + command[0]);
               }
             }

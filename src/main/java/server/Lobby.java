@@ -177,12 +177,14 @@ public class Lobby {
     String gameId = this.getName() + "_" + gamesPlayed;
     this.game = new ServerGame(this.clientColours, getClientHandlers(), gameId);
 
-    Thread gameThread = new Thread(game);
-    gameThread.start();
-
+    // Tell the clients to load their game screen
     for (ClientHandler client : this.getClientHandlers()) {
       client.startGame();
     }
+
+    // Starts the game thread
+    Thread gameThread = new Thread(game);
+    gameThread.start();
 
     Server.getInstance().addGame(this.game);
     this.isInGame = true;
