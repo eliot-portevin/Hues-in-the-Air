@@ -47,27 +47,28 @@ public class ServerGame implements Runnable {
   private boolean jumped;
   private AnimationTimer timer;
 
-  private Boolean running = true;
+  protected Boolean running = true;
   private final ArrayList<ClientHandler> clients;
 
   private final String gameId;
   /** The instance of the game */
   public static ServerGame instance;
+  private Lobby lobby;
 
   /** Creates a new game
    *
-   * @param clientColours The clients and their respective colours
-   * @param clients The clients
+   * @param clientsAndColours The clients and their respective colours
    * @param gameId The number of the game
    */
   public ServerGame(
-      HashMap<ClientHandler, Color> clientColours,
-      ArrayList<ClientHandler> clients,
-      String gameId) {
-    this.clientColours = clientColours;
-    this.clients = clients;
+      HashMap<ClientHandler, Color> clientsAndColours,
+      String gameId,
+      Lobby lobby) {
+    this.clientColours = clientsAndColours;
+    this.clients = new ArrayList<>(clientColours.keySet());
     this.gameId = gameId;
 
+    this.lobby = lobby;
     instance = this;
   }
 
@@ -129,11 +130,6 @@ public class ServerGame implements Runnable {
     player.start_position = position.clone();
   }
 
-  /** Starts the game loop */
-  public void startGameLoop() {
-    this.running = true;
-  }
-
   /** Runnable run method. This method is called when the thread is started. */
   @Override
   public void run() {
@@ -157,7 +153,6 @@ public class ServerGame implements Runnable {
         updateAllClientPositions();
       }
     }
-    
     this.endGame();
   }
 
@@ -181,15 +176,6 @@ public class ServerGame implements Runnable {
    */
   protected String getGameId() {
     return gameId;
-  }
-
-  /**
-   * A client has left the server. The game is closed.
-   *
-   * @param client - The client that left the server.
-   */
-  protected void removeClient(ClientHandler client) {
-    this.running = false;
   }
 
   /**
@@ -244,8 +230,7 @@ public class ServerGame implements Runnable {
    * remove the game from its list of games and to inform the clients that the game has ended.
    */
   protected void endGame() {
-    this.running = false;
-    Server.getInstance().endGame(this);
+    this.lobby.endGame();
   }
 
   /**

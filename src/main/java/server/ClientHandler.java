@@ -251,7 +251,6 @@ public class ClientHandler implements Runnable {
           case EXIT_LOBBY -> {
             if (this.lobby != null) this.lobby.removeClient(this);
           }
-          case START_GAME_LOOP -> this.startGameLoop();
           case SPACE_BAR_PRESSED -> this.spaceBarPressed();
           case REQUEST_CRITICAL_BLOCKS -> this.getLobby().getGame().sendCriticalBlocks();
           case REQUEST_END_GAME -> this.getLobby().getGame().endGame();
@@ -263,15 +262,6 @@ public class ClientHandler implements Runnable {
     } catch (IllegalArgumentException | NullPointerException e) {
       LOGGER.error("ClientHandler " + this.username + " sent an invalid command: " + command[0]);
     }
-  }
-
-  /**
-   * Starts the game loop of the game in this client's lobby, and sends a protocol command to all
-   * clients to start their game loops.
-   */
-  private void startGameLoop() {
-    this.lobby.getGame().startGameLoop();
-    this.lobby.sendGameCommandToAllClients(ClientProtocol.START_GAME_LOOP.toString());
   }
 
   /** Resets noAnswerCounter. */
@@ -451,12 +441,6 @@ public class ClientHandler implements Runnable {
 
   private void spaceBarPressed() {
     this.lobby.getGame().spaceBarPressed(this);
-  }
-
-  /** Sends StartGameLoop command to the client associated with this ClientHandler. */
-  public void startClientGameLoop() {
-    String command = ClientProtocol.START_GAME_LOOP.toString();
-    this.out.println(command);
   }
 
   /**

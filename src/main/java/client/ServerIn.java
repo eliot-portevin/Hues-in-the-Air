@@ -112,7 +112,6 @@ public class ServerIn implements Runnable {
                     this.client.exit();
                   }
                 }
-                case START_GAME_LOOP -> this.client.startGameLoop();
                 case POSITION_UPDATE -> this.client
                     .gameController
                     .getGame()

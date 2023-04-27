@@ -14,10 +14,11 @@ public class Lobby {
   private final ArrayList<ClientHandler> clients = new ArrayList<>();
 
   private final HashMap<ClientHandler, Boolean> clientsReady = new HashMap<>();
-  private final HashMap<ClientHandler, Color> clientColours = new HashMap<>();
+  private final HashMap<ClientHandler, Color> clientsAndColours = new HashMap<>();
 
   private final Logger LOGGER = LogManager.getLogger(getClass());
 
+  Thread gameThread;
   private ServerGame game;
   private boolean isInGame = false;
   int gamesPlayed = 0;
@@ -45,7 +46,7 @@ public class Lobby {
         synchronized (this.clients) {
           this.clients.add(client);
           this.clientsReady.put(client, false);
-          this.clientColours.put(client, this.getFreeColour());
+          this.clientsAndColours.put(client, this.getFreeColour());
           client.enterLobby(this);
           Server.getInstance().updateLobbyList();
           Server.getInstance().updateClientList();
@@ -58,7 +59,7 @@ public class Lobby {
   /** Gets an available colour for a new client. */
   private Color getFreeColour() {
     ArrayList<Color> freeColours = new ArrayList<>(ServerGame.blockColours);
-    for (Color colour : this.clientColours.values()) {
+    for (Color colour : this.clientsAndColours.values()) {
       freeColours.remove(colour);
     }
     return freeColours.get((int) Math.floor(Math.random() * freeColours.size()));
@@ -70,14 +71,15 @@ public class Lobby {
    */
   protected void removeClient(ClientHandler client) {
     if (this.isInGame) {
-      this.game.removeClient(client);
+      this.game.endGame();
+      this.isInGame = false;
     }
 
     synchronized (this.clients) {
       client.exitLobby();
       this.clients.remove(client);
       this.clientsReady.remove(client);
-      this.clientColours.remove(client);
+      this.clientsAndColours.remove(client);
       Server.getInstance().updateLobbyList();
       Server.getInstance().updateClientList();
       LOGGER.info("Client " + client.getUsername() + " left lobby " + this.name);
@@ -175,7 +177,7 @@ public class Lobby {
   private void startGame() {
     // The game instance starts itself
     String gameId = this.getName() + "_" + gamesPlayed;
-    this.game = new ServerGame(this.clientColours, getClientHandlers(), gameId);
+    this.game = new ServerGame(this.clientsAndColours, gameId, this);
 
     // Tell the clients to load their game screen
     for (ClientHandler client : this.getClientHandlers()) {
@@ -183,7 +185,7 @@ public class Lobby {
     }
 
     // Starts the game thread
-    Thread gameThread = new Thread(game);
+    this.gameThread = new Thread(game);
     gameThread.start();
 
     Server.getInstance().addGame(this.game);
@@ -211,17 +213,25 @@ public class Lobby {
                         + " "
                         + this.clientsReady.get(c)
                         + " "
-                        + this.clientColours.get(c))
+                        + this.clientsAndColours.get(c))
             .collect(Collectors.joining(ServerProtocol.SUBSEPARATOR.toString()));
     return command;
   }
 
-  /** Sends a game command to all clients in the lobby.
-   * @param command the command to send
-   * */
-  public void sendGameCommandToAllClients(String command) {
-    for (ClientHandler client : this.getClientHandlers()) {
-      client.startClientGameLoop();
+  /**
+   * Ends the game thread by setting the running status of the game to false.
+   */
+  protected void endGame() {
+    this.game.running = false;
+    this.isInGame = false;
+    this.gamesPlayed++;
+
+    try {
+      this.gameThread.interrupt();
+    } catch (Exception e) {
+      LOGGER.warn("Could not interrupt game thread.");
     }
+
+    Server.getInstance().endGame(this.game);
   }
 }

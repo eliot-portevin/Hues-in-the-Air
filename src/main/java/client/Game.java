@@ -37,8 +37,6 @@ public class Game {
   private final Timer pauseTimer = new Timer();
 
   private boolean running = true;
-  /** Whether the game has started or not. */
-  public boolean gameStarted = false;
 
   /** The level that is currently being played. */
   public Level level;
