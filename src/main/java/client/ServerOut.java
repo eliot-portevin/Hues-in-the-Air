@@ -84,7 +84,7 @@ public class ServerOut implements Runnable {
    * @param message The message to validate
    * @return True if the message is valid, false otherwise
    */
-  private Boolean validateMessage(String message) {
+  public Boolean validateMessage(String message) {
     if (message == null) {
       System.out.println("[SERVER_OUT] Message is null");
       return false;
