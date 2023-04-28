@@ -316,4 +316,12 @@ public class Server implements Runnable {
 
     this.updateGameList();
   }
+
+  /**
+   * Returns the Logger of the server. Called from levelLoader or game when problems occur.
+   * @return The Logger of the server
+   */
+  public Logger getLogger() {
+    return LOGGER;
+  }
 }

@@ -11,6 +11,7 @@ public enum GameConstants {
   DEFAULT_ACCELERATION_ANGLE(0);
 
   private final int value;
+
   GameConstants(int value) {
     this.value = value;
   }

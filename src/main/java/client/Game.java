@@ -1,11 +1,15 @@
 package client;
 
 import game.Colours;
+import game.GameConstants;
 import game.Level;
 import game.Vector2D;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Timer;
 import javafx.animation.AnimationTimer;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -137,8 +141,13 @@ public class Game {
 
   /** The client has received the level path from the server and can now load the level. */
   public void loadLevel(String levelPath) {
+    this.gameRoot.getChildren().clear();
+
     this.level = new Level(levelPath, 50, gameRoot);
     this.client.requestCriticalBlocks();
+
+    this.loadCoin();
+
     Vector2D playerSpawn =
         new Vector2D(
             level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
@@ -172,6 +181,22 @@ public class Game {
             });
 
     player.blockSize = gridSize; // Sets the grid size for the player
+  }
+
+  /**
+   * Gets the coin position from the level and adds it to the game root. If no coin is found, the
+   * coin is placed outside the level (top left corner).
+   */
+  private void loadCoin() {
+    Image coinImage =
+        new Image(
+            Objects.requireNonNull(getClass().getResource("/images/coin.png")).toExternalForm());
+    ImageView coin = new ImageView(coinImage);
+    coin.setFitHeight(GameConstants.BLOCK_SIZE.getValue());
+    coin.setFitWidth(GameConstants.BLOCK_SIZE.getValue());
+    coin.setX(level.coinIdx[0] * level.blockWidth);
+    coin.setY(level.coinIdx[1] * level.blockWidth);
+    this.gameRoot.getChildren().add(coin);
   }
 
   /**

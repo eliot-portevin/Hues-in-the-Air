@@ -93,7 +93,7 @@ class ServerCubeTest {
     @Test
     void testResetPosition() {
         tester.setPositionTo(100, 100);
-        tester.resetLevel();
+        tester.resetMovement();
         assertAll(
             () -> assertEquals(tester.start_position.getX(), tester.getPosition().getX()),
             () -> assertEquals(tester.start_position.getY(), tester.getPosition().getY())

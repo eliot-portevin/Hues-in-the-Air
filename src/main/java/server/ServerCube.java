@@ -20,9 +20,11 @@ public class ServerCube {
   public Vector2D start_position = new Vector2D(0, 0);
   /** The velocity which the cube currently has. */
   protected Vector2D velocity = new Vector2D(0, 0);
+
   private final double maxVelocity;
   /** The acceleration which the cube is currently experiencing. */
   public Vector2D acceleration = new Vector2D(0, 0);
+
   int accelerationAngle = 0;
 
   private boolean jumping = true;
@@ -39,6 +41,7 @@ public class ServerCube {
   private final Pane gameRoot;
   /** The size of a block in pixels. */
   public int blockSize;
+
   private Vector2D rotationPoint;
 
   /**
@@ -85,6 +88,7 @@ public class ServerCube {
 
   /**
    * Returns the position vector of the cube
+   *
    * @return position of the cube
    */
   public Vector2D getPosition() {
@@ -93,6 +97,7 @@ public class ServerCube {
 
   /**
    * Returns the velocity vector of the cube
+   *
    * @return velocity of the cube
    */
   public Vector2D getVelocity() {
@@ -101,6 +106,7 @@ public class ServerCube {
 
   /**
    * Returns the acceleration vector of the cube
+   *
    * @return acceleration of the cube
    */
   public Vector2D getAcceleration() {
@@ -161,6 +167,9 @@ public class ServerCube {
         if (this.rectangle
             .getBoundsInParent()
             .intersects(block.getRectangle().getBoundsInParent())) {
+          // Checks for collision with a coin
+          this.checkCoinCollision(block);
+
           boolean isEdgeCollision = isEdgeCollision(block, true);
 
           if (!isEdgeCollision) {
@@ -186,7 +195,7 @@ public class ServerCube {
 
           // Check for collision with white block
           if (block.getColour().equals(Colours.WHITE.getHex())) {
-            this.resetLevel();
+            this.resetMovement();
           }
         }
       }
@@ -201,6 +210,9 @@ public class ServerCube {
         if (this.rectangle
             .getBoundsInParent()
             .intersects(block.getRectangle().getBoundsInParent())) {
+          // Checks for collision with a coin
+          this.checkCoinCollision(block);
+
           boolean isEdgeCollision = isEdgeCollision(block, false);
 
           if (!isEdgeCollision) {
@@ -227,7 +239,7 @@ public class ServerCube {
 
           // Check collision with a white block
           if (block.getColour().equals(Colours.WHITE.getHex())) {
-            this.resetLevel();
+            this.resetMovement();
           }
         }
       }
@@ -283,7 +295,7 @@ public class ServerCube {
    * The cube has entered in contact with a white cube. It is sent back to the start of the level
    * and the level is reset.
    */
-  void resetLevel() {
+  void resetMovement() {
     this.position.setX(start_position.getX());
     this.position.setY(start_position.getY());
     this.rectangle.setTranslateX(this.position.getX());
@@ -294,7 +306,7 @@ public class ServerCube {
     this.velocity.setX(0);
     this.velocity.setY(0);
 
-    if(ServerGame.getInstance() != null) ServerGame.getInstance().resetLevel();
+    if (ServerGame.getInstance() != null) ServerGame.getInstance().resetLevel();
   }
 
   /**
@@ -349,6 +361,16 @@ public class ServerCube {
         this.velocity.setY(-this.velocity.getY());
         this.canRotate = false;
       }
+    }
+  }
+
+  /**
+   * Checks whether the player is currently colliding with the coin (end of the level). If that is
+   * the case, the next level is loaded. Called from {@link ServerCube#move(Block[], double)}.
+   */
+  private void checkCoinCollision(Block block) {
+    if (block.getColour().equals(Colours.TRANSPARENT.getHex())) {
+      ServerGame.getInstance().nextLevel();
     }
   }
 }

@@ -23,7 +23,9 @@ public enum Colours {
   /** The colour grey */
   GREY("#777777"),
   /** The colour dark grey */
-  DARK_GREY("#464646");
+  DARK_GREY("#464646"),
+  /** A transparent colour */
+  TRANSPARENT("transparent");
 
   private final String hex;
 

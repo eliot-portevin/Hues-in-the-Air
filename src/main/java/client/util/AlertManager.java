@@ -10,8 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 /**
- * Manages the alert label. This label is used to display messages to the client, such as confirmation
- * of a successful action or an error.
+ * Manages the alert label. This label is used to display messages to the client, such as
+ * confirmation of a successful action or an error.
  */
 public class AlertManager {
 

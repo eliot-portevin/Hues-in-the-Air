@@ -3,15 +3,11 @@ package server;
 import game.Block;
 import game.Level;
 import game.Vector2D;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
-
-import javafx.animation.AnimationTimer;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
@@ -20,10 +16,7 @@ public class ServerGame implements Runnable {
   // Pane that contains the game
   private Pane gameRoot;
 
-  /** The keys which are currently being pressed by players */
-  public HashMap<KeyCode, Boolean> keys = new HashMap<>();
-
-  private Block[][] grid; // Used to store the grid of blocks, null if no block is present
+  // Used to store the grid of blocks, null if no block is present
   private Level level;
   private final int[] difficultyProbabilities = {50, 35, 15};
 
@@ -42,28 +35,24 @@ public class ServerGame implements Runnable {
   private ServerCube player;
   /** Whether the cube is currently moving */
   public boolean cubeMoving = false;
-  private final int gridSize = 50;
-  private final int cubeSize = 30;
-  private boolean jumped;
-  private AnimationTimer timer;
 
-  protected Boolean running = true;
+  // Lobby
   private final ArrayList<ClientHandler> clients;
-
+  private final Lobby lobby;
   private final String gameId;
+  private int levelsCompleted = 0;
+
   /** The instance of the game */
   public static ServerGame instance;
-  private Lobby lobby;
+  protected Boolean running = true;
 
-  /** Creates a new game
+  /**
+   * Creates a new game
    *
    * @param clientsAndColours The clients and their respective colours
    * @param gameId The number of the game
    */
-  public ServerGame(
-      HashMap<ClientHandler, Color> clientsAndColours,
-      String gameId,
-      Lobby lobby) {
+  public ServerGame(HashMap<ClientHandler, Color> clientsAndColours, String gameId, Lobby lobby) {
     this.clientColours = clientsAndColours;
     this.clients = new ArrayList<>(clientColours.keySet());
     this.gameId = gameId;
@@ -84,9 +73,11 @@ public class ServerGame implements Runnable {
     }
   }
 
-  /** Called every frame and handles the game logic
+  /**
+   * Called every frame and handles the game logic
+   *
    * @param dt The time since the last frame
-   * */
+   */
   public void update(double dt) {
     // Potentially add pause update if wished
     this.gameUpdate(dt);
@@ -107,7 +98,14 @@ public class ServerGame implements Runnable {
     // Create empty pane to which the game will virtually be added
     gameRoot = new Pane();
 
-    // Load a random level
+    this.load_level();
+  }
+
+  /**
+   * Loads the level
+   */
+  private void load_level() {
+    // Get a random level path
     String levelPath = this.getRandomLevelPath();
     this.sendLevelPath(levelPath);
 
@@ -123,10 +121,11 @@ public class ServerGame implements Runnable {
     load_player(playerSpawn);
   }
 
-  /** Loads the player */
+  /** Loads the player. */
   private void load_player(Vector2D position) {
     player = new ServerCube(gameRoot, position); // creates the player
-    player.start_position = position.clone();
+    player.start_position = position.copy();
+    player.resetMovement();
   }
 
   /** Runnable run method. This method is called when the thread is started. */
@@ -190,8 +189,8 @@ public class ServerGame implements Runnable {
   }
 
   /**
-   * Informs all clients of the positions and colours of the critical blocks in the level. Called at the beginning
-   * of the game.
+   * Informs all clients of the positions and colours of the critical blocks in the level. Called at
+   * the beginning of the game.
    */
   public void sendCriticalBlocks() {
     ArrayList<Block> blocks = level.getCriticalBlocks();
@@ -216,6 +215,7 @@ public class ServerGame implements Runnable {
 
   /**
    * Sends the path of the current level to all clients.
+   *
    * @param levelPath The path of the level.
    */
   private void sendLevelPath(String levelPath) {
@@ -225,8 +225,8 @@ public class ServerGame implements Runnable {
   }
 
   /**
-   * Closes the game loop and informs the server that the game has ended. The server then proceeds to
-   * remove the game from its list of games and to inform the clients that the game has ended.
+   * Closes the game loop and informs the server that the game has ended. The server then proceeds
+   * to remove the game from its list of games and to inform the clients that the game has ended.
    */
   protected void endGame() {
     this.lobby.endGame();
@@ -241,27 +241,28 @@ public class ServerGame implements Runnable {
 
   /**
    * Gets a random level path from the level's folder.
+   *
    * @return The path to the level.
    */
   private String getRandomLevelPath() {
     boolean found = false;
     String path = null;
-    String difficulty = null;
+    String difficulty;
 
     while (!found) {
       int random = (int) (Math.random() * 100);
 
       if (random < difficultyProbabilities[0]) {
         difficulty = "easy/";
-      }
-      else if (random < difficultyProbabilities[1]) {
+      } else if (random < difficultyProbabilities[1]) {
         difficulty = "medium/";
-      }
-      else {
+      } else {
         difficulty = "hard/";
       }
 
-      File dir = new File(Objects.requireNonNull(getClass().getResource("/levels/" + difficulty)).getPath());
+      File dir =
+          new File(
+              Objects.requireNonNull(getClass().getResource("/levels/" + difficulty)).getPath());
       File[] files = dir.listFiles((dir1, name) -> name.endsWith(".csv"));
 
       if (files != null) {
@@ -272,7 +273,15 @@ public class ServerGame implements Runnable {
         }
       }
     }
-
     return path;
+  }
+
+  /**
+   * The cube has collided with a coin in the level. A new level is loaded and the number of levels
+   * completed is incremented.
+   */
+  void nextLevel() {
+    this.load_level();
+    this.levelsCompleted++;
   }
 }

@@ -5,15 +5,19 @@ import java.util.ArrayList;
 import java.util.Optional;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import server.Server;
 
 /** The level class which loads a level from a string and handles the logic for the level. */
 public class Level {
+  private final String levelPath;
   // Grid of blocks
   private Block[][] grid;
   /** The width of a block. */
   public int blockWidth;
   /** The position at which the player spawns. */
   public int[] playerSpawnIdx = new int[2];
+
+  public int[] coinIdx = {-1, -1};
 
   private final ArrayList<Block> criticalBlocks = new ArrayList<>();
 
@@ -28,6 +32,7 @@ public class Level {
    * @param gameRoot the pane on which the level is drawn
    */
   public Level(String levelPath, int blockWidth, Pane gameRoot) {
+    this.levelPath = levelPath;
     this.blockWidth = blockWidth;
     this.gameRoot = gameRoot;
 
@@ -47,17 +52,24 @@ public class Level {
     this.grid = new Block[gridLines.length][gridLines[0].length()];
 
     for (int i = 0; i < gridLines.length; i++) {
-      for (int j = 0; j < gridLines[i].length(); j++) {
-        if (j > gridLines[0].length()) throw new IllegalStateException("Invalid level data");
-
-        switch (gridLines[i].charAt(j)) {
-          case '0' -> this.grid[i][j] = null;
-          case '1' -> this.grid[i][j] =
-              new Block(Colours.WHITE.getHex(), j * blockWidth, i * blockWidth, blockWidth);
-          case '2' -> this.grid[i][j] = new Block(null, j * blockWidth, i * blockWidth, blockWidth);
-          case '3' -> {
-            this.playerSpawnIdx[0] = j;
-            this.playerSpawnIdx[1] = i;
+      for (int j = 0; j < gridLines[0].length(); j++) {
+        // Some levels may be incorrectly formatted, so we ignore missing blocks and rely
+        // on the fact that the players will notice that the level is broken
+        if (gridLines[i].length() > j) {
+          switch (gridLines[i].charAt(j)) {
+            case '1' -> this.grid[i][j] =
+                new Block(Colours.WHITE.getHex(), j * blockWidth, i * blockWidth, blockWidth);
+            case '2' -> this.grid[i][j] = new Block(null, j * blockWidth, i * blockWidth, blockWidth);
+            case '3' -> {
+              this.playerSpawnIdx[0] = j;
+              this.playerSpawnIdx[1] = i;
+            }
+            case '4' -> {
+              this.coinIdx[0] = j;
+              this.coinIdx[1] = i;
+              this.grid[i][j] = new Block(Colours.TRANSPARENT.getHex(), j * blockWidth, i * blockWidth, blockWidth);
+            }
+            default -> this.grid[i][j] = null;
           }
         }
       }
@@ -145,10 +157,6 @@ public class Level {
     if (grid[yIdx][xIdx].getColour() != null) return;
 
     grid[yIdx][xIdx].setColour(colour);
-
-    int[][] neighbourIndexes = {
-      {xIdx - 1, yIdx}, {xIdx + 1, yIdx}, {xIdx, yIdx - 1}, {xIdx, yIdx + 1}
-    };
 
     setNeighbourColours(xIdx - 1, yIdx, colour);
     setNeighbourColours(xIdx + 1, yIdx, colour);

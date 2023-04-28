@@ -3,9 +3,7 @@ package game;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-/**
- * Represents a block in the game
- */
+/** Represents a block in the game */
 public class Block {
   private Color colour;
   private Rectangle rectangle;
@@ -36,9 +34,11 @@ public class Block {
     this.yIdx = y / size;
   }
 
-  /** Getter for the color of the block
+  /**
+   * Getter for the color of the block
+   *
    * @return the color of the block
-   * */
+   */
   public Color getColour() {
     return colour;
   }
@@ -88,6 +88,7 @@ public class Block {
 
   /**
    * Sets the colour of the block
+   *
    * @param colour the colour of the block
    */
   public void setColour(Color colour) {
@@ -97,6 +98,7 @@ public class Block {
 
   /**
    * Returns the index of the block in the level grid
+   *
    * @return the index of the block in the level grid
    */
   public int[] getIndex() {

@@ -35,7 +35,7 @@ public class Cube {
   public void spawnCube() {
     rectangle = new Rectangle(size.getX(), size.getY());
     this.setPositionTo(position.getX(), position.getY());
-    rectangle.setFill(Colours.GREEN.getHex());
+    rectangle.setFill(Colours.WHITE.getHex());
     gameRoot.getChildren().add(rectangle);
   }
 
@@ -48,10 +48,5 @@ public class Cube {
   public void setPositionTo(double x, double y) {
     this.rectangle.setTranslateX(x);
     this.rectangle.setTranslateY(y);
-  }
-
-  /** Called upon collision with a white block, is responsible for the death effects of the cube. */
-  public void death() {
-    rectangle.setFill(Colours.DARK_GREY.getHex());
   }
 }
