@@ -20,10 +20,10 @@ class ServerCubeTest {
 
     @BeforeEach
     void setUp() {
-        tester = new ServerCube(new Pane(), new Vector2D(0, 0), 30, 50);
-        velocity_constant = GameConstants.VELOCITY_CONSTANT.getValue();
-        acceleration_constant = GameConstants.ACCELERATION_CONSTANT.getValue();
-        blockSize = GameConstants.GRID_SIZE.getValue();
+        tester = new ServerCube(new Pane(), new Vector2D(0, 0));
+        velocity_constant = GameConstants.CUBE_VELOCITY.getValue();
+        acceleration_constant = GameConstants.CUBE_ACCELERATION.getValue();
+        blockSize = GameConstants.BLOCK_SIZE.getValue();
         cubeSize = GameConstants.CUBE_SIZE.getValue();
         blocksPerSecond = GameConstants.BLOCKS_PER_SECOND.getValue();
         //ServerGame serverGame = new ServerGame(null, null, null);

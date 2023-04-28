@@ -104,7 +104,6 @@ public class ServerGame implements Runnable {
    * player Creates the stars Will create the coin to finish the game
    */
   public void initialiseContent() {
-    System.out.println("initialising content");
     // Create empty pane to which the game will virtually be added
     gameRoot = new Pane();
 
@@ -126,7 +125,7 @@ public class ServerGame implements Runnable {
 
   /** Loads the player */
   private void load_player(Vector2D position) {
-    player = new ServerCube(gameRoot, position, cubeSize, gridSize); // creates the player
+    player = new ServerCube(gameRoot, position); // creates the player
     player.start_position = position.clone();
   }
 

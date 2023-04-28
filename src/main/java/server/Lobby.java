@@ -170,6 +170,10 @@ public class Lobby {
         return;
       }
     }
+    // Upon closing of the lobby, a game would be started with 0 players
+    if (this.getNumPlayers() < 1) {
+      return;
+    }
     this.startGame();
   }
 
@@ -192,16 +196,20 @@ public class Lobby {
     this.isInGame = true;
   }
 
-  /** Getter for the game.
+  /**
+   * Getter for the game.
+   *
    * @return the game
-   * */
+   */
   protected ServerGame getGame() {
     return this.game;
   }
 
-  /** Returns the lobby list as a string containing all the information about the lobby.
+  /**
+   * Returns the lobby list as a string containing all the information about the lobby.
+   *
    * @return the lobby list as a string
-   * */
+   */
   public String listLobby() {
     String command = ServerProtocol.UPDATE_LOBBY_LIST.toString() + ServerProtocol.SEPARATOR;
 
@@ -218,9 +226,7 @@ public class Lobby {
     return command;
   }
 
-  /**
-   * Ends the game thread by setting the running status of the game to false.
-   */
+  /** Ends the game thread by setting the running status of the game to false. */
   protected void endGame() {
     this.game.running = false;
     this.isInGame = false;
