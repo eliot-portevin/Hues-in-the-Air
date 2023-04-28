@@ -11,7 +11,6 @@ import javafx.scene.shape.Rectangle;
 /** The cube instance which the server works with. */
 public class ServerCube {
   // Position, velocity, acceleration
-  final int blocksPerSecond = GameConstants.BLOCKS_PER_SECOND.getValue();
   final double velocity_constant;
   final double acceleration_constant;
 
@@ -47,19 +46,17 @@ public class ServerCube {
    *
    * @param gameRoot A virtual game root which the cube and blocks will be added to
    * @param position The position of the cube
-   * @param cubeSize The size of the cube
-   * @param blockSize The size of a block
    */
-  public ServerCube(Pane gameRoot, Vector2D position, int cubeSize, int blockSize) {
+  public ServerCube(Pane gameRoot, Vector2D position) {
     // Initialise position, velocity and acceleration
     this.position = position;
-    this.velocity_constant = GameConstants.VELOCITY_CONSTANT.getValue();
-    this.maxVelocity = this.velocity_constant * 2;
-    this.acceleration_constant = GameConstants.ACCELERATION_CONSTANT.getValue();
-    this.setAccelerationAngle(0);
+    this.velocity_constant = GameConstants.CUBE_VELOCITY.getValue();
+    this.maxVelocity = GameConstants.CUBE_MAX_VELOCITY.getValue();
+    this.acceleration_constant = GameConstants.CUBE_ACCELERATION.getValue();
+    this.setAccelerationAngle(GameConstants.DEFAULT_ACCELERATION_ANGLE.getValue());
 
     this.cubeSize = GameConstants.CUBE_SIZE.getValue();
-    this.blockSize = GameConstants.GRID_SIZE.getValue();
+    this.blockSize = GameConstants.BLOCK_SIZE.getValue();
 
     this.gameRoot = gameRoot;
 

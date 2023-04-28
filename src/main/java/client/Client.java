@@ -813,11 +813,6 @@ public class Client extends Application {
     this.menuController.settingsTabController.setUsernameField();
   }
 
-  /** Starts the game loop */
-  public void startGameLoop() {
-    this.gameController.getGame().gameStarted = true;
-  }
-
   /** Loads a level in the game screen */
   public void loadLevel(String levelPath) {
     if (this.gameController != null) {
