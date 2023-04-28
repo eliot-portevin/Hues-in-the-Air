@@ -5,6 +5,7 @@ import game.Vector2D;
 import javafx.scene.layout.Pane;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,15 +18,29 @@ class ServerCubeTest {
     static int cubeSize;
     static int blocksPerSecond;
     static Thread testGameThread;
+    static Thread clientThread1;
+    static Thread clientThread2;
 
     @BeforeEach
     void setUp() {
-        tester = new ServerCube(new Pane(), new Vector2D(0, 0));
+        tester = new ServerCube(new Pane(), new Vector2D(0, 0)); // test Cube
+
+        // game constants
         velocity_constant = GameConstants.CUBE_VELOCITY.getValue();
         acceleration_constant = GameConstants.CUBE_ACCELERATION.getValue();
         blockSize = GameConstants.BLOCK_SIZE.getValue();
         cubeSize = GameConstants.CUBE_SIZE.getValue();
         blocksPerSecond = GameConstants.BLOCKS_PER_SECOND.getValue();
+
+        //initialization of mock clients and threads
+        ClientHandler c1 = mock(ClientHandler.class);
+        clientThread1 = new Thread(c1);
+        clientThread1.start();
+        ClientHandler c2 = mock(ClientHandler.class);
+        clientThread2 = new Thread(c2);
+        clientThread2.start();
+
+        //
         //ServerGame serverGame = new ServerGame(null, null, null);
         //testGameThread = new Thread(serverGame);
         //testGameThread.start();
