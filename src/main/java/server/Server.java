@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +22,7 @@ public class Server implements Runnable {
   private final ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
   private final ArrayList<Thread> clientThreads = new ArrayList<>();
   private final HashMap<String, Lobby> lobbies = new HashMap<>();
-  private final Map<ServerGame, Map.Entry<Integer, Boolean>> games = new LinkedHashMap<>();
+  private Map<ServerGame, Map.Entry<Integer, Boolean>> games = new LinkedHashMap<>();
 
   private ServerSocket listener;
 
@@ -166,6 +168,20 @@ public class Server implements Runnable {
     return this.games;
   }
 
+  /** Sorts the games by the number of levels completed. */
+  private void sortGames() {
+    List<Map.Entry<ServerGame, Map.Entry<Integer, Boolean>>> list =
+        new LinkedList<>(this.games.entrySet());
+
+    list.sort(((o1, o2) -> o2.getValue().getKey().compareTo(o1.getValue().getKey())));
+
+    this.games =
+        list.stream()
+            .collect(
+                Collectors.toMap(
+                    Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
+  }
+
   /**
    * Returns the name of the client for given username
    *
@@ -254,6 +270,8 @@ public class Server implements Runnable {
    * (running or finished).
    */
   private void updateGameList() {
+    this.sortGames();
+
     synchronized (this.clientHandlers) {
       for (ClientHandler client : this.clientHandlers) {
         client.updateGameList();
@@ -317,15 +335,6 @@ public class Server implements Runnable {
     }
 
     this.updateGameList();
-  }
-
-  /**
-   * Returns the Logger of the server. Called from levelLoader or game when problems occur.
-   *
-   * @return The Logger of the server
-   */
-  public Logger getLogger() {
-    return LOGGER;
   }
 
   /**

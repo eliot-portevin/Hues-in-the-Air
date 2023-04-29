@@ -1,6 +1,10 @@
 package client.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -9,7 +13,7 @@ import javafx.scene.layout.VBox;
 /** The controller for the games tab in the menu window. */
 public class MenuGameController {
 
-  @FXML private VBox gamesTab;
+  @FXML private VBox highscoreTab;
 
   @FXML private Label labelLobbyName;
   @FXML private Label labelScore;
@@ -25,6 +29,7 @@ public class MenuGameController {
    */
   public void initialize() {
     this.initialiseLists();
+    this.initialiseFonts();
   }
 
   /** Initialises the list views in the games tab. */
@@ -59,6 +64,28 @@ public class MenuGameController {
             });
   }
 
+  private void initialiseFonts() {
+    labelLobbyName
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", highscoreTab.widthProperty().divide(25)));
+    labelScore
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", highscoreTab.widthProperty().divide(25)));
+    labelStatus
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", highscoreTab.widthProperty().divide(25)));
+
+    gameList
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", highscoreTab.widthProperty().divide(35)));
+    gameStatusList
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", highscoreTab.widthProperty().divide(35)));
+    scoreList
+        .styleProperty()
+        .bind(Bindings.concat("-fx-font-size: ", highscoreTab.widthProperty().divide(35)));
+  }
+
   /**
    * The client has received a full list of games from the server. This method updates the list of
    * games in the games tab.
@@ -88,8 +115,7 @@ public class MenuGameController {
       this.gameList.getItems().addAll(gameList);
       this.gameStatusList.getItems().addAll(gameStatusList);
       this.scoreList.getItems().addAll(scoreList);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       this.gameList.getItems().add("Received invalid game list from server!");
     }
   }

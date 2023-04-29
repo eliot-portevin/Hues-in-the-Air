@@ -66,8 +66,8 @@ public class ServerGame implements Runnable {
     instance = this;
   }
 
-  /** Updates position on all clients */
-  protected void updateAllClientPositions() {
+  /** Sends a position update to all clients, so they can move the cube to its current position. */
+  protected void cubePositionUpdate() {
     for (ClientHandler client : clients) {
       client.positionUpdate(
           ServerProtocol.POSITION_UPDATE
@@ -75,6 +75,21 @@ public class ServerGame implements Runnable {
               + player.position.getX()
               + ServerProtocol.SEPARATOR
               + player.position.getY());
+    }
+  }
+
+  /**
+   * Informs all clients of how many lives they have left and how many levels they have completed. That
+   * way, they can update their UI accordingly.
+   */
+  private void gameStatusUpdate() {
+    for (ClientHandler client : clients) {
+      client.gameStatusUpdate(
+          ServerProtocol.GAME_STATUS_UPDATE
+              + ServerProtocol.SEPARATOR.toString()
+              + this.lives
+              + ServerProtocol.SEPARATOR
+              + this.levelsCompleted);
     }
   }
 
@@ -108,6 +123,9 @@ public class ServerGame implements Runnable {
 
   /** Loads the level */
   private void load_level() {
+    // Inform clients of the game status
+    this.gameStatusUpdate();
+
     // Get a random level path
     String levelPath = this.getRandomLevelPath();
     this.sendLevelPath(levelPath);
@@ -153,7 +171,7 @@ public class ServerGame implements Runnable {
         previousTime = now;
 
         update(dt);
-        updateAllClientPositions();
+        cubePositionUpdate();
       }
     }
     this.endGame();
@@ -200,6 +218,8 @@ public class ServerGame implements Runnable {
     if (this.lives <= 0) {
       this.endGame();
     }
+
+    this.gameStatusUpdate();
   }
 
   /**
@@ -288,8 +308,8 @@ public class ServerGame implements Runnable {
       }
     }
     // Use this to test a specific level
-    return getClass().getResource("/levels/easy/level_01.csv").getPath();
-    //return path;
+    return getClass().getResource("/levels/easy/level_02.csv").getPath();
+    // return path;
   }
 
   /**
@@ -303,6 +323,8 @@ public class ServerGame implements Runnable {
       this.load_level();
       this.levelsCompleted++;
       Server.getInstance().updateGameLevelsCompleted(this);
+
+      this.gameStatusUpdate();
     }
   }
 

@@ -90,6 +90,11 @@ public enum ServerProtocol {
   SEND_CRITICAL_BLOCKS(1),
   /** Updates the position of the cube for the client. */
   POSITION_UPDATE(2),
+  /**
+   * Informs the players in the game of how many lives they have left and how many levels they have
+   * completed.
+   */
+  GAME_STATUS_UPDATE(2),
   /** Tells the client to load new level */
   LOAD_LEVEL(1);
   private final int numArgs;

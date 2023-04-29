@@ -116,6 +116,7 @@ public class ServerIn implements Runnable {
                     .gameController
                     .getGame()
                     .updatePosition(command[1], command[2]);
+                case GAME_STATUS_UPDATE -> this.client.gameController.updateGameStatus(command[1], command[2]);
                 case LOAD_LEVEL -> this.client.loadLevel(command[1]);
                 case SEND_CRITICAL_BLOCKS -> {
                   if (this.client.gameController != null) {

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="homeTab" prefHeight="540.0" prefWidth="960.0" stylesheets="@HomeTab.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuHomeController">
+<VBox fx:id="homeTab" stylesheets="@HomeTab.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuHomeController">
    <children>
       <GridPane>
         <columnConstraints>

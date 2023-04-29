@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -481,5 +482,15 @@ public class ClientHandler implements Runnable {
    */
   public void sendLevelPath(String levelPath) {
     this.out.println(ServerProtocol.LOAD_LEVEL.toString() + ServerProtocol.SEPARATOR + levelPath);
+  }
+
+  /**
+   * Informs the clients in the game of the amount of lives they have left and how many levels they
+   * have completed.
+   *
+   * @param command The command to send to the client
+   */
+  public void gameStatusUpdate(String command) {
+    this.out.println(command);
   }
 }

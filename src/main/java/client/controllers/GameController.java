@@ -229,4 +229,16 @@ public class GameController {
   public void loadLevel(String levelPath) {
     this.game.loadLevel(levelPath);
   }
+
+  /**
+   * The server has sent the number of lives remaining and the number of levels completed. The
+   * corresponding labels are updated.
+   *
+   * @param livesRemaining the number of lives remaining
+   * @param levelsCompleted the number of levels completed
+   */
+  public void updateGameStatus(String livesRemaining, String levelsCompleted) {
+    this.livesLabel.setText("Lives: " + livesRemaining);
+    this.scoreLabel.setText("Levels completed: " + levelsCompleted);
+  }
 }

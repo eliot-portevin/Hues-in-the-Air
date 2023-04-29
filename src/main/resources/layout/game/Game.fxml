@@ -74,7 +74,7 @@
          </children>
       </HBox>
       <Button fx:id="quitButton" mnemonicParsing="false" stylesheets="@../Button.css" text="Quit Game" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-      <Label fx:id="livesLabel" text="Lives Remaining: 4" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <Label fx:id="scoreLabel" text="Levels Won: 3" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+      <Label fx:id="livesLabel" text="Lives:" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <Label fx:id="scoreLabel" text="Levels completed:" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP" />
    </children>
 </GridPane>

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="highscoreTab" prefHeight="540.0" prefWidth="960.0" stylesheets="@GamesTab.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuGameController">
+<VBox fx:id="highscoreTab" prefHeight="540.0" prefWidth="960.0" stylesheets="@HighscoresTab.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.MenuGameController">
    <children>
       <GridPane VBox.vgrow="ALWAYS">
         <columnConstraints>
@@ -25,7 +25,7 @@
         </rowConstraints>
          <children>
             <ListView fx:id="gameList" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="labelLobbyName" alignment="CENTER" text="Lobby name" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Label fx:id="labelLobbyName" alignment="CENTER" text="Lobby" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Label fx:id="labelScore" text="Score" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Label fx:id="labelStatus" text="Status" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <ListView fx:id="gameStatusList" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />

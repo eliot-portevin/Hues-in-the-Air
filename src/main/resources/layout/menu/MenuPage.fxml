@@ -82,7 +82,7 @@
          </children>
       </HBox>
       <fx:include fx:id="settingsTab" source="SettingsTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
-      <fx:include fx:id="highscoreTab" source="GamesTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
+      <fx:include fx:id="highscoreTab" source="HighscoresTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
       <fx:include fx:id="homeTab" source="HomeTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
    </children>
 </GridPane>
