@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Reads a level from a csv file for the {@link game.Level} class.
+ */
 public class LevelReader {
-    static String path;
-
     /**
      * Reads the level from the csv file and returns it as a string with \n to split lines
      * @param path the path to the level

@@ -813,7 +813,9 @@ public class Client extends Application {
     this.menuController.settingsTabController.setUsernameField();
   }
 
-  /** Loads a level in the game screen */
+  /** Loads a level in the game screen
+   * @param levelPath The path of the level to be loaded from the resources
+   * */
   public void loadLevel(String levelPath) {
     if (this.gameController != null) {
       this.gameController.loadLevel(levelPath);

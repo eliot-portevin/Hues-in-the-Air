@@ -7,6 +7,9 @@ import game.Vector2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+/**
+ * The server version of a cube. Used to handle the logic of the cube on the server side.
+ */
 public class ServerCube extends Cube {
   /**
    * Creates a cube.

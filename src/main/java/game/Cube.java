@@ -24,11 +24,21 @@ public abstract class Cube {
   /** The acceleration which the cube is currently experiencing. */
   public Vector2D acceleration = new Vector2D(0, 0);
 
+  /**
+   * The angle at which the cube is accelerating (0 being downwards, then rotate counterclockwise).
+   */
   public int accelerationAngle = 0;
 
+  /**
+   * Whether the cube is jumping at the moment. True at the beginning because the cube spawns in the
+   * air.
+   */
   public boolean jumping = true;
+  /** Whether the cube has already rotated in this jump */
   public boolean canRotate = false;
+  /** The colour on which the cube is currently moving. */
   public Color colourCanJump;
+  /** The point around which the cube will rotate (during a jump). */
   public Vector2D rotationPoint;
 
   // Cube information
@@ -164,7 +174,8 @@ public abstract class Cube {
             }
             // If the block was to the left of the cube before collision
             else if (velocity.getX() < 0) {
-              this.setPositionTo(block.getX() + block.getRectangle().getWidth(), this.position.getY());
+              this.setPositionTo(
+                  block.getX() + block.getRectangle().getWidth(), this.position.getY());
               this.setAccelerationAngle(270);
             }
 
@@ -205,7 +216,8 @@ public abstract class Cube {
             }
             // If the block was above the cube before collision
             else if (velocity.getY() < 0) {
-              this.setPositionTo(this.position.getX(), block.getY() + block.getRectangle().getHeight());
+              this.setPositionTo(
+                  this.position.getX(), block.getY() + block.getRectangle().getHeight());
               this.setAccelerationAngle(180);
             }
 
@@ -244,6 +256,8 @@ public abstract class Cube {
    * Rotates the gravitational acceleration vector to the given angle without adjusting the cube
    * velocity. Called to rotate the cube around an edge as opposed to reset the velocity after a
    * collision.
+   *
+   * @param angle angle compared to the y-axis
    */
   public void onlySetAccelerationAngle(int angle) {
     this.accelerationAngle = angle;
@@ -344,16 +358,17 @@ public abstract class Cube {
 
   /**
    * Abstraction of the collision check between the cube and the coin at the end of the level.
+   *
+   * @param block the block which might be a coin
    */
   public abstract void checkCoinCollision(Block block);
 
-  /**
-   * Abstraction of the death method. Called when the cube has collided with a white block.
-   */
+  /** Abstraction of the death method. Called when the cube has collided with a white block. */
   public abstract void die();
 
   /**
    * Sets the player's velocity to the given values.
+   *
    * @param velocityX the x component of the velocity
    * @param velocityY the y component of the velocity
    */

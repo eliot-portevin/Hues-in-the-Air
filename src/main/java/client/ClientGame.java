@@ -34,6 +34,7 @@ public class ClientGame {
    * Creates a new game.
    *
    * @param client the client that is playing the game
+   * @param backgroundPane the pane on which the game is displayed
    */
   public ClientGame(Client client, Pane backgroundPane) {
     this.client = client;
@@ -78,8 +79,11 @@ public class ClientGame {
   /**
    * update the position of the player
    *
-   * @param positionX - x position
-   * @param positionY - y position
+   * @param positionX - the x component of the cube's position
+   * @param positionY - the y component of the cube's position
+   * @param velocityX - the x component of the cube's velocity
+   * @param velocityY - the y component of the cube's velocity
+   * @param accelerationAngle - the angle of the acceleration
    */
   protected void updatePosition(String positionX, String positionY, String velocityX, String velocityY, String accelerationAngle) {
     player.setPositionTo(Double.parseDouble(positionX), Double.parseDouble(positionY));
@@ -120,7 +124,9 @@ public class ClientGame {
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
   }
 
-  /** The client has received the level path from the server and can now load the level. */
+  /** The client has received the level path from the server and can now load the level.
+   * @param levelPath the path to the level to load from the resources folder
+   * */
   public void loadLevel(String levelPath) {
     this.gameRoot.getChildren().clear();
 

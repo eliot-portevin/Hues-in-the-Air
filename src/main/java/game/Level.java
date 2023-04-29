@@ -17,6 +17,7 @@ public class Level {
   /** The position at which the player spawns. */
   public int[] playerSpawnIdx = new int[2];
 
+  /** The position at which the coin will spawn if no coin is present in the level. */
   public int[] coinIdx = {-1, -1};
 
   private final ArrayList<Block> criticalBlocks = new ArrayList<>();

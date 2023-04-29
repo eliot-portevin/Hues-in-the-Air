@@ -48,6 +48,7 @@ public class ServerGame implements Runnable {
   /** The instance of the game */
   public static ServerGame instance;
 
+  /** The boolean used for the game loop */
   protected Boolean running = true;
   private Boolean coinCollision = false;
 
@@ -56,6 +57,7 @@ public class ServerGame implements Runnable {
    *
    * @param clientsAndColours The clients and their respective colours
    * @param gameId The number of the game
+   * @param lobby The lobby in which the game is played
    */
   public ServerGame(HashMap<ClientHandler, Color> clientsAndColours, String gameId, Lobby lobby) {
     this.clientColours = clientsAndColours;
