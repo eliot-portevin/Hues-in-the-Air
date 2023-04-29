@@ -331,14 +331,14 @@ public class ServerGame implements Runnable {
       if (files != null) {
         if (files.length > 0) {
           int randomFile = (int) (Math.random() * files.length);
-          path = files[randomFile].getPath();
+          path = "/levels/" + dir.getName() + "/" + files[randomFile].getName();
           found = true;
         }
       }
     }
     // Use this to test a specific level
-    return getClass().getResource("/levels/easy/level_05.csv").getPath();
-    // return path;
+    // return getClass().getResource("/levels/easy/level_05.csv").getPath();
+    return path;
   }
 
   /**

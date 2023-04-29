@@ -2,6 +2,7 @@ package game;
 
 import client.LevelReader;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -33,11 +34,11 @@ public class Level {
    * @param gameRoot the pane on which the level is drawn
    */
   public Level(String levelPath, int blockWidth, Pane gameRoot) {
-    this.levelPath = levelPath;
+    this.levelPath = Objects.requireNonNull(getClass().getResource(levelPath)).getPath();
     this.blockWidth = blockWidth;
     this.gameRoot = gameRoot;
 
-    String levelString = LevelReader.readLevel(levelPath);
+    String levelString = LevelReader.readLevel(this.levelPath);
     loadLevel(levelString);
   }
 
