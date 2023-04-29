@@ -17,19 +17,19 @@ import javafx.scene.text.TextFlow;
 public class MenuController {
   // Sub-controllers
   @FXML private MenuHomeController homeTabController;
-  @FXML private MenuGameController gamesTabController;
+  @FXML private MenuGameController highscoreTabController;
   /** The settings controller */
   public MenuSettingsController settingsTabController;
 
   // Tab windows
   @FXML private VBox homeTab;
-  @FXML private VBox gamesTab;
+  @FXML private VBox highscoreTab;
   @FXML private VBox settingsTab;
 
   @FXML private GridPane backgroundPane;
 
   // Tab buttons
-  @FXML private ToggleButton tabGamesButton;
+  @FXML private ToggleButton tabHighscoresButton;
   @FXML private ToggleButton tabHomeButton;
   @FXML private ToggleButton tabSettingsButton;
 
@@ -86,7 +86,7 @@ public class MenuController {
 
   /** Configures the tabs to play a click sound when the mouse enter them */
   private void setButtonBehaviour() {
-    for (ToggleButton tab : Arrays.asList(tabHomeButton, tabGamesButton, tabSettingsButton)) {
+    for (ToggleButton tab : Arrays.asList(tabHomeButton, tabHighscoresButton, tabSettingsButton)) {
       tab.setOnMouseEntered(
           e -> {
             if (!tab.isSelected()) {
@@ -101,7 +101,7 @@ public class MenuController {
     tabHomeButton
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
-    tabGamesButton
+    tabHighscoresButton
         .styleProperty()
         .bind(Bindings.concat("-fx-font-size: ", backgroundPane.widthProperty().divide(50)));
     tabSettingsButton
@@ -117,11 +117,11 @@ public class MenuController {
    * tab can be selected at a time.
    */
   private void setTabButtonsBehaviour() {
-    for (ToggleButton tab : Arrays.asList(tabHomeButton, tabGamesButton, tabSettingsButton)) {
+    for (ToggleButton tab : Arrays.asList(tabHomeButton, tabHighscoresButton, tabSettingsButton)) {
       tab.setOnAction(
           e -> {
             for (ToggleButton otherTab :
-                Arrays.asList(tabHomeButton, tabGamesButton, tabSettingsButton)) {
+                Arrays.asList(tabHomeButton, tabHighscoresButton, tabSettingsButton)) {
               if (otherTab != tab) {
                 configureTab(otherTab, false);
               }
@@ -143,8 +143,8 @@ public class MenuController {
     if (isSelected) {
       if (tab == tabHomeButton) {
         homeTab.toFront();
-      } else if (tab == tabGamesButton) {
-        gamesTab.toFront();
+      } else if (tab == tabHighscoresButton) {
+        highscoreTab.toFront();
       } else if (tab == tabSettingsButton) {
         settingsTab.toFront();
       }
@@ -182,7 +182,7 @@ public class MenuController {
    * @param games The list of games and whether they are being played or not
    */
   public void setGameList(String[] games) {
-    this.gamesTabController.setGameList(games);
+    this.highscoreTabController.setGameList(games);
   }
 
   /**

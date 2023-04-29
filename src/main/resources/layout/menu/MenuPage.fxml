@@ -38,7 +38,7 @@
             </HBox>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ToggleButton fx:id="tabGamesButton" mnemonicParsing="false" stylesheets="@../TabButton.css" text="Games" />
+                  <ToggleButton fx:id="tabHighscoresButton" mnemonicParsing="false" stylesheets="@../TabButton.css" text="Highscores" />
                </children>
             </HBox>
             <HBox alignment="BOTTOM_CENTER" HBox.hgrow="ALWAYS">
@@ -82,7 +82,7 @@
          </children>
       </HBox>
       <fx:include fx:id="settingsTab" source="SettingsTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
-      <fx:include fx:id="gamesTab" source="GamesTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
+      <fx:include fx:id="highscoreTab" source="GamesTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
       <fx:include fx:id="homeTab" source="HomeTab.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" />
    </children>
 </GridPane>

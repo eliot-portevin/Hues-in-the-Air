@@ -20,7 +20,7 @@ public class Server implements Runnable {
   private final ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
   private final ArrayList<Thread> clientThreads = new ArrayList<>();
   private final HashMap<String, Lobby> lobbies = new HashMap<>();
-  private final Map<ServerGame, Boolean> games = new LinkedHashMap<>();
+  private final Map<ServerGame, Map.Entry<Integer, Boolean>> games = new LinkedHashMap<>();
 
   private ServerSocket listener;
 
@@ -162,7 +162,7 @@ public class Server implements Runnable {
   /**
    * @return The games that have been played, or are still playing, and their status
    */
-  protected Map<ServerGame, Boolean> getGames() {
+  protected Map<ServerGame, AbstractMap.Entry<Integer, Boolean>> getGames() {
     return this.games;
   }
 
@@ -292,23 +292,25 @@ public class Server implements Runnable {
 
   /**
    * Called from {@link Lobby} when a game has been started. Adds the game to the list of games and
-   * sends a message to all clients in the server containing the list of all games.
+   * sends a message to all clients in the server containing the list of all games. The info stored
+   * in the map is: game instance, levels completed, whether the game is running or not.
    *
    * @param game The game instance that has been started
    */
   protected void addGame(ServerGame game) {
-    this.games.put(game, true);
+    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
     this.updateGameList();
   }
 
   /**
    * Called from {@link ServerGame} when a game has ended. Sets the game to finished and sends a
-   * message to all clients in the server containing the list of all games.
+   * message to all clients in the server containing the list of all games. The info stored in the
+   * map is: game instance, levels completed, whether the game is running or not.
    *
    * @param game The game instance that has ended
    */
   protected void endGame(ServerGame game) {
-    this.games.put(game, false);
+    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), false));
 
     for (ClientHandler client : game.getPlayers()) {
       client.gameEnded();
@@ -319,9 +321,23 @@ public class Server implements Runnable {
 
   /**
    * Returns the Logger of the server. Called from levelLoader or game when problems occur.
+   *
    * @return The Logger of the server
    */
   public Logger getLogger() {
     return LOGGER;
+  }
+
+  /**
+   * Called from {@link ServerGame#nextLevel()} when a level has been completed. Updates the number
+   * of levels completed and sends a message to all clients in the server containing the list of all
+   * games. The info stored in the map is: game instance, levels completed, whether the game is
+   * running or not.
+   *
+   * @param game The game instance that has completed a level
+   */
+  protected void updateGameLevelsCompleted(ServerGame game) {
+    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
+    this.updateGameList();
   }
 }

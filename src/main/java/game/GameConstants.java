@@ -2,6 +2,11 @@ package game;
 
 /** The constants used in the game. */
 public enum GameConstants {
+  DEFAULT_LIVES(3),
+  LIFE_GAIN_EASY(1),
+  LIFE_GAIN_MEDIUM(2),
+  LIFE_GAIN_HARD(3),
+  MAX_LIVES(10),
   BLOCKS_PER_SECOND(8),
   CUBE_SIZE(30),
   BLOCK_SIZE(50),

@@ -1,6 +1,7 @@
 package server;
 
 import game.Block;
+import game.GameConstants;
 import game.Level;
 import game.Vector2D;
 import java.io.File;
@@ -36,6 +37,8 @@ public class ServerGame implements Runnable {
   /** Whether the cube is currently moving */
   public boolean cubeMoving = false;
 
+  private int lives = GameConstants.DEFAULT_LIVES.getValue();
+
   // Lobby
   private final ArrayList<ClientHandler> clients;
   private final Lobby lobby;
@@ -44,7 +47,9 @@ public class ServerGame implements Runnable {
 
   /** The instance of the game */
   public static ServerGame instance;
+
   protected Boolean running = true;
+  private Boolean coinCollision = false;
 
   /**
    * Creates a new game
@@ -101,9 +106,7 @@ public class ServerGame implements Runnable {
     this.load_level();
   }
 
-  /**
-   * Loads the level
-   */
+  /** Loads the level */
   private void load_level() {
     // Get a random level path
     String levelPath = this.getRandomLevelPath();
@@ -126,6 +129,8 @@ public class ServerGame implements Runnable {
     player = new ServerCube(gameRoot, position); // creates the player
     player.start_position = position.copy();
     player.resetMovement();
+
+    this.cubeMoving = false;
   }
 
   /** Runnable run method. This method is called when the thread is started. */
@@ -183,9 +188,18 @@ public class ServerGame implements Runnable {
     return instance;
   }
 
-  /** The cube has touched a white block. The block position is reset, etc. */
-  public void resetLevel() {
+  /**
+   * The cube has entered in contact with a white block. Its position, velocity and acceleration are
+   * reset. A life is deducted from the players and the game is ended if that was their last life.
+   */
+  public void die() {
+    this.player.resetMovement();
     this.cubeMoving = false;
+    this.lives--;
+
+    if (this.lives <= 0) {
+      this.endGame();
+    }
   }
 
   /**
@@ -274,16 +288,30 @@ public class ServerGame implements Runnable {
       }
     }
     // Use this to test a specific level
-    // return getClass().getResource("/levels/hard/level_03.csv").getPath();
-    return path;
+    return getClass().getResource("/levels/easy/level_01.csv").getPath();
+    //return path;
   }
 
   /**
    * The cube has collided with a coin in the level. A new level is loaded and the number of levels
    * completed is incremented.
    */
-  void nextLevel() {
-    this.load_level();
-    this.levelsCompleted++;
+  protected void nextLevel() {
+    if (!coinCollision) {
+      coinCollision = true;
+
+      this.load_level();
+      this.levelsCompleted++;
+      Server.getInstance().updateGameLevelsCompleted(this);
+    }
+  }
+
+  /**
+   * Returns the number of levels completed by the players in this game.
+   *
+   * @return The number of levels completed.
+   */
+  public int getLevelsCompleted() {
+    return this.levelsCompleted;
   }
 }

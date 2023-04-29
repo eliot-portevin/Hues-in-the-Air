@@ -74,17 +74,23 @@ public class MenuGameController {
     ArrayList<String> gameStatusList = new ArrayList<>();
     ArrayList<String> scoreList = new ArrayList<>();
 
-    for (String game : games) {
-      String gameId = game.split(" ")[0];
-      String gameStatus = game.split(" ")[1];
+    try {
+      for (String game : games) {
+        String gameId = game.split(" ")[0];
+        String gameScore = game.split(" ")[1];
+        String gameStatus = game.split(" ")[2];
 
-      gameList.add(gameId);
-      gameStatusList.add(gameStatus.equals("true") ? "In Game" : "Finished");
-      scoreList.add("Undefined");
+        gameList.add(gameId);
+        gameStatusList.add(gameStatus.equals("true") ? "In Game" : "Finished");
+        scoreList.add(gameScore);
+      }
+
+      this.gameList.getItems().addAll(gameList);
+      this.gameStatusList.getItems().addAll(gameStatusList);
+      this.scoreList.getItems().addAll(scoreList);
     }
-
-    this.gameList.getItems().addAll(gameList);
-    this.gameStatusList.getItems().addAll(gameStatusList);
-    this.scoreList.getItems().addAll(scoreList);
+    catch (Exception e) {
+      this.gameList.getItems().add("Received invalid game list from server!");
+    }
   }
 }

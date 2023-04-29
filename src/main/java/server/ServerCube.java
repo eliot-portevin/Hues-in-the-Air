@@ -195,7 +195,7 @@ public class ServerCube {
 
           // Check for collision with white block
           if (block.getColour().equals(Colours.WHITE.getHex())) {
-            this.resetMovement();
+            this.die();
           }
         }
       }
@@ -239,7 +239,7 @@ public class ServerCube {
 
           // Check collision with a white block
           if (block.getColour().equals(Colours.WHITE.getHex())) {
-            this.resetMovement();
+            this.die();
           }
         }
       }
@@ -292,8 +292,8 @@ public class ServerCube {
   }
 
   /**
-   * The cube has entered in contact with a white cube. It is sent back to the start of the level
-   * and the level is reset.
+   * Resets the position, velocity and acceleration. Called at the beginning of a level and when the
+   * cube has collided with a white block.
    */
   void resetMovement() {
     this.position.setX(start_position.getX());
@@ -305,8 +305,15 @@ public class ServerCube {
 
     this.velocity.setX(0);
     this.velocity.setY(0);
+  }
 
-    if (ServerGame.getInstance() != null) ServerGame.getInstance().resetLevel();
+  /**
+   * The cube has entered in contact with a white cube. Its position, velocity and acceleration are
+   * reset. The game instance is also informed of this event so that a life can be deducted. See
+   * {@link ServerGame#die()}.
+   */
+  private void die() {
+    if (ServerGame.getInstance() != null) ServerGame.getInstance().die();
   }
 
   /**
