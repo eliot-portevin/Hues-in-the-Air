@@ -5,6 +5,7 @@ import game.Colours;
 import game.Cube;
 import game.Vector2D;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 public class ServerCube extends Cube {
   /**
@@ -38,5 +39,21 @@ public class ServerCube extends Cube {
   @Override
   public void die() {
     if (ServerGame.getInstance() != null) ServerGame.getInstance().die();
+  }
+
+  /**
+   * Calls the super method to jump. If a jump has successfully been performed, all clients in the
+   * game are informed of the jump (the coordinates of the rotation point). See {@link
+   * ServerGame#jumpUpdate()}.
+   *
+   * @param Colour the colour of the player who requested a jump
+   */
+  @Override
+  public void jump(Color Colour) {
+    super.jump(Colour);
+
+    if (jumping) {
+      ServerGame.getInstance().jumpUpdate();
+    }
   }
 }

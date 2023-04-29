@@ -74,13 +74,19 @@ public class ServerGame implements Runnable {
               + ServerProtocol.SEPARATOR.toString()
               + player.getPosition().getX()
               + ServerProtocol.SEPARATOR
-              + player.getPosition().getY());
+              + player.getPosition().getY()
+              + ServerProtocol.SEPARATOR
+              + player.getVelocity().getX()
+              + ServerProtocol.SEPARATOR
+              + player.getVelocity().getY()
+              + ServerProtocol.SEPARATOR
+              + player.accelerationAngle);
     }
   }
 
   /**
-   * Informs all clients of how many lives they have left and how many levels they have completed. That
-   * way, they can update their UI accordingly.
+   * Informs all clients of how many lives they have left and how many levels they have completed.
+   * That way, they can update their UI accordingly.
    */
   private void gameStatusUpdate() {
     for (ClientHandler client : clients) {
@@ -91,6 +97,22 @@ public class ServerGame implements Runnable {
               + ServerProtocol.SEPARATOR
               + this.levelsCompleted);
     }
+  }
+
+  /**
+   * The cube has just jumped. Inform the client of the coordinates of the rotation point and update
+   * their movement.
+   */
+  protected void jumpUpdate() {
+    for (ClientHandler client : clients) {
+      client.jumpUpdate(
+          ServerProtocol.JUMP_UPDATE
+              + ServerProtocol.SEPARATOR.toString()
+              + player.rotationPoint.getX()
+              + ServerProtocol.SEPARATOR
+              + player.rotationPoint.getY());
+    }
+    cubePositionUpdate();
   }
 
   /**
@@ -172,15 +194,12 @@ public class ServerGame implements Runnable {
         previousTime = now;
 
         update(dt);
-        cubePositionUpdate();
       }
 
-      /*
-      if (now - clientUpdateTime > (double) 1 / 10) {
+      if ((now - clientUpdateTime) * 1e-9 > (double) 1 / 10) {
         clientUpdateTime = System.nanoTime();
         cubePositionUpdate();
       }
-      */
     }
     this.endGame();
   }

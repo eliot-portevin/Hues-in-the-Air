@@ -89,7 +89,9 @@ public enum ServerProtocol {
   /** Sends the critical blocks and their colour to the client. */
   SEND_CRITICAL_BLOCKS(1),
   /** Updates the position of the cube for the client. */
-  POSITION_UPDATE(2),
+  POSITION_UPDATE(5),
+  /** The cube has just jumped. Informs the client of the coordinates of the rotation point. */
+  JUMP_UPDATE(2),
   /**
    * Informs the players in the game of how many lives they have left and how many levels they have
    * completed.

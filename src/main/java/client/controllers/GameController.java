@@ -62,8 +62,8 @@ public class GameController {
 
   /** Starts the game. Is required because otherwise the client is being set too late otherwise */
   public void startGame() {
-    this.game = new ClientGame(this.client);
-    game.run(this.gamePane);
+    this.game = new ClientGame(this.client, this.gamePane);
+    game.run();
   }
   /**
    * getter for the game

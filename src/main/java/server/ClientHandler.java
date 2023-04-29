@@ -493,4 +493,14 @@ public class ClientHandler implements Runnable {
   public void gameStatusUpdate(String command) {
     this.out.println(command);
   }
+
+  /**
+   * Informs the client of the position of the rotation point in the game. Called when the cube has
+   * just jumped.
+   *
+   * @param command The command to send to the client
+   */
+  public void jumpUpdate(String command) {
+    this.out.println(command);
+  }
 }

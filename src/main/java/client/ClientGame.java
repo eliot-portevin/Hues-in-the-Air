@@ -1,9 +1,7 @@
 package client;
 
-import game.Colours;
-import game.GameConstants;
-import game.Level;
-import game.Vector2D;
+import game.*;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Timer;
@@ -47,23 +45,30 @@ public class ClientGame {
    *
    * @param client the client that is playing the game
    */
-  public ClientGame(Client client) {
+  public ClientGame(Client client, Pane backgroundPane) {
     this.client = client;
+    this.appRoot = backgroundPane;
   }
 
   /**
    * Called every frame and handles the game logic.
    *
-   * @param deltaF the time between the last frame and the current frame
+   * @param dt the time between the last frame and the current frame
    */
-  public void update(double deltaF) {
+  public void update(double dt) {
     // Possibility to add a pause method
-    this.gameUpdate(deltaF);
+    this.gameUpdate(dt);
   }
 
   /** The update method that is called if the game is not paused. Handles the game logic. */
-  private void gameUpdate(double deltaF) {
-    this.analyseKeys(deltaF);
+  private void gameUpdate(double dt) {
+    this.analyseKeys(dt);
+
+    if (player != null) {
+      Block[] neighbourBlocks =
+          this.level.getNeighbourBlocks(player.getPosition().getX(), player.getPosition().getY());
+      player.move(neighbourBlocks, dt);
+    }
   }
 
   /**
@@ -81,19 +86,16 @@ public class ClientGame {
       }
     }
   }
-
-  /** The update method that is called if the game is paused. */
-  private void pauseUpdate(double deltaF) {
-    analyseKeys(deltaF);
-  }
   /**
    * update the position of the player
    *
    * @param positionX - x position
    * @param positionY - y position
    */
-  protected void updatePosition(String positionX, String positionY) {
+  protected void updatePosition(String positionX, String positionY, String velocityX, String velocityY, String accelerationAngle) {
     player.setPositionTo(Double.parseDouble(positionX), Double.parseDouble(positionY));
+    player.setVelocityTo(Double.parseDouble(velocityX), Double.parseDouble(velocityY));
+    player.onlySetAccelerationAngle(Integer.parseInt(accelerationAngle));
   }
 
   /** Returns whether a key has been pressed by the user or not. */
@@ -104,11 +106,8 @@ public class ClientGame {
   /**
    * Initializes the content of the game Loads the level data and creates the platforms Creates the
    * player Creates the stars Will create the coin to finish the game.
-   *
-   * @param backgroundPane the pane that the game is displayed on
    */
-  public void initialiseContent(Pane backgroundPane) {
-    this.appRoot = backgroundPane;
+  public void initialiseContent() {
     gameRoot = new Pane();
 
     // The camera is always centered on the player (middle of the screen)
@@ -196,38 +195,28 @@ public class ClientGame {
 
   /**
    * Launches the application.
-   *
-   * @param pane the pane to launch the application in
    */
-  public void run(Pane pane) {
-    this.initialiseContent(pane);
+  public void run() {
+    this.initialiseContent();
 
     this.timer =
         new AnimationTimer() {
-          double timePerFrame = 1e9 / 60; // 60 FPS
-          double deltaF = 0;
-          long previousTime = 0;
-          int frames = 0;
-          long lastCheck = System.currentTimeMillis();
+          long previousTime = System.nanoTime();
+          final int FPS = 120;
+          double dt;
 
           @Override
           public void handle(long now) { // Called every frame
-            deltaF += (now - previousTime) / timePerFrame;
-            previousTime = now;
-            if (deltaF >= 1) {
-              while (deltaF >= 1) {
-                update(deltaF);
-                frames++;
-                deltaF--;
-              }
-            }
+            dt = (now - previousTime) * 1e-9; // Time since last frame in seconds
 
-            if (System.currentTimeMillis() - lastCheck >= 1000) {
-              frames = 0;
-              lastCheck = System.currentTimeMillis();
+            if (dt > (double) 1/FPS) {
+              previousTime = now;
+
+              update(dt);
             }
           }
         };
+
     this.timer.start();
   }
 
@@ -250,5 +239,18 @@ public class ClientGame {
     offset.addInPlace(playerScreenPosition);
     gameRoot.setLayoutX(offset.getX());
     gameRoot.setLayoutY(offset.getY());
+  }
+
+  /**
+   * The cube has successfully jumped. The client has now just been informed of the coordinates of the point
+   * around which the cube should rotate.
+   *
+   * @param rotationPointX the x coordinate of the rotation point
+   * @param rotationPointY the y coordinate of the rotation point
+   */
+  public void updateJump(String rotationPointX, String rotationPointY) {
+    player.rotationPoint = new Vector2D(Double.parseDouble(rotationPointX), Double.parseDouble(rotationPointY));
+    player.jumping = true;
+    player.canRotate = true;
   }
 }

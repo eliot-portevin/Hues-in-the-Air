@@ -14,7 +14,7 @@ public abstract class Cube {
   final double acceleration_constant;
 
   /** The current position of the cube. */
-  Vector2D position;
+  public Vector2D position;
   /** The spawn position of the cube. */
   public Vector2D start_position = new Vector2D(0, 0);
   /** The velocity which the cube currently has. */
@@ -26,9 +26,10 @@ public abstract class Cube {
 
   public int accelerationAngle = 0;
 
-  boolean jumping = true;
-  boolean canRotate = false;
-  Color colourCanJump;
+  public boolean jumping = true;
+  public boolean canRotate = false;
+  public Color colourCanJump;
+  public Vector2D rotationPoint;
 
   // Cube information
   /** The size of the cube in pixels. */
@@ -40,8 +41,6 @@ public abstract class Cube {
   final Pane gameRoot;
   /** The size of a block in pixels. */
   public int blockSize;
-
-  Vector2D rotationPoint;
 
   /**
    * Creates a cube.
@@ -70,19 +69,6 @@ public abstract class Cube {
     rectangle = new Rectangle(cubeSize, cubeSize);
     this.setPositionTo(position.getX(), position.getY());
     gameRoot.getChildren().add(rectangle);
-  }
-
-  /**
-   * Sets position of the cube to the given x and y.
-   *
-   * @param x the x position to set the cube to
-   * @param y the y position to set the cube to
-   */
-  public void setPositionTo(double x, double y) {
-    this.rectangle.setTranslateX(x);
-    this.rectangle.setTranslateY(y);
-    this.position.setX(x);
-    this.position.setY(y);
   }
 
   /**
@@ -158,8 +144,7 @@ public abstract class Cube {
     this.velocity.addInPlace(acceleration.multiply(dt));
 
     // Move cube in x direction and check for collisions
-    this.position.setX(this.position.getX() + velocity.getX() * dt);
-    this.rectangle.setTranslateX(this.position.getX());
+    this.setPositionTo(this.position.getX() + velocity.getX() * dt, this.position.getY());
 
     for (Block block : neighbourBlocks) {
       if (block != null) {
@@ -174,15 +159,14 @@ public abstract class Cube {
           if (!isEdgeCollision) {
             // If the block was to the right of the cube before collision
             if (velocity.getX() > 0) {
-              this.position.setX(block.getX() - this.rectangle.getWidth());
+              this.setPositionTo(block.getX() - this.rectangle.getWidth(), this.position.getY());
               this.setAccelerationAngle(90);
             }
             // If the block was to the left of the cube before collision
             else if (velocity.getX() < 0) {
-              this.position.setX(block.getX() + block.getRectangle().getWidth());
+              this.setPositionTo(block.getX() + block.getRectangle().getWidth(), this.position.getY());
               this.setAccelerationAngle(270);
             }
-            this.rectangle.setTranslateX(this.position.getX());
 
             this.velocity.setX(0);
             jumping = false;
@@ -201,8 +185,7 @@ public abstract class Cube {
     }
 
     // Move cube in y direction and check for collisions
-    this.position.setY(this.position.getY() + velocity.getY() * dt);
-    this.rectangle.setTranslateY(this.position.getY());
+    this.setPositionTo(this.position.getX(), this.position.getY() + velocity.getY() * dt);
 
     for (Block block : neighbourBlocks) {
       if (block != null) {
@@ -217,16 +200,14 @@ public abstract class Cube {
           if (!isEdgeCollision) {
             // If the block was below the cube before collision
             if (velocity.getY() > 0) {
-              this.position.setY(block.getY() - rectangle.getHeight());
+              this.setPositionTo(this.position.getX(), block.getY() - rectangle.getHeight());
               this.setAccelerationAngle(0);
             }
             // If the block was above the cube before collision
             else if (velocity.getY() < 0) {
-              this.position.setY(block.getY() + block.getRectangle().getHeight());
+              this.setPositionTo(this.position.getX(), block.getY() + block.getRectangle().getHeight());
               this.setAccelerationAngle(180);
             }
-
-            this.rectangle.setTranslateY(this.position.getY());
 
             velocity.setY(0);
             jumping = false;
@@ -370,4 +351,27 @@ public abstract class Cube {
    * Abstraction of the death method. Called when the cube has collided with a white block.
    */
   public abstract void die();
+
+  /**
+   * Sets the player's velocity to the given values.
+   * @param velocityX the x component of the velocity
+   * @param velocityY the y component of the velocity
+   */
+  public void setVelocityTo(double velocityX, double velocityY) {
+    this.velocity.setX(velocityX);
+    this.velocity.setY(velocityY);
+  }
+
+  /**
+   * Sets position of the cube to the given x and y.
+   *
+   * @param x the x position to set the cube to
+   * @param y the y position to set the cube to
+   */
+  public void setPositionTo(double x, double y) {
+    this.rectangle.setTranslateX(x);
+    this.rectangle.setTranslateY(y);
+    this.position.setX(x);
+    this.position.setY(y);
+  }
 }
