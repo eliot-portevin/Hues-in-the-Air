@@ -16,20 +16,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /** The game class which the client uses to handle the game logic. */
-public class Game {
+public class ClientGame {
   /** The keys that are pressed. */
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
   private Pane appRoot = new Pane();
   private Pane gameRoot;
-  private int levelWidth;
-  private int levelHeight;
   private int gridSize = 50;
   private double cameraMarginWidth;
   private double cameraMarginHeight;
   private Vector2D playerScreenPosition;
-  /** Whether the cube is jumping or not. */
-  public boolean jumped;
 
   private int cubeSize = 30;
   private AnimationTimer timer;
@@ -38,21 +34,20 @@ public class Game {
   public boolean jumpRequestSent = false;
 
   private final Client client;
-  private final Timer pauseTimer = new Timer();
 
   private boolean running = true;
 
   /** The level that is currently being played. */
   public Level level;
 
-  private Cube player;
+  private ClientCube player;
 
   /**
    * Creates a new game.
    *
    * @param client the client that is playing the game
    */
-  public Game(Client client) {
+  public ClientGame(Client client) {
     this.client = client;
   }
 
@@ -155,8 +150,8 @@ public class Game {
   }
 
   /** Loads the player */
-  private void load_player(Vector2D position) {
-    player = new Cube(gameRoot, position, new Vector2D(cubeSize, cubeSize)); // creates the player
+  private void load_player(Vector2D spawnPosition) {
+    player = new ClientCube(gameRoot, spawnPosition); // creates the player
 
     player
         .rectangle

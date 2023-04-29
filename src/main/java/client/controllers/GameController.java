@@ -2,7 +2,7 @@ package client.controllers;
 
 import client.Client;
 import client.ClientProtocol;
-import client.Game;
+import client.ClientGame;
 import client.util.AlertManager;
 import client.util.Chat;
 import javafx.application.Platform;
@@ -45,7 +45,7 @@ public class GameController {
   @FXML Label scoreLabel;
 
   /** The game */
-  public Game game;
+  public ClientGame game;
 
   private Client client;
   /** Initializes the controller class. */
@@ -62,7 +62,7 @@ public class GameController {
 
   /** Starts the game. Is required because otherwise the client is being set too late otherwise */
   public void startGame() {
-    this.game = new Game(this.client);
+    this.game = new ClientGame(this.client);
     game.run(this.gamePane);
   }
   /**
@@ -70,7 +70,7 @@ public class GameController {
    *
    * @return the game
    */
-  public Game getGame() {
+  public ClientGame getGame() {
     return this.game;
   }
   /**

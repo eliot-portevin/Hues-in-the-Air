@@ -72,9 +72,9 @@ public class ServerGame implements Runnable {
       client.positionUpdate(
           ServerProtocol.POSITION_UPDATE
               + ServerProtocol.SEPARATOR.toString()
-              + player.position.getX()
+              + player.getPosition().getX()
               + ServerProtocol.SEPARATOR
-              + player.position.getY());
+              + player.getPosition().getY());
     }
   }
 
@@ -106,7 +106,7 @@ public class ServerGame implements Runnable {
   /** The update method that is called if the game is not paused. Handles the game logic. */
   private void gameUpdate(double dt) {
     Block[] neighbourBlocks =
-        this.level.getNeighbourBlocks(player.position.getX(), player.position.getY());
+        this.level.getNeighbourBlocks(player.getPosition().getX(), player.getPosition().getY());
     player.move(neighbourBlocks, dt);
   }
 
@@ -157,6 +157,7 @@ public class ServerGame implements Runnable {
     this.initialiseContent();
 
     long previousTime = System.nanoTime();
+    long clientUpdateTime = System.nanoTime();
     long now;
     int FPS = 120;
     double dt;
@@ -173,6 +174,13 @@ public class ServerGame implements Runnable {
         update(dt);
         cubePositionUpdate();
       }
+
+      /*
+      if (now - clientUpdateTime > (double) 1 / 10) {
+        clientUpdateTime = System.nanoTime();
+        cubePositionUpdate();
+      }
+      */
     }
     this.endGame();
   }
@@ -316,7 +324,7 @@ public class ServerGame implements Runnable {
    * The cube has collided with a coin in the level. A new level is loaded and the number of levels
    * completed is incremented.
    */
-  protected void nextLevel() {
+  public void nextLevel() {
     if (!coinCollision) {
       coinCollision = true;
 
