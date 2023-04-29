@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -357,19 +356,6 @@ public class ClientHandler implements Runnable {
     return this.lobby;
   }
 
-  /**
-   * Sends a list of clients to the client.
-   *
-   * @param clients The list of clients to send
-   */
-  protected void sendClientList(final ArrayList<ClientHandler> clients) {
-    String command =
-        ServerProtocol.UPDATE_LOBBY_LIST.toString()
-            + ServerProtocol.SEPARATOR
-            + clients.stream().map(ClientHandler::getUsername).collect(Collectors.joining(" "));
-    System.out.println(command);
-    this.out.println(command);
-  }
   /**
    * Called when the client leaves a lobby.
    *

@@ -78,14 +78,8 @@ public enum ServerProtocol {
 
   /** Signal sent to client upon receiving a PING from the client. */
   SERVER_PONG(0),
-  /** Signal sent to client upon receiving a pause request. */
-  TOGGLE_PAUSE(0),
-  /** Informs clients that the game is starting. */
-  START_GAME_LOOP(0),
   /** The game has been closed. Inform the clients that they can go back to their lobby screen. */
   GAME_ENDED(0),
-  /** Informs the client, that the jump request was successful. */
-  JUMP(0),
   /** Sends the critical blocks and their colour to the client. */
   SEND_CRITICAL_BLOCKS(1),
   /** Updates the position of the cube for the client. */

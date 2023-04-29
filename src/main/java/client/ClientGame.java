@@ -1,10 +1,8 @@
 package client;
 
 import game.*;
-
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Timer;
 import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,22 +16,14 @@ public class ClientGame {
   /** The keys that are pressed. */
   public HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
-  private Pane appRoot = new Pane();
+  private final Pane appRoot;
   private Pane gameRoot;
-  private int gridSize = 50;
-  private double cameraMarginWidth;
-  private double cameraMarginHeight;
   private Vector2D playerScreenPosition;
-
-  private int cubeSize = 30;
-  private AnimationTimer timer;
 
   /** Whether a jump request has been sent to the server or not. */
   public boolean jumpRequestSent = false;
 
   private final Client client;
-
-  private boolean running = true;
 
   /** The level that is currently being played. */
   public Level level;
@@ -62,7 +52,7 @@ public class ClientGame {
 
   /** The update method that is called if the game is not paused. Handles the game logic. */
   private void gameUpdate(double dt) {
-    this.analyseKeys(dt);
+    this.analyseKeys();
 
     if (player != null) {
       Block[] neighbourBlocks =
@@ -75,9 +65,8 @@ public class ClientGame {
    * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic
    * is handled.
    *
-   * @param deltaF the time between the last frame and the current frame
    */
-  private void analyseKeys(double deltaF) {
+  private void analyseKeys() {
     // Possibility to add a pause method
     if (isPressed(KeyCode.SPACE)) {
       if (!jumpRequestSent) {
@@ -123,8 +112,6 @@ public class ClientGame {
         .heightProperty()
         .addListener(
             (obs, old, newValues) -> playerScreenPosition.setY(newValues.doubleValue() / 2));
-    cameraMarginWidth = cubeSize * 10;
-    cameraMarginHeight = cubeSize * 5;
 
     Rectangle bg =
         new Rectangle(
@@ -174,7 +161,7 @@ public class ClientGame {
               updateCameraPosition();
             });
 
-    player.blockSize = gridSize; // Sets the grid size for the player
+    player.blockSize = GameConstants.BLOCK_SIZE.getValue();
   }
 
   /**
@@ -199,25 +186,26 @@ public class ClientGame {
   public void run() {
     this.initialiseContent();
 
-    this.timer =
-        new AnimationTimer() {
-          long previousTime = System.nanoTime();
-          final int FPS = 120;
-          double dt;
+    // Called every frame
+    // Time since last frame in seconds
+    AnimationTimer timer = new AnimationTimer() {
+      long previousTime = System.nanoTime();
+      final int FPS = 120;
+      double dt;
 
-          @Override
-          public void handle(long now) { // Called every frame
-            dt = (now - previousTime) * 1e-9; // Time since last frame in seconds
+      @Override
+      public void handle(long now) { // Called every frame
+        dt = (now - previousTime) * 1e-9; // Time since last frame in seconds
 
-            if (dt > (double) 1/FPS) {
-              previousTime = now;
+        if (dt > (double) 1 / FPS) {
+          previousTime = now;
 
-              update(dt);
-            }
-          }
-        };
+          update(dt);
+        }
+      }
+    };
 
-    this.timer.start();
+    timer.start();
   }
 
   /**
