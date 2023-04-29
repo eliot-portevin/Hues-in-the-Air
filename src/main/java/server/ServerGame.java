@@ -308,7 +308,7 @@ public class ServerGame implements Runnable {
       }
     }
     // Use this to test a specific level
-    return getClass().getResource("/levels/easy/level_04.csv").getPath();
+    return getClass().getResource("/levels/easy/level_05.csv").getPath();
     // return path;
   }
 
