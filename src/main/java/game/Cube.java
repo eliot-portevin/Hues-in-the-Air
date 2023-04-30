@@ -187,9 +187,11 @@ public abstract class Cube {
             this.colourCanJump = block.getColour();
           }
 
-          // Check for collision with white block
-          if (block.getColour().equals(Colours.WHITE.getHex())) {
-            this.die();
+          if (block.getColour() != null) {
+            // Check for collision with white block
+            if (block.getColour().equals(Colours.WHITE.getHex())) {
+              this.die();
+            }
           }
         }
       }
@@ -230,8 +232,10 @@ public abstract class Cube {
           }
 
           // Check collision with a white block
-          if (block.getColour().equals(Colours.WHITE.getHex())) {
-            this.die();
+          if (block.getColour() != null) {
+            if (block.getColour().equals(Colours.WHITE.getHex())) {
+              this.die();
+            }
           }
         }
       }

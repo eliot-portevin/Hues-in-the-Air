@@ -245,6 +245,7 @@ public class ClientGame {
   public void updateJump(String rotationPointX, String rotationPointY) {
     player.rotationPoint = new Vector2D(Double.parseDouble(rotationPointX), Double.parseDouble(rotationPointY));
     player.jumping = true;
+    player.rotating = true;
     player.canRotate = true;
   }
 }
