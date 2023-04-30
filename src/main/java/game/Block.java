@@ -6,12 +6,12 @@ import javafx.scene.shape.Rectangle;
 /** Represents a block in the game */
 public class Block {
   private Color colour;
-  private Rectangle rectangle;
+  private final Rectangle rectangle;
 
   private int x;
   private int y;
-  private int xIdx;
-  private int yIdx;
+  private final int xIdx;
+  private final int yIdx;
 
   /**
    * Creates a new block
@@ -103,5 +103,17 @@ public class Block {
    */
   public int[] getIndex() {
     return new int[] {xIdx, yIdx};
+  }
+
+  /**
+   * Returns whether a block is a coin or not. Called from the cube move method to detect if a block should
+   * be collided with.
+   * @return whether a block is a coin or not
+   */
+  public boolean isCoin() {
+    if (this.colour == null) {
+      return false;
+    }
+    return this.colour.equals(Colours.TRANSPARENT.getHex());
   }
 }

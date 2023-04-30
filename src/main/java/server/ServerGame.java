@@ -164,6 +164,9 @@ public class ServerGame implements Runnable {
         new Vector2D(
             level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
     load_player(playerSpawn);
+
+    // Allow coin collision
+    this.coinCollision = false;
   }
 
   /** Loads the player. */
@@ -337,8 +340,8 @@ public class ServerGame implements Runnable {
       }
     }
     // Use this to test a specific level
-    return "/levels/easy/level_05.csv";
-    //return path;
+    // return "/levels/easy/level_02.csv";
+    return path;
   }
 
   /**

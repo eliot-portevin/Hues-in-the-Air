@@ -158,15 +158,14 @@ public abstract class Cube {
 
     for (Block block : neighbourBlocks) {
       if (block != null) {
-        if (this.rectangle
-            .getBoundsInParent()
-            .intersects(block.getRectangle().getBoundsInParent())) {
+        if (this.rectangle.getBoundsInParent().intersects(block.getRectangle().getBoundsInParent())) {
           // Checks for collision with a coin
           this.checkCoinCollision(block);
 
           boolean isEdgeCollision = isEdgeCollision(block, true);
 
-          if (!isEdgeCollision) {
+
+          if (!isEdgeCollision && !block.isCoin()) {
             // If the block was to the right of the cube before collision
             if (velocity.getX() > 0) {
               this.setPositionTo(block.getX() - this.rectangle.getWidth(), this.position.getY());
@@ -210,7 +209,7 @@ public abstract class Cube {
 
           boolean isEdgeCollision = isEdgeCollision(block, false);
 
-          if (!isEdgeCollision) {
+          if (!isEdgeCollision && !block.isCoin()) {
             // If the block was below the cube before collision
             if (velocity.getY() > 0) {
               this.setPositionTo(this.position.getX(), block.getY() - rectangle.getHeight());
