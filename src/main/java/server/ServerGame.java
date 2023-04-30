@@ -341,7 +341,6 @@ public class ServerGame implements Runnable {
         }
       }
     }
-    System.out.println(this.levelDifficulty);
     // Use this to test a specific level
     // return "/levels/easy/level_02.csv";
     return path;
@@ -352,28 +351,21 @@ public class ServerGame implements Runnable {
    * completed is incremented.
    */
   public void nextLevel() {
-    if (!coinCollision) {
-      coinCollision = true;
-
-      if (this.levelDifficulty.equals("easy")) {
-        this.lives += GameConstants.LIFE_GAIN_EASY.getValue();
-      }
-      else if (this.levelDifficulty.equals("medium")) {
-        this.lives += GameConstants.LIFE_GAIN_MEDIUM.getValue();
-      }
-      else {
-        this.lives += GameConstants.LIFE_GAIN_HARD.getValue();
-      }
-      if (this.lives > GameConstants.MAX_LIVES.getValue()) {
-        this.lives = GameConstants.MAX_LIVES.getValue();
-      }
-
-      this.load_level();
-      this.levelsCompleted++;
-      Server.getInstance().updateGameLevelsCompleted(this);
-
-      this.gameStatusUpdate();
+    switch (this.levelDifficulty) {
+      case "easy" -> this.lives += GameConstants.LIFE_GAIN_EASY.getValue();
+      case "medium" -> this.lives += GameConstants.LIFE_GAIN_MEDIUM.getValue();
+      case "hard" -> this.lives += GameConstants.LIFE_GAIN_HARD.getValue();
     }
+
+    if (this.lives > GameConstants.MAX_LIVES.getValue()) {
+      this.lives = GameConstants.MAX_LIVES.getValue();
+    }
+
+    this.load_level();
+    this.levelsCompleted++;
+    Server.getInstance().updateGameLevelsCompleted(this);
+
+    this.gameStatusUpdate();
   }
 
   /**
