@@ -44,6 +44,7 @@ public class ServerGame implements Runnable {
   private final Lobby lobby;
   private final String gameId;
   private int levelsCompleted = 0;
+  private String levelDifficulty;
 
   /** The instance of the game */
   public static ServerGame instance;
@@ -335,10 +336,12 @@ public class ServerGame implements Runnable {
         if (files.length > 0) {
           int randomFile = (int) (Math.random() * files.length);
           path = "/levels/" + dir.getName() + "/" + files[randomFile].getName();
+          this.levelDifficulty = dir.getName();
           found = true;
         }
       }
     }
+    System.out.println(this.levelDifficulty);
     // Use this to test a specific level
     // return "/levels/easy/level_02.csv";
     return path;
@@ -351,6 +354,19 @@ public class ServerGame implements Runnable {
   public void nextLevel() {
     if (!coinCollision) {
       coinCollision = true;
+
+      if (this.levelDifficulty.equals("easy")) {
+        this.lives += GameConstants.LIFE_GAIN_EASY.getValue();
+      }
+      else if (this.levelDifficulty.equals("medium")) {
+        this.lives += GameConstants.LIFE_GAIN_MEDIUM.getValue();
+      }
+      else {
+        this.lives += GameConstants.LIFE_GAIN_HARD.getValue();
+      }
+      if (this.lives > GameConstants.MAX_LIVES.getValue()) {
+        this.lives = GameConstants.MAX_LIVES.getValue();
+      }
 
       this.load_level();
       this.levelsCompleted++;
