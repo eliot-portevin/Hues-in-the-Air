@@ -20,6 +20,7 @@ public abstract class Cube {
   /** The velocity which the cube currently has. */
   Vector2D velocity = new Vector2D(0, 0);
 
+  /** The maximum velocity which the cube can reach. Used to calculate the starting jump velocity */
   public final double maxVelocity;
   /** The acceleration which the cube is currently experiencing. */
   public Vector2D acceleration = new Vector2D(0, 0);

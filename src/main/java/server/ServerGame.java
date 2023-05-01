@@ -170,7 +170,9 @@ public class ServerGame implements Runnable {
     this.coinCollision = false;
   }
 
-  /** Loads the player. */
+  /** Loads the player.
+   * @param position The initial position of the player
+   * */
    public void load_player(Vector2D position) {
     player = new ServerCube(gameRoot, position); // creates the player
     player.start_position = position.copy();
