@@ -3,29 +3,35 @@ package server;
 import java.util.ArrayList;
 
 /**
- * The class which sends a ping to the client every 300ms. If the client doesn't respond to 3 pings,
+ * The class which sends a ping to the client every 300ms.
+ * If the client doesn't respond to 3 pings,
  * the server removes the client.
  */
 public class ServerPingSender implements Runnable {
 
-  ArrayList<ClientHandler> clients;
-  boolean running = true;
+  /** An ArrayList of the ClientHandlers. */
+  private ArrayList<ClientHandler> clients;
+  /** Used to know if the client is running. */
+  private boolean running = true;
+  /** The server of the pingSender. */
   private Server server;
   /**
    * Creates a new ServerPingSender. It sends a ping to the client every 300ms.
    * If the client doesn't respond to 3 pings, the server removes the client.
-   * @param clients The list of clients
-   * @param server The server
+   * @param clientList The list of clients
+   * @param pingServer The server
    */
-  public ServerPingSender(ArrayList<ClientHandler> clients, Server server) {
-    this.clients = clients;
-    this.server = server;
+  public ServerPingSender(final ArrayList<ClientHandler> clientList,
+                          final Server pingServer) {
+    this.clients = clientList;
+    this.server = pingServer;
   }
 
   /**
    * Method from Runnable interface.
    *
-   * Sends a ping to the client every 300ms. If the client doesn't respond to 3 pings, the server
+   * Sends a ping to the client every 300ms.
+   * If the client doesn't respond to 3 pings, the server
    * removes the client.
    */
   @SuppressWarnings("checkstyle:SimplifyBooleanExpression")
@@ -37,7 +43,7 @@ public class ServerPingSender implements Runnable {
 
         for (int i = 0; i < this.clients.size(); i++) {
           client = this.clients.get(i);
-          if (client.getClientConnected() == true) {
+          if (client.getClientConnected()) {
             client.setClientConnected(false);
             client.ping();
           } else {

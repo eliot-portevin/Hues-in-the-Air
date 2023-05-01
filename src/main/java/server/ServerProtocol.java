@@ -5,8 +5,9 @@ import client.ClientProtocol;
 /**
  * Server protocol for Hues in the Air
  *
- * <p>These are the commands that the server can send to the client. See {@link ClientProtocol} for
- * the commands that the client can send to the server.
+ * <p>These are the commands that the server can send to the client.
+ * See {@link ClientProtocol} for the commands
+ * that the client can send to the server.
  */
 public enum ServerProtocol {
   /**
@@ -15,29 +16,38 @@ public enum ServerProtocol {
    * <p>This is used to separate arguments in the protocol.
    */
   SEPARATOR(0) {
+    /** Separator for the protocol.
+     * @return <&!> the separator */
     public String toString() {
       return "<&!>";
     }
   },
-
-  /** Separator used to separate subarguments */
+  /**
+   * Separator used to separate subarguments.
+   */
   SUBSEPARATOR(0) {
+    /** The separator of the subarguments.
+     * @return <&.> the separator of the subarguments
+     */
     public String toString() {
       return "<&.>";
     }
   },
 
-  /** Separator used to separate subsubarguments */
+  /** Separator used to separate subsubarguments. */
   SUBSUBSEPARATOR(0) {
+    /** The separator of the subsubarguments.
+     *@return <&..> the separator of the subsubarguments */
     public String toString() {
       return "<&..>";
     }
   },
 
-  /** Inform client that the username is already taken */
+  /** Inform client that the username is already taken. */
   USERNAME_SET_TO(1),
 
-  /** No user with that username was found. Called from {@link ClientHandler}. */
+  /** No user with that username was found.
+   *  Called from {@link ClientHandler}. */
   NO_USER_FOUND(1),
 
   /** A message is being sent to another client. */
@@ -55,10 +65,11 @@ public enum ServerProtocol {
   /** A client has successfully exited the lobby. */
   LOBBY_EXITED(1),
 
-  /** Send a list of all lobbies and the clients they contain */
+  /** Send a list of all lobbies and the clients they contain. */
   UPDATE_FULL_LIST(1),
 
-  /** Send a list of all clients in the server. Used for the client list in the menu. */
+  /** Send a list of all clients in the server.
+   * Used for the client list in the menu. */
   UPDATE_CLIENT_LIST(1),
 
   /** Sends the list of clients in the lobby. */
@@ -78,30 +89,36 @@ public enum ServerProtocol {
 
   /** Signal sent to client upon receiving a PING from the client. */
   SERVER_PONG(0),
-  /** The game has been closed. Inform the clients that they can go back to their lobby screen. */
+  /** The game has been closed.
+   *  Inform the clients that they can go back to their lobby screen. */
   GAME_ENDED(0),
   /** Sends the critical blocks and their colour to the client. */
   SEND_CRITICAL_BLOCKS(1),
   /** Updates the position of the cube for the client. */
   POSITION_UPDATE(5),
-  /** The cube has just jumped. Informs the client of the coordinates of the rotation point. */
+  /** The cube has just jumped. Informs the client
+   *  of the coordinates of the rotation point. */
   JUMP_UPDATE(2),
   /**
-   * Informs the players in the game of how many lives they have left and how many levels they have
-   * completed.
+   * Informs the players in the game of how many lives they have left
+   * and how many levels they have completed.
    */
   GAME_STATUS_UPDATE(2),
-  /** Tells the client to load new level */
+  /** Tells the client to load new level. */
   LOAD_LEVEL(1);
+  /** The number of arguments. */
   private final int numArgs;
 
-  /** Initialises the command */
-  ServerProtocol(int numArgs) {
-    this.numArgs = numArgs;
+  /** Initialises the command.
+   * @param numbArgs the number of arguments
+   */
+  ServerProtocol(final int numbArgs) {
+    this.numArgs = numbArgs;
   }
 
   /**
-   * Returns the number of arguments needed. Called from {@link client.ServerIn} to separate the
+   * Returns the number of arguments needed.
+   * Called from {@link client.ServerIn} to separate the
    * commands by their length
    *
    * @return The number of arguments needed to send the command.

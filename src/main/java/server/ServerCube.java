@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
  * Used to handle the logic of the cube on the server side.
  */
 public class ServerCube extends Cube {
-  // Lock so that the nextLevel method is only called once
+  /** Lock so that the nextLevel method is only called once.*/
   private boolean nextLevelCalled = false;
 
   /**
@@ -34,7 +34,8 @@ public class ServerCube extends Cube {
    */
   @Override
   public void checkCoinCollision(final Block block) {
-    if (block.getColour().equals(Colours.TRANSPARENT.getHex()) && !nextLevelCalled) {
+    if (block.getColour().equals(Colours.TRANSPARENT.getHex())
+            && !nextLevelCalled) {
       nextLevelCalled = true;
       ServerGame.getInstance().nextLevel();
     }

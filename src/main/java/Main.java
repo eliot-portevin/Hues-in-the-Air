@@ -6,7 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Main class of the project. Launches a server or a client depending on the arguments passed to it.
+ * Main class of the project.
+ * Launches a server or a client depending on the arguments passed to it.
  */
 public class Main {
 
