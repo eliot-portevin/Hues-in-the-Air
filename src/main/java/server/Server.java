@@ -273,7 +273,7 @@ public class Server implements Runnable {
    */
   protected void updateLobbyList() {
     synchronized (this.lobbies) {
-      Lobby[] lobbies = (Lobby[]) this.lobbies.values().toArray();
+      Lobby[] lobbies = this.lobbies.values().toArray(Lobby[]::new);
       for (int i = 0; i < lobbies.length; i++) {
         if (lobbies[i].getNumPlayers() == 0) {
           this.removeLobby(lobbies[i]);
