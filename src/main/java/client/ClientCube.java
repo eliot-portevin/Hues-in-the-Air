@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane;
 
 /** Represents the cube in the game. */
 public class ClientCube extends Cube {
+  /** initializes the rotations variable. */
   public boolean rotating = false;
   private boolean clockwise = true;
   /**
