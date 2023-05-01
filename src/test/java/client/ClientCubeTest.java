@@ -356,6 +356,4 @@ class ClientCubeTest {
         tester.setPositionTo(100, 50);
         assertTrue(tester.isEdgeCollision(block, false));
     }
-
-
 }
