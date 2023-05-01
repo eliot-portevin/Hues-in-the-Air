@@ -171,7 +171,7 @@ public class ServerGame implements Runnable {
   }
 
   /** Loads the player. */
-  private void load_player(Vector2D position) {
+   public void load_player(Vector2D position) {
     player = new ServerCube(gameRoot, position); // creates the player
     player.start_position = position.copy();
     player.resetMovement();
