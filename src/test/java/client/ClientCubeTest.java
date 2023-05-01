@@ -17,18 +17,25 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * JUnit tests for the ClientCube class. Tests all the methods inherited from the Cube class which are relevant
+ * to the game logic and the movement of the cube in the game.
+ */
 class ClientCubeTest {
+
+    // The cube that is used to test all the methods
     static ClientCube tester;
+
+    // Game Constants
     static int velocity_constant;
     static int acceleration_constant;
     static int blockSize;
     static int cubeSize;
     static int blocksPerSecond;
-    static Thread testGameThread;
-    static Thread clientThread1;
-    static Thread clientThread2;
-    static HashMap<ClientHandler, Color> clientsAndColours;
 
+    /**
+     * Initialize the tester cube before each test
+     */
     @BeforeEach
     void setUp() {
         tester = new ClientCube(new Pane(), new Vector2D(0, 0)); // test Cube
@@ -39,40 +46,26 @@ class ClientCubeTest {
         blockSize = GameConstants.BLOCK_SIZE.getValue();
         cubeSize = GameConstants.CUBE_SIZE.getValue();
         blocksPerSecond = GameConstants.BLOCKS_PER_SECOND.getValue();
-
-        //initialization of mock clients and threads
-        ClientHandler c1 = mock(ClientHandler.class);
-        clientThread1 = new Thread(c1);
-        clientThread1.start();
-        ClientHandler c2 = mock(ClientHandler.class);
-        clientThread2 = new Thread(c2);
-        clientThread2.start();
-
-        clientsAndColours = new HashMap<>();
-        clientsAndColours.put(c1, Color.PINK);
-        clientsAndColours.put(c2, Color.BLUE);
-
-
-        ServerGame serverGame = new ServerGame(clientsAndColours, "1", Mockito.mock(Lobby.class));
-        testGameThread = new Thread(serverGame);
-        testGameThread.start();
     }
 
     @Test
     void testSetPosition() { // sets cube to a position and checks if it is there
-        Vector2D testPosition = new Vector2D(100, 100);
         tester.setPositionTo(100, 100);
         assertAll(
-            () -> assertEquals(testPosition.getX(), tester.getPosition().getX()),
-            () -> assertEquals(testPosition.getY(), tester.getPosition().getY())
+            () -> assertEquals(100, tester.getPosition().getX()),
+            () -> assertEquals(100, tester.getPosition().getY())
         );
     }
 
+    /**
+     * Checks if the cube's speed is initialised correctly
+     */
     @Test
-    void testInitialiseSpeed() { // checks if the cube's speed is initialised correctly
+    void testInitialiseSpeed() {
         tester.initialiseSpeed();
         assertAll(
-            () -> assertEquals(blockSize * blocksPerSecond, tester.getVelocity().getX()),
+            // at the beginning, the cube's velocity should be initialized to the following values
+            () -> assertEquals(velocity_constant, tester.getVelocity().getX()),
             () -> assertEquals(0, tester.getVelocity().getY()),
             () -> assertEquals(0, tester.getAcceleration().getX()),
             () -> assertEquals(acceleration_constant, tester.getAcceleration().getY()),
@@ -80,8 +73,11 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Checks if the cube's acceleration angle is set correctly
+     */
     @Test
-    void testOnlySetAccelerationAngle() { // checks if the cube's acceleration angle is set correctly
+    void testOnlySetAccelerationAngle() {
         tester.onlySetAccelerationAngle(90);
         assertAll(
             () -> assertEquals(90, tester.accelerationAngle),
@@ -90,8 +86,11 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Checks if the cube's acceleration angle is set correctly with value 180
+     */
     @Test
-    void testSetAccelerationAngle180() { // checks if the cube's acceleration angle is set correctly with value 180
+    void testSetAccelerationAngle180() {
         Vector2D initVelocity = new Vector2D(tester.getVelocity().getX(), tester.getVelocity().getY());
         tester.setAccelerationAngle(180);
         assertAll(
@@ -101,8 +100,11 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Checks if the cube's acceleration angle is set correctly with values not equal to 180 (test case: 90)
+     */
     @Test
-    void testSetAccelerationAngleNot180() { // checks if the cube's acceleration angle is set correctly with value 90
+    void testSetAccelerationAngleNot180() {
         Vector2D initVelocity = new Vector2D(tester.getVelocity().getX(), tester.getVelocity().getY());
         Vector2D initAcceleration = new Vector2D(tester.getAcceleration().getX(), tester.getAcceleration().getY());
         tester.setAccelerationAngle(90);
@@ -115,8 +117,11 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Checks if the cube's movement is reset correctly
+     */
     @Test
-    void testResetMovement() { // checks if the cube's movement is reset correctly
+    void testResetMovement() {
         tester.setPositionTo(100, 100);
         tester.resetMovement();
         assertAll(
@@ -128,18 +133,21 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Tests if the cube correctly changes the gravity in the opposite direction when the cube
+     * needs to rotate around a platform (test for when the gravity is in the vertical direction)
+     */
     @Test
     void checkForRotationY() {
         tester.canRotate = true;
-        Vector2D initPosition = new Vector2D(100, 100);
 
-        tester.rotationPoint = null;
-        if(tester.rotationPoint == null) return;
-
+        // test case for when the gravity is initially in the downward direction
         tester.setPositionTo(100, 100);
         tester.setVelocityTo(200, 100);
         Vector2D initVelocity = tester.getVelocity();
-        Vector2D finalInitVelocity = initVelocity;
+        Vector2D finalInitVelocity = new Vector2D(initVelocity.getX(), initVelocity.getY());
+
+        System.out.println(finalInitVelocity.getX() + " " + finalInitVelocity.getY());
 
         tester.rotationPoint = new Vector2D(100, 50);
         tester.onlySetAccelerationAngle(0);
@@ -150,11 +158,12 @@ class ClientCubeTest {
             () -> assertFalse(tester.canRotate)
         );
 
+        // test case for when the gravity is initially in the upward direction
         tester.canRotate = true;
         tester.setPositionTo(100, 100);
         tester.setVelocityTo(200, 100);
         initVelocity = tester.getVelocity();
-        Vector2D finalInitVelocity1 = initVelocity;
+        Vector2D finalInitVelocity1 = new Vector2D(initVelocity.getX(), initVelocity.getY());
 
         tester.rotationPoint = new Vector2D(100, 150);
         tester.onlySetAccelerationAngle(180);
@@ -166,34 +175,39 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Tests if the cube correctly changes the gravity in the opposite direction when the cube
+     * needs to rotate around a platform (test for when the gravity is in the horizontal direction)
+     */
     @Test
     void checkForRotationX() {
         tester.canRotate = true;
-        tester.rotationPoint = null;
-        if(tester.rotationPoint == null) return;
 
+        // test case for when the gravity is initially to the right
         tester.setPositionTo(100, 100);
         tester.setVelocityTo(100, 200);
         Vector2D initVelocity = tester.getVelocity();
-        Vector2D finalInitVelocity = initVelocity;
+        Vector2D finalInitVelocity = new Vector2D(initVelocity.getX(), initVelocity.getY());
 
         tester.rotationPoint = new Vector2D(50, 100);
         tester.onlySetAccelerationAngle(90);
         tester.checkForRotation();
         assertAll(
             () -> assertEquals(270, tester.accelerationAngle),
-            () -> assertEquals(-finalInitVelocity.getY(), tester.getVelocity().getY(), 0.0001),
+            () -> assertEquals(-(finalInitVelocity.getY()), tester.getVelocity().getY(), 0.0001),
             () -> assertFalse(tester.canRotate)
         );
 
+        // test case for when the gravity is initially to the left
         tester.canRotate = true;
         tester.setPositionTo(100, 100);
         tester.setVelocityTo(100, 200);
         initVelocity = tester.getVelocity();
-        Vector2D finalInitVelocity1 = initVelocity;
+        Vector2D finalInitVelocity1 = new Vector2D(initVelocity.getX(), initVelocity.getY());
 
         tester.rotationPoint = new Vector2D(150, 100);
         tester.onlySetAccelerationAngle(270);
+        tester.checkForRotation();
         assertAll(
             () -> assertEquals(90, tester.accelerationAngle),
             () -> assertEquals(-finalInitVelocity1.getY(), tester.getVelocity().getY(), 0.0001),
@@ -201,6 +215,10 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Tests if all the variables relating to the jump (rotationPoint and the jumpVelocity) are set correctly
+     * at the beginning of each jump
+     */
     @Test
     void testJump() {
         tester.rotationPoint = new Vector2D(100, 100);
@@ -236,6 +254,9 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Tests if the cube moves in the right way when there are no blocks for it to collide with
+     */
     @Test
     void moveWithoutCollision() {
         Block[] neighbours = new Block[9];
@@ -256,6 +277,9 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Tests for collisions to the right
+     */
     @Test
     void moveWithCollisionRight() {
         double dt = 1 / 60.0;
@@ -277,6 +301,9 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Tests for collisions to the left
+     */
     @Test
     void moveWithCollisionLeft() {
         double dt = 1/60.0;
@@ -298,7 +325,9 @@ class ClientCubeTest {
         );
     }
 
-
+    /**
+     * Tests for collisions downwards
+     */
     @Test
     void moveWithCollisionDown() {
         double dt = 1/60.0;
@@ -320,6 +349,9 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Tests for collisions upward
+     */
     @Test
     void moveWithCollisionUp() {
         double dt = 1/60.0;
@@ -340,8 +372,11 @@ class ClientCubeTest {
         );
     }
 
+    /**
+     * Sets cube on the edge of a wall, so it detects a collision and has to go to the edge case where this collision should be ignored
+     */
     @Test
-    void isEdgeCollisionX() { // sets cube on the edge of a wall, so it detects a collision and has to go to the edge case where this collision should be ignored
+    void isEdgeCollisionX() {
         Block block = new Block(Color.BLUE, 50, 50, 50);
         tester.setPositionTo(50, 20);
         assertTrue(tester.isEdgeCollision(block, true));
@@ -349,8 +384,11 @@ class ClientCubeTest {
         assertTrue(tester.isEdgeCollision(block, true));
     }
 
+    /**
+     * Sets cube on the other edge of a wall, so it detects a collision and has to go to the edge case where this collision should be ignored
+     */
     @Test
-    void isEdgeCollisionY() { // sets cube on the other edge of a wall, so it detects a collision and has to go to the edge case where this collision should be ignored
+    void isEdgeCollisionY() {
         Block block = new Block(Color.BLUE, 50, 50, 50);
         tester.setPositionTo(20, 50);
         assertTrue(tester.isEdgeCollision(block, false));
