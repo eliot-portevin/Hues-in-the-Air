@@ -59,7 +59,7 @@ class ClientCubeTest {
     }
 
     @Test
-    void testSetPosition() {
+    void testSetPosition() { // sets cube to a position and checks if it is there
         Vector2D testPosition = new Vector2D(100, 100);
         tester.setPositionTo(100, 100);
         assertAll(
@@ -69,7 +69,7 @@ class ClientCubeTest {
     }
 
     @Test
-    void testInitialiseSpeed() {
+    void testInitialiseSpeed() { // checks if the cube's speed is initialised correctly
         tester.initialiseSpeed();
         assertAll(
             () -> assertEquals(blockSize * blocksPerSecond, tester.getVelocity().getX()),
@@ -81,7 +81,7 @@ class ClientCubeTest {
     }
 
     @Test
-    void testOnlySetAccelerationAngle() {
+    void testOnlySetAccelerationAngle() { // checks if the cube's acceleration angle is set correctly
         tester.onlySetAccelerationAngle(90);
         assertAll(
             () -> assertEquals(90, tester.accelerationAngle),
@@ -91,7 +91,7 @@ class ClientCubeTest {
     }
 
     @Test
-    void testSetAccelerationAngle180() {
+    void testSetAccelerationAngle180() { // checks if the cube's acceleration angle is set correctly with value 180
         Vector2D initVelocity = new Vector2D(tester.getVelocity().getX(), tester.getVelocity().getY());
         tester.setAccelerationAngle(180);
         assertAll(
@@ -102,7 +102,7 @@ class ClientCubeTest {
     }
 
     @Test
-    void testSetAccelerationAngleNot180() {
+    void testSetAccelerationAngleNot180() { // checks if the cube's acceleration angle is set correctly with value 90
         Vector2D initVelocity = new Vector2D(tester.getVelocity().getX(), tester.getVelocity().getY());
         Vector2D initAcceleration = new Vector2D(tester.getAcceleration().getX(), tester.getAcceleration().getY());
         tester.setAccelerationAngle(90);
@@ -116,7 +116,7 @@ class ClientCubeTest {
     }
 
     @Test
-    void testResetMovement() {
+    void testResetMovement() { // checks if the cube's movement is reset correctly
         tester.setPositionTo(100, 100);
         tester.resetMovement();
         assertAll(
