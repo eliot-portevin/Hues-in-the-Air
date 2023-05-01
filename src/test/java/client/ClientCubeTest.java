@@ -350,7 +350,7 @@ class ClientCubeTest {
     }
 
     @Test
-    void isEdgeCollisionY() { // sets cube on the other edge of a wall, so it detects a collision and has to go to the edge case where this collision should be ignored
+    void isEdgeCollisionY() { // sets cube on the other edge of a wall, so it detects a collision and has to not go to the edge case where this collision should be ignored
         Block block = new Block(Color.BLUE, 50, 50, 50);
         tester.setPositionTo(20, 50);
         assertTrue(tester.isEdgeCollision(block, false));
