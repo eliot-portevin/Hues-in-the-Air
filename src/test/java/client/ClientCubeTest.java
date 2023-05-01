@@ -250,6 +250,7 @@ class ClientCubeTest {
         Vector2D endPosition = new Vector2D(startPosition.getX() + tester.getVelocity().getX(), startPosition.getY() + tester.getVelocity().getY());
 
         assertAll(
+                // moves in to one direction without colliding with anything --> should be at the endPosition
                 () -> assertEquals(endPosition.getX(), tester.getPosition().getX(), 0.0001),
                 () -> assertEquals(endPosition.getY(), tester.getPosition().getY(), 0.0001)
         );
@@ -340,8 +341,8 @@ class ClientCubeTest {
     }
 
     @Test
-    void isEdgeCollisionX() {
-        Block block = new Block(null, 50, 50, 50);
+    void isEdgeCollisionX() { // sets cube on the edge of a wall, so it detects a collision and has to go to the edge case where this collision should be ignored
+        Block block = new Block(Color.BLUE, 50, 50, 50);
         tester.setPositionTo(50, 20);
         assertTrue(tester.isEdgeCollision(block, true));
         tester.setPositionTo(50, 100);
@@ -349,8 +350,8 @@ class ClientCubeTest {
     }
 
     @Test
-    void isEdgeCollisionY() {
-        Block block = new Block(null, 50, 50, 50);
+    void isEdgeCollisionY() { // sets cube on the other edge of a wall, so it detects a collision and has to go to the edge case where this collision should be ignored
+        Block block = new Block(Color.BLUE, 50, 50, 50);
         tester.setPositionTo(20, 50);
         assertTrue(tester.isEdgeCollision(block, false));
         tester.setPositionTo(100, 50);

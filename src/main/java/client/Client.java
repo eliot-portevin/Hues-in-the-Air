@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -534,6 +535,7 @@ public class Client extends Application {
 
     try {
       this.stage.close();
+      Platform.exit();
     } catch (IllegalStateException e) {
       LOGGER.error("Stage is already closed");
     }
