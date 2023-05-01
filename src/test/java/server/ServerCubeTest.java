@@ -5,10 +5,9 @@ import game.Vector2D;
 import javafx.scene.layout.Pane;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.*;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ServerCubeTest {
     static ServerCube tester;
@@ -93,9 +92,7 @@ class ServerCubeTest {
     void testSetAccelerationAngleNot180() {
         Vector2D initVelocity = new Vector2D(tester.getVelocity().getX(), tester.getVelocity().getY());
         Vector2D initAcceleration = new Vector2D(tester.getAcceleration().getX(), tester.getAcceleration().getY());
-        System.out.println(tester.getAcceleration().getX() + " " + tester.getAcceleration().getY() + " " + tester.getVelocity().getX() + " " + tester.getVelocity().getY());
         tester.setAccelerationAngle(90);
-        System.out.println(tester.getAcceleration().getX() + " " + tester.getAcceleration().getY() + " " + tester.getVelocity().getX() + " " + tester.getVelocity().getY());
         assertAll(
             () -> assertEquals(90, tester.accelerationAngle),
             () -> assertEquals(acceleration_constant * Math.cos(Math.toRadians(90)), tester.getAcceleration().getY(), 0.0001),
@@ -106,12 +103,88 @@ class ServerCubeTest {
     }
 
     @Test
-    void testResetPosition() {
+    void testResetMovement() {
         tester.setPositionTo(100, 100);
         tester.resetMovement();
         assertAll(
             () -> assertEquals(tester.start_position.getX(), tester.getPosition().getX()),
-            () -> assertEquals(tester.start_position.getY(), tester.getPosition().getY())
+            () -> assertEquals(tester.start_position.getY(), tester.getPosition().getY()),
+            () -> assertEquals(0, tester.accelerationAngle),
+            () -> assertEquals(0, tester.getVelocity().getX(), 0.0001),
+            () -> assertEquals(0, tester.getVelocity().getY(), 0.0001)
+        );
+    }
+
+    @Test
+    void checkForRotationY() {
+        tester.canRotate = true;
+        Vector2D initPosition = new Vector2D(100, 100);
+
+        tester.rotationPoint = null;
+        if(tester.rotationPoint == null) return;
+
+        tester.setPositionTo(100, 100);
+        tester.setVelocityTo(200, 100);
+        Vector2D initVelocity = tester.getVelocity();
+        Vector2D finalInitVelocity = initVelocity;
+
+        tester.rotationPoint = new Vector2D(100, 50);
+        tester.onlySetAccelerationAngle(0);
+        tester.checkForRotation();
+        assertAll(
+            () -> assertEquals(180, tester.accelerationAngle),
+            () -> assertEquals(-finalInitVelocity.getX(), tester.getVelocity().getX(), 0.0001),
+            () -> assertFalse(tester.canRotate)
+        );
+
+        tester.canRotate = true;
+        tester.setPositionTo(100, 100);
+        tester.setVelocityTo(200, 100);
+        initVelocity = tester.getVelocity();
+        Vector2D finalInitVelocity1 = initVelocity;
+
+        tester.rotationPoint = new Vector2D(100, 150);
+        tester.onlySetAccelerationAngle(180);
+        tester.checkForRotation();
+        assertAll(
+            () -> assertEquals(0, tester.accelerationAngle),
+            () -> assertEquals(-finalInitVelocity1.getX(), tester.getVelocity().getX(), 0.0001),
+            () -> assertFalse(tester.canRotate)
+        );
+    }
+
+    @Test
+    void checkForRotationX() {
+        tester.canRotate = true;
+        tester.rotationPoint = null;
+        if(tester.rotationPoint == null) return;
+
+        tester.setPositionTo(100, 100);
+        tester.setVelocityTo(100, 200);
+        Vector2D initVelocity = tester.getVelocity();
+        Vector2D finalInitVelocity = initVelocity;
+
+        tester.rotationPoint = new Vector2D(50, 100);
+        tester.onlySetAccelerationAngle(90);
+        tester.checkForRotation();
+        assertAll(
+            () -> assertEquals(270, tester.accelerationAngle),
+            () -> assertEquals(-finalInitVelocity.getY(), tester.getVelocity().getY(), 0.0001),
+            () -> assertFalse(tester.canRotate)
+        );
+
+        tester.canRotate = true;
+        tester.setPositionTo(100, 100);
+        tester.setVelocityTo(100, 200);
+        initVelocity = tester.getVelocity();
+        Vector2D finalInitVelocity1 = initVelocity;
+
+        tester.rotationPoint = new Vector2D(150, 100);
+        tester.onlySetAccelerationAngle(270);
+        assertAll(
+            () -> assertEquals(90, tester.accelerationAngle),
+            () -> assertEquals(-finalInitVelocity1.getY(), tester.getVelocity().getY(), 0.0001),
+            () -> assertFalse(tester.canRotate)
         );
     }
 }
