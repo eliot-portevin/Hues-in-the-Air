@@ -1,6 +1,7 @@
 package client.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -93,6 +94,15 @@ public class MenuGameController {
    * @param games The games to display
    */
   public void setGameList(String[] games) {
+    Arrays.sort(games, new Comparator<String>() {
+      public int compare(String str1, String str2) {
+        int int1 = Integer.parseInt(str1.split(" ")[1]);
+        int int2 = Integer.parseInt(str2.split(" ")[1]);
+
+        return Integer.valueOf(int2).compareTo(Integer.valueOf(int1));
+      }
+    });
+
     this.gameList.getItems().clear();
     this.gameStatusList.getItems().clear();
     this.scoreList.getItems().clear();
