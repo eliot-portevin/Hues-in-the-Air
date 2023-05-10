@@ -5,10 +5,10 @@ import game.GameConstants;
 import game.Level;
 import game.Vector2D;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
@@ -143,11 +143,15 @@ public class ServerGame implements Runnable {
     // Create empty pane to which the game will virtually be added
     gameRoot = new Pane();
 
-    this.load_level();
+    try {
+      this.load_level();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /** Loads the level */
-  private void load_level() {
+  private void load_level() throws IOException {
     // Inform clients of the game status
     this.gameStatusUpdate();
 
@@ -313,13 +317,15 @@ public class ServerGame implements Runnable {
    *
    * @return The path to the level.
    */
-  private String getRandomLevelPath() {
+  private String getRandomLevelPath() throws IOException {
     boolean found = false;
     String path = null;
+    File dir;
     String difficulty;
 
     while (!found) {
       int random = (int) (Math.random() * 100);
+      ArrayList<String> levelNames = new ArrayList<>();
 
       if (random < difficultyProbabilities[0]) {
         difficulty = "easy/";
@@ -329,22 +335,52 @@ public class ServerGame implements Runnable {
         difficulty = "hard/";
       }
 
-      File dir =
-          new File(
-              Objects.requireNonNull(getClass().getResource("/levels/" + difficulty)).getPath());
-      File[] files = dir.listFiles((dir1, name) -> name.endsWith(".csv"));
+      //////////////////////////////////////////////////////////
+      String dirPath = "levels/" + difficulty;
+      File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 
-      if (files != null) {
-        if (files.length > 0) {
-          int randomFile = (int) (Math.random() * files.length);
-          path = "/levels/" + dir.getName() + "/" + files[randomFile].getName();
-          this.levelDifficulty = dir.getName();
+      // If the server is being run from a jar file
+      if(jarFile.getPath().endsWith(".jar")) {
+        final JarFile jar = new JarFile(jarFile);
+        final Enumeration<JarEntry> entries = jar.entries();
+
+        while(entries.hasMoreElements()) {
+          final String name = entries.nextElement().getName();
+          if (name.startsWith(dirPath) && !name.equals(dirPath)) {
+            levelNames.add(name);
+          }
+        }
+        jar.close();
+
+        if (levelNames.size() > 0) {
+          int randomFile = (int) (Math.random() * levelNames.size());
+          path = "/" + levelNames.get(randomFile);
+          this.levelDifficulty = difficulty;
           found = true;
         }
       }
+
+      else { // If the server is being run from an IDE
+        dir =
+            new File(
+                Objects.requireNonNull(getClass().getResource("/" + dirPath)).getPath());
+
+        File[] files = dir.listFiles((dir1, name) -> name.endsWith(".csv"));
+
+        if (files != null) {
+          if (files.length > 0) {
+            int randomFile = (int) (Math.random() * files.length);
+            path = "/levels/" + dir.getName() + "/" + files[randomFile].getName();
+            this.levelDifficulty = dir.getName();
+            found = true;
+          }
+        }
+      }
+
+      /////////////////////////////////////////////////
     }
     // Use this to test a specific level
-    //return "/levels/hard/level_04.csv";
+    // return "/levels/hard/level_04.csv";
     return path;
   }
 
@@ -363,7 +399,12 @@ public class ServerGame implements Runnable {
       this.lives = GameConstants.MAX_LIVES.getValue();
     }
 
-    this.load_level();
+    try {
+      this.load_level();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
     this.levelsCompleted++;
     Server.getInstance().updateGameLevelsCompleted(this);
 

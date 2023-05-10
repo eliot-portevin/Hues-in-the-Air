@@ -34,7 +34,7 @@ public class Level {
    * @param gameRoot the pane on which the level is drawn
    */
   public Level(String levelPath, int blockWidth, Pane gameRoot) {
-    this.levelPath = Objects.requireNonNull(getClass().getResource(levelPath)).getPath();
+    this.levelPath = levelPath;
     this.blockWidth = blockWidth;
     this.gameRoot = gameRoot;
 

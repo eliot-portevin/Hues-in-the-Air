@@ -1,6 +1,10 @@
 package client;
 
 import game.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Objects;
 import javafx.animation.AnimationTimer;
@@ -133,7 +137,11 @@ public class ClientGame {
     this.level = new Level(levelPath, 50, gameRoot);
     this.client.requestCriticalBlocks();
 
-    this.loadCoin();
+    try {
+      this.loadCoin();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     Vector2D playerSpawn =
         new Vector2D(
@@ -174,10 +182,10 @@ public class ClientGame {
    * Gets the coin position from the level and adds it to the game root. If no coin is found, the
    * coin is placed outside the level (top left corner).
    */
-  private void loadCoin() {
-    Image coinImage =
-        new Image(
-            Objects.requireNonNull(getClass().getResource("/images/coin.png")).toExternalForm());
+  private void loadCoin() throws IOException {
+    URL coinURL = getClass().getResource("/images/Coin.png");
+    assert coinURL != null;
+    Image coinImage = new Image(coinURL.openStream());
     ImageView coin = new ImageView(coinImage);
     coin.setFitHeight(GameConstants.BLOCK_SIZE.getValue());
     coin.setFitWidth(GameConstants.BLOCK_SIZE.getValue());
