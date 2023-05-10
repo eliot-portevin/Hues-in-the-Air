@@ -180,7 +180,7 @@ public class Lobby {
   /** Starts the game. */
   private void startGame() {
     // The game instance starts itself
-    String gameId = this.getName() + "_" + gamesPlayed;
+    String gameId = this.getName();
     this.game = new ServerGame(this.clientsAndColours, gameId, this);
 
     // Tell the clients to load their game screen

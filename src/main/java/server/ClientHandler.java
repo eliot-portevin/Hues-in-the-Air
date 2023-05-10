@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -406,20 +407,12 @@ public class ClientHandler implements Runnable {
 
   /** Sends the list of all games that have been played or are being played to the client. */
   public void updateGameList() {
-    Map<ServerGame, AbstractMap.Entry<Integer, Boolean>> games = this.server.getGames();
+    List<String> highscores = this.server.getHighscores();
 
-    StringBuilder command =
-        new StringBuilder(ServerProtocol.UPDATE_GAME_LIST.toString() + ServerProtocol.SEPARATOR);
 
-    for (ServerGame game : games.keySet()) {
-      command
-          .append(game.getGameId())
-          .append(" ")
-          .append(games.get(game).getKey())
-          .append(" ")
-          .append(games.get(game).getValue())
-          .append(ServerProtocol.SUBSEPARATOR);
-    }
+    String command = ServerProtocol.UPDATE_GAME_LIST.toString() + ServerProtocol.SEPARATOR;
+
+    command += highscores.stream().collect(Collectors.joining(ServerProtocol.SUBSEPARATOR.toString()));
 
     this.out.println(command);
   }

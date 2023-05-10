@@ -1,26 +1,22 @@
 package server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import client.LevelReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The server class. This class is responsible for managing the server.
- * It contains a list of all clients, a list of all lobbies and a list
- * of all games. It also contains a ServerSocket which is
+ * The server class. This class is responsible for managing the server. It contains a list of all
+ * clients, a list of all lobbies and a list of all games. It also contains a ServerSocket which is
  * used to listen for client connections.
  */
 public class Server implements Runnable {
@@ -35,8 +31,8 @@ public class Server implements Runnable {
   /** A HashMap for all lobbies with their names. */
   private final HashMap<String, Lobby> lobbies = new HashMap<>();
   /** A Map for the ServerGame used for the game state. */
-  private Map<ServerGame, Map.Entry<Integer, Boolean>> games
-          = new LinkedHashMap<>();
+  private Map<ServerGame, Map.Entry<Integer, Boolean>> games = new LinkedHashMap<>();
+  private List<String> highscores = new ArrayList<>();
 
   /** The listener of the ServerSocket. */
   private ServerSocket listener;
@@ -44,7 +40,6 @@ public class Server implements Runnable {
   private boolean shuttingDown = false;
   /** Used to know if clients are connected to the server. */
   private boolean noClientConnected = true;
-
 
   /** The instance of the server. */
   private static Server instance;
@@ -63,18 +58,22 @@ public class Server implements Runnable {
     this.port = serverPort;
     this.logger = LogManager.getLogger(Server.class);
     instance = this;
+
+    try {
+      this.loadHighscores();
+    } catch (IOException | URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
-   * Waits for client connections.
-   * When a client wants to connect to the server, the addClient
+   * Waits for client connections. When a client wants to connect to the server, the addClient
    * method is called.
    */
   public void run() {
     try {
       this.listener = new ServerSocket(this.port);
-      Thread pingSender
-              = new Thread(new ServerPingSender(this.clientHandlers, this));
+      Thread pingSender = new Thread(new ServerPingSender(this.clientHandlers, this));
 
       while (true) {
         if (!shuttingDown) {
@@ -103,8 +102,7 @@ public class Server implements Runnable {
   }
 
   /**
-   * Adds a client to the list of clients
-   * and starts a dedicated thread for the client.
+   * Adds a client to the list of clients and starts a dedicated thread for the client.
    *
    * @param clientSocket The socket of the client
    * @throws IOException If the client socket is closed
@@ -124,8 +122,8 @@ public class Server implements Runnable {
 
   /**
    * Called from {@link ClientHandler} when a client disconnects ({@link
-   * client.ClientProtocol#EXIT}). Removes the client from the list of clients,
-   * from its lobby and interrupts the client's dedicated thread.
+   * client.ClientProtocol#EXIT}). Removes the client from the list of clients, from its lobby and
+   * interrupts the client's dedicated thread.
    *
    * @param client The client that disconnected
    */
@@ -150,8 +148,7 @@ public class Server implements Runnable {
   protected void removeLobby(final Lobby lobby) {
     this.lobbies.remove(lobby.getName());
     this.updateLobbyList();
-    logger.info("The lobby " + lobby.getName()
-            + " was removed because it was empty.");
+    logger.info("The lobby " + lobby.getName() + " was removed because it was empty.");
   }
 
   /**
@@ -184,8 +181,7 @@ public class Server implements Runnable {
   }
 
   /**
-   * @return The games that have been played,
-   * or are still playing, and their status.
+   * @return The games that have been played, or are still playing, and their status.
    */
   protected Map<ServerGame, AbstractMap.Entry<Integer, Boolean>> getGames() {
     return this.games;
@@ -196,15 +192,13 @@ public class Server implements Runnable {
     List<Map.Entry<ServerGame, Map.Entry<Integer, Boolean>>> list =
         new LinkedList<>(this.games.entrySet());
 
-    list.sort(((o1, o2)
-            -> o2.getValue().getKey().compareTo(o1.getValue().getKey())));
+    list.sort(((o1, o2) -> o2.getValue().getKey().compareTo(o1.getValue().getKey())));
 
     this.games =
         list.stream()
             .collect(
                 Collectors.toMap(
-                    Map.Entry::getKey, Map.Entry::getValue,
-                        (a, b) -> b, LinkedHashMap::new));
+                    Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
   }
 
   /**
@@ -225,15 +219,15 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link ClientHandler} when a client wants to create a lobby.
-   * Creates a new lobby and adds the client to it.
+   * Called from {@link ClientHandler} when a client wants to create a lobby. Creates a new lobby
+   * and adds the client to it.
    *
    * @param lobbyName The name of the lobby
    * @param password The password of the lobby
    * @param client The client that wants to create the lobby
    */
-  protected void createLobby(final String lobbyName, final String password,
-                             final ClientHandler client) {
+  protected void createLobby(
+      final String lobbyName, final String password, final ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         // Lobby already exists
@@ -248,16 +242,15 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link ClientHandler} when a client wants to join a lobby
-   * Adds the client to the
+   * Called from {@link ClientHandler} when a client wants to join a lobby Adds the client to the
    * lobby.
    *
    * @param lobbyName The name of the lobby
    * @param password The password of the lobby
    * @param client The client that wants to join the lobby
    */
-  protected void joinLobby(final String lobbyName, final String password,
-                           final ClientHandler client) {
+  protected void joinLobby(
+      final String lobbyName, final String password, final ClientHandler client) {
     for (String lobby : this.lobbies.keySet()) {
       if (lobby.equals(lobbyName)) {
         this.lobbies.get(lobbyName).addClient(client, password);
@@ -268,8 +261,8 @@ public class Server implements Runnable {
   }
 
   /**
-   * Sends a message to all clients in the server
-   * containing the list of all lobbies and their clients.
+   * Sends a message to all clients in the server containing the list of all lobbies and their
+   * clients.
    */
   protected void updateLobbyList() {
     synchronized (this.lobbies) {
@@ -285,10 +278,7 @@ public class Server implements Runnable {
     }
   }
 
-  /**
-   * Sends a message to all clients in the server
-   * containing the list of all clients.
-   */
+  /** Sends a message to all clients in the server containing the list of all clients. */
   protected void updateClientList() {
     synchronized (this.clientHandlers) {
       for (ClientHandler client : this.clientHandlers) {
@@ -298,8 +288,8 @@ public class Server implements Runnable {
   }
 
   /**
-   * Sends a message to all clients in the server containing
-   * the list of all games and their status (running or finished).
+   * Sends a message to all clients in the server containing the list of all games and their status
+   * (running or finished).
    */
   private void updateGameList() {
     this.sortGames();
@@ -312,8 +302,7 @@ public class Server implements Runnable {
   }
 
   /**
-   * Produces an array of all lobbies and their clients.
-   * Called from {@link ClientHandler} each time
+   * Produces an array of all lobbies and their clients. Called from {@link ClientHandler} each time
    * the client list is updated. This list is then sent to the client.
    *
    * @return An array of all lobbies and their clients
@@ -333,8 +322,7 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link ClientHandler} for the logger and from {@link Lobby}
-   * to update the lists.
+   * Called from {@link ClientHandler} for the logger and from {@link Lobby} to update the lists.
    *
    * @return the instance of the server
    */
@@ -343,31 +331,27 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link Lobby} when a game has been started.
-   * Adds the game to the list of games and sends a message to all clients
-   * in the server containing the list of all games. The info stored
-   * in the map is: game instance, levels completed,
-   * whether the game is running or not.
+   * Called from {@link Lobby} when a game has been started. Adds the game to the list of games and
+   * sends a message to all clients in the server containing the list of all games. The info stored
+   * in the map is: game instance, levels completed, whether the game is running or not.
    *
    * @param game The game instance that has been started
    */
   protected void addGame(final ServerGame game) {
-    this.games.put(game,
-            new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
+    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
+    this.highscores.add(game.getGameId() + " " + game.getLevelsCompleted() + " " + game.running);
     this.updateGameList();
   }
 
   /**
-   * Called from {@link ServerGame} when a game has ended.
-   * Sets the game to finished and sends a message to all clients in the server
-   * containing the list of all games. The info stored in the map is:
-   * game instance, levels completed, whether the game is running or not.
+   * Called from {@link ServerGame} when a game has ended. Sets the game to finished and sends a
+   * message to all clients in the server containing the list of all games. The info stored in the
+   * map is: game instance, levels completed, whether the game is running or not.
    *
    * @param game The game instance that has ended
    */
   protected void endGame(final ServerGame game) {
-    this.games.put(game,
-            new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), false));
+    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), false));
 
     for (ClientHandler client : game.getPlayers()) {
       client.gameEnded();
@@ -377,17 +361,50 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link ServerGame#nextLevel()} when a level has been completed.
-   * Updates the number of levels completed and sends a message to all clients
-   * in the server containing the list of all games.
-   * The info stored in the map is: game instance, levels completed,
-   * whether the game is running or not.
+   * Called from {@link ServerGame#nextLevel()} when a level has been completed. Updates the number
+   * of levels completed and sends a message to all clients in the server containing the list of all
+   * games. The info stored in the map is: game instance, levels completed, whether the game is
+   * running or not.
    *
    * @param game The game instance that has completed a level
    */
   protected void updateGameLevelsCompleted(final ServerGame game) {
-    this.games.put(game,
-            new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
+    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
     this.updateGameList();
+    try {
+      this.updateHighscoreFile();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Updates the file containing the highscores when a game has been ended. The list of games is
+   * then updated so the clients can see the actual highscore state.
+   */
+  private void updateHighscoreFile() throws IOException {
+    PrintWriter writer = new PrintWriter(getClass().getResourceAsStream("highscores.csv").toString());
+    for (String highscore : this.highscores) {
+      writer.println(highscore + (highscore.endsWith("\n") ? "" : "\n"));
+    }
+  }
+
+  /** Loads the highscores from the file upon startup. Called from the constructor. */
+  private void loadHighscores() throws IOException, URISyntaxException {
+    InputStream is = LevelReader.class.getResourceAsStream("/highscores.csv");
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+    String line;
+    while ((line = reader.readLine()) != null) {
+      this.highscores.add(line);
+    }
+  }
+
+  /**
+   * Returns the list of highscores. Used in ClientHandler to send the highscores to the client.
+   * @return The list of highscores
+   */
+  List<String> getHighscores() {
+    return this.highscores;
   }
 }
