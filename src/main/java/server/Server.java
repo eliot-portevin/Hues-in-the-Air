@@ -2,15 +2,8 @@ package server;
 
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import client.LevelReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +25,7 @@ public class Server implements Runnable {
   private final HashMap<String, Lobby> lobbies = new HashMap<>();
   /** A Map for the ServerGame used for the game state. */
   private Map<ServerGame, Map.Entry<Integer, Boolean>> games = new LinkedHashMap<>();
+
   private List<String> highscores = new ArrayList<>();
 
   /** The listener of the ServerSocket. */
@@ -338,9 +332,11 @@ public class Server implements Runnable {
    * @param game The game instance that has been started
    */
   protected void addGame(final ServerGame game) {
-    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
-    this.highscores.add(game.getGameId() + " " + game.getLevelsCompleted() + " " + game.running);
-    this.updateGameList();
+    synchronized (this.highscores) {
+      this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
+      this.highscores.add(game.getGameId() + " " + game.getLevelsCompleted() + " " + game.running);
+      this.updateGameList();
+    }
   }
 
   /**
@@ -351,7 +347,19 @@ public class Server implements Runnable {
    * @param game The game instance that has ended
    */
   protected void endGame(final ServerGame game) {
-    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), false));
+    synchronized (this.highscores) {
+      this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), false));
+
+      List<String> strings = this.highscores;
+      for (int i = 0; i < strings.size(); i++) {
+        String score = strings.get(i);
+        if (score.equals(game.getGameId() + " " + game.getLevelsCompleted() + " true")) {
+          this.highscores.remove(i);
+          this.highscores.add(game.getGameId() + " " + game.getLevelsCompleted() + " false");
+          break;
+        }
+      }
+    }
 
     for (ClientHandler client : game.getPlayers()) {
       client.gameEnded();
@@ -369,7 +377,20 @@ public class Server implements Runnable {
    * @param game The game instance that has completed a level
    */
   protected void updateGameLevelsCompleted(final ServerGame game) {
-    this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
+    synchronized (this.highscores) {
+      this.games.put(game, new AbstractMap.SimpleEntry<>(game.getLevelsCompleted(), true));
+
+      List<String> strings = this.highscores;
+      for (int i = 0; i < strings.size(); i++) {
+        String score = strings.get(i);
+        if (score.equals(game.getGameId() + " " + (game.getLevelsCompleted() - 1) + " true")) {
+          this.highscores.remove(i);
+          this.highscores.add(game.getGameId() + " " + game.getLevelsCompleted() + " true");
+          break;
+        }
+      }
+    }
+
     this.updateGameList();
     try {
       this.updateHighscoreFile();
@@ -383,25 +404,39 @@ public class Server implements Runnable {
    * then updated so the clients can see the actual highscore state.
    */
   private void updateHighscoreFile() throws IOException {
-    PrintWriter writer = new PrintWriter(getClass().getResourceAsStream("highscores.csv").toString());
-    for (String highscore : this.highscores) {
-      writer.println(highscore + (highscore.endsWith("\n") ? "" : "\n"));
+    // Create empty highscore file if it doesn't exist
+    File file = new File("highscores.csv");
+    boolean notExistent = file.createNewFile();
+
+    try (PrintWriter writer = new PrintWriter(file)) {
+      for (String highscore : this.highscores) {
+        if (highscore.split(" ").length == 3) {
+          writer.println(highscore.replace("\n", ""));
+        }
+      }
     }
   }
 
   /** Loads the highscores from the file upon startup. Called from the constructor. */
   private void loadHighscores() throws IOException, URISyntaxException {
-    InputStream is = LevelReader.class.getResourceAsStream("/highscores.csv");
+    // Create empty highscore file if it doesn't exist
+    File file = new File("highscores.csv");
+    boolean notExistent = file.createNewFile();
+
+    InputStream is = new FileInputStream(file);
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
     String line;
     while ((line = reader.readLine()) != null) {
-      this.highscores.add(line);
+      if (line.split(" ").length == 3) {
+        this.highscores.add(line.replace("true", "false"));
+      }
     }
   }
 
   /**
    * Returns the list of highscores. Used in ClientHandler to send the highscores to the client.
+   *
    * @return The list of highscores
    */
   List<String> getHighscores() {

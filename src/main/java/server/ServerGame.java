@@ -407,7 +407,6 @@ public class ServerGame implements Runnable {
     
     this.levelsCompleted++;
     Server.getInstance().updateGameLevelsCompleted(this);
-
     this.gameStatusUpdate();
   }
 

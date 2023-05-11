@@ -96,10 +96,14 @@ public class MenuGameController {
   public void setGameList(String[] games) {
     Arrays.sort(games, new Comparator<String>() {
       public int compare(String str1, String str2) {
-        int int1 = Integer.parseInt(str1.split(" ")[1]);
-        int int2 = Integer.parseInt(str2.split(" ")[1]);
+        try {
+          int int1 = Integer.parseInt(str1.split(" ")[1]);
+          int int2 = Integer.parseInt(str2.split(" ")[1]);
 
-        return Integer.valueOf(int2).compareTo(Integer.valueOf(int1));
+          return Integer.valueOf(int2).compareTo(Integer.valueOf(int1));
+        } catch (Exception e) {
+          return 0;
+        }
       }
     });
 
