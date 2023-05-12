@@ -44,3 +44,6 @@ gradle-app.setting
 
 # Log files
 .log/
+
+# Highscore file
+highscores.csv
