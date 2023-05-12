@@ -26,7 +26,7 @@ public class Server implements Runnable {
   /** A Map for the ServerGame used for the game state. */
   private Map<ServerGame, Map.Entry<Integer, Boolean>> games = new LinkedHashMap<>();
 
-  private List<String> highscores = new ArrayList<>();
+  private final List<String> highscores = new ArrayList<>();
 
   /** The listener of the ServerSocket. */
   private ServerSocket listener;
@@ -172,13 +172,6 @@ public class Server implements Runnable {
    */
   protected ArrayList<ClientHandler> getClientHandlers() {
     return this.clientHandlers;
-  }
-
-  /**
-   * @return The games that have been played, or are still playing, and their status.
-   */
-  protected Map<ServerGame, AbstractMap.Entry<Integer, Boolean>> getGames() {
-    return this.games;
   }
 
   /** Sorts the games by the number of levels completed. */

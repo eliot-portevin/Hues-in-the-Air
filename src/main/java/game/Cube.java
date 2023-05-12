@@ -37,6 +37,8 @@ public abstract class Cube {
   public boolean jumping = true;
   /** Whether the cube has already rotated in this jump */
   public boolean canRotate = false;
+  public boolean rotating = false;
+  public boolean clockwise = true;
   /** The colour on which the cube is currently moving. */
   public Color colourCanJump;
   /** The point around which the cube will rotate (during a jump). */
@@ -139,6 +141,7 @@ public abstract class Cube {
       // Don't allow the cube to jump again until it has landed
       jumping = true;
       canRotate = true;
+      rotating = true;
     }
   }
 
@@ -246,6 +249,8 @@ public abstract class Cube {
     if (this.canRotate) {
       checkForRotation();
     }
+
+    this.rotateCube(dt);
   }
 
   /** Makes the cube accelerate to its maximum speed at the beginning of a level. */
@@ -392,5 +397,46 @@ public abstract class Cube {
     this.rectangle.setTranslateY(y);
     this.position.setX(x);
     this.position.setY(y);
+  }
+
+  /**
+   * If the cube is jumping, rotate it by 180 degrees per second. If not, reset the rotation to 0 degrees.
+   * This may result in a slight stutter when the cube lands, but it is barely noticeable if the levels
+   * are designed well.
+   *
+   * @param dt The time since the last frame
+   */
+  private void rotateCube(double dt) {
+    if (!jumping) {
+      rotating = false;
+      clockwise = signum(this.getVelocity().getX())
+          == signum(Math.cos(Math.toRadians(this.accelerationAngle)))
+          && signum(-this.getVelocity().getY())
+          == signum(Math.sin(Math.toRadians(this.accelerationAngle)));
+    }
+
+    if (rotating) {
+      // Rotate the cube
+      if (clockwise) {
+        this.rectangle.setRotate(this.rectangle.getRotate() + 180 * dt);
+      } else {
+        this.rectangle.setRotate(this.rectangle.getRotate() - 180 * dt);
+      }
+    } else {
+      this.rectangle.setRotate(0);
+    }
+  }
+
+  /**
+   * Returns whether a value is positive, negative or zero. Better than Math.signum because it
+   * returns 0 if the value is 0.
+   *
+   * @param value The value to check
+   * @return 1 if the value is positive, -1 if it is negative and 0 if it is 0
+   */
+  protected int signum(double value) {
+    if (Math.abs(value) < 1e-4) return 0;
+    if (value > 0) return 1;
+    return -1;
   }
 }
