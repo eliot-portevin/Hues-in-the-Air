@@ -7,10 +7,7 @@ import client.controllers.MenuController;
 import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -45,6 +42,7 @@ public class Client extends Application {
   boolean shuttingDown = false;
   /** The instance of the client. Set upon startup. */
   public static Client instance;
+
   boolean loginScreen = true;
 
   boolean menuScreen = false;
@@ -86,6 +84,16 @@ public class Client extends Application {
   // Sound
   private MediaPlayer clickPlayer;
   private MediaPlayer menuMusicPlayer;
+  private final String[] musicPaths = {
+    "bedtime_stories.mp3",
+    "ghiblis_waltz.mp3",
+    "paradise.mp3",
+    "silver_seven_step.mp3",
+    "weightless.mp3"
+  };
+  private MediaPlayer gameMusicPlayer;
+  int currentMusicIdx = -1;
+  boolean menuMusicPlaying = false;
 
   /** The logger for the client */
   public Logger LOGGER;
@@ -117,7 +125,8 @@ public class Client extends Application {
         new Media(Objects.requireNonNull(getClass().getResource("/sounds/click.wav")).toString());
     this.clickPlayer = new MediaPlayer(clickSound);
     Media menuMusic =
-        new Media(Objects.requireNonNull(getClass().getResource("/sounds/menu_music.mp3")).toString());
+        new Media(
+            Objects.requireNonNull(getClass().getResource("/sounds/menu_music.mp3")).toString());
     this.menuMusicPlayer = new MediaPlayer(menuMusic);
 
     // Get server info from command line arguments
@@ -251,11 +260,7 @@ public class Client extends Application {
     this.requestMenuLists();
 
     // Play menu music
-    this.menuMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-    this.menuMusicPlayer.play();
-    if (!this.lobbyScreen) {
-      this.menuMusicPlayer.seek(this.menuMusicPlayer.getStartTime());
-    }
+    this.playMenuMusic();
 
     this.loginScreen = false;
     this.menuScreen = true;
@@ -280,6 +285,9 @@ public class Client extends Application {
 
     // Reset the toggle status in case the user was in a game before
     this.sendToggleReady(false);
+
+    // Music
+    this.playMenuMusic();
 
     this.menuScreen = false;
     this.isInLobby = true;
@@ -307,6 +315,9 @@ public class Client extends Application {
     this.lobbyScreen = false;
     this.gameScreen = true;
     LOGGER.info("Game screen loaded.");
+
+    // Music
+    this.playGameMusic();
   }
 
   /** Plays a clicking sound. Called when the user hovers over a button. */
@@ -653,8 +664,9 @@ public class Client extends Application {
     this.outputSocket.sendToServer(command);
   }
 
-  /** The client has loaded the lobby screen successfully and would like to know which clients are in their
-   * lobby.
+  /**
+   * The client has loaded the lobby screen successfully and would like to know which clients are in
+   * their lobby.
    */
   public void requestLobbyList() {
     String command = ClientProtocol.GET_FULL_LOBBY_LIST.toString();
@@ -827,9 +839,11 @@ public class Client extends Application {
     this.menuController.settingsTabController.setUsernameField();
   }
 
-  /** Loads a level in the game screen
+  /**
+   * Loads a level in the game screen
+   *
    * @param levelPath The path of the level to be loaded from the resources
-   * */
+   */
   public void loadLevel(String levelPath) {
     if (this.gameController != null) {
       this.gameController.loadLevel(levelPath);
@@ -870,5 +884,64 @@ public class Client extends Application {
    */
   public Color getColour() {
     return this.colour;
+  }
+
+  /**
+   * Returns a music from the list of game music files which is different from the previous one. If
+   * the method fails to find a different music after 20 tries, it returns null.
+   *
+   * @return A random music
+   */
+  private Media getRandomMusic() {
+    Random rand = new Random();
+
+    for (int i = 0; i < 20; i++) {
+      int index = rand.nextInt(this.musicPaths.length);
+      if (index != currentMusicIdx) {
+        currentMusicIdx = index;
+        return new Media(
+            Objects.requireNonNull(getClass().getResource("/sounds/" + musicPaths[index]))
+                .toString());
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Gets a random music, plays it and sets the onEndOfMedia to play another random music. Used
+   * while in game.
+   */
+  private void playGameMusic() {
+    if (this.menuMusicPlayer != null) this.menuMusicPlayer.stop();
+    this.menuMusicPlaying = false;
+
+    Media music = this.getRandomMusic();
+
+    if (music != null) {
+      this.gameMusicPlayer = new MediaPlayer(music);
+      this.gameMusicPlayer.setCycleCount(1);
+      this.gameMusicPlayer.play();
+      this.gameMusicPlayer.seek(this.gameMusicPlayer.getStartTime());
+
+      // Change the music when the song is finished
+      this.gameMusicPlayer.setOnEndOfMedia(this::playGameMusic);
+    }
+  }
+
+  /**
+   * Stops the game music. If the menu music isn't playing already, plays it from the start. Used when
+   * loading the menu- and lobby screens.
+   */
+  private void playMenuMusic() {
+    if (this.gameMusicPlayer != null) this.gameMusicPlayer.stop();
+
+    if (!this.menuMusicPlaying) {
+      this.menuMusicPlaying = true;
+
+      this.menuMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+      this.menuMusicPlayer.play();
+      this.menuMusicPlayer.seek(this.menuMusicPlayer.getStartTime());
+    }
   }
 }

@@ -355,7 +355,7 @@ public class ServerGame implements Runnable {
         if (levelNames.size() > 0) {
           int randomFile = (int) (Math.random() * levelNames.size());
           path = "/" + levelNames.get(randomFile);
-          this.levelDifficulty = difficulty;
+          this.levelDifficulty = difficulty.replace("/", "");
           found = true;
         }
       }
@@ -390,9 +390,9 @@ public class ServerGame implements Runnable {
    */
   public void nextLevel() {
     switch (this.levelDifficulty) {
-      case "easy" -> this.lives += GameConstants.LIFE_GAIN_EASY.getValue();
-      case "medium" -> this.lives += GameConstants.LIFE_GAIN_MEDIUM.getValue();
       case "hard" -> this.lives += GameConstants.LIFE_GAIN_HARD.getValue();
+      case "medium" -> this.lives += GameConstants.LIFE_GAIN_MEDIUM.getValue();
+      default -> this.lives += GameConstants.LIFE_GAIN_EASY.getValue();
     }
 
     if (this.lives > GameConstants.MAX_LIVES.getValue()) {

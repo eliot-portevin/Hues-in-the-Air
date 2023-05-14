@@ -37,7 +37,9 @@ public abstract class Cube {
   public boolean jumping = true;
   /** Whether the cube has already rotated in this jump */
   public boolean canRotate = false;
+  /** Whether the cube is currently rotating */
   public boolean rotating = false;
+  /** Whether the cube is currently rotating clockwise or not */
   public boolean clockwise = true;
   /** The colour on which the cube is currently moving. */
   public Color colourCanJump;
