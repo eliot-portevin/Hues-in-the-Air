@@ -13,11 +13,20 @@ Used to separate arguments in the packages sent from client to server or vice ve
 Example: LOBBY_EXITED<&!>lobbyName <br>
 Command sent form server to client. Here the separator is used to separate the argument LOBBY_EXITED from the argument recipient (the lobby name)
 
+### SUBSEPARATOR <br>
+returns "<&.>" <br>
+The separator of the subarguments <br>
+Example: UPDATE_LOBBY_LIST<&!>client1 #ff33ff<&.>client2 #blabla<&.>client3 #robert <br>
+Subsepparator is used when sending lists of something. Elements of these lists are assembled as shown above
+
+
+### SUBSUBSEPARATOR <br>
+returns "<&..>" <br>
 ### LOBBY_INFO_SEPARATOR
 returns "<&?>" <br>
 Used to separate lobby information when a list of clients is requested <br>
-Example: UPDATE_LOBBY_LIST<&!>username1<&?>username2<&?>username3 <br>
-Command sent form server to client. Here the separator is used to separate the arguments (username1, username2, username3) from each other.
+Example: SEND_CRITICAL_BLOCKS<&!><&.>55<&..>39<&..>0xf57dc6ff<&.>55<&..>41<&..>0xf57dc6ff<&.>61<&..>45<&..>0xf57dc6ff <br>
+Subsubseparator is used when sending nested lists of something. Elements of these lists are assembled as shown above
 
 ### USERNAME_SET_TO
 Inform client that their username has been changed. <br>
@@ -100,15 +109,35 @@ Signal sent to client upon receiving a pause request.
 Example: TOGGLE_PAUSE <br>
 Command sent form server to client. Server has received a pause request from client and sends this command to all clients to pause the game.
 
-###  START_GAME_LOOP
-Signal sent to client upon receiving a start game request.
-Example: START_GAME_LOOP <br>
-Command sent form server to client. Server has received a start game request from client and sends this command to all clients to start the game.
+### GAME_ENDED
+Signal sent to clients upon receiving a end game request.
+Example: GAME_ENDED <br>
+Command sent form server to client. Server has received a end game request from client and sends this command to all clients to end the game and return to their lobbys.
+
+### SEND_CRITICAL_BLOCKS
+Sends the critical blocks and their colour to the client. <br>
+Example: SEND_CRITICAL_BLOCKS<&!><&.>55<&..>39<&..>0xf57dc6ff<&.>55<&..>41<&..>0xf57dc6ff<&.>61<&..>45<&..>0xf57dc6ff <br>
+Command sent form server to client. Server sends this command to all clients to update the critical blocks.
 
 ### POSITION_UPDATE
 Updates the position of the cube for the client. <br>
 Example: POSITION_UPDATE<&!>x_pos<&!>y_pos <br>
 Command sent form server to client. Server sends this command to all clients to update the position of the cube.
+
+### JUMP_UPDATE
+The cube has just jumped. Informs the client of the coordinates of the rotation point <br>
+Example: JUMP_UPDATE<&!>x_pos<&!>y_pos<&!> <br>
+Command sent form server to client. Server sends this command to all clients to update the position of the cube.
+
+### GAME_STATUS_UPDATE
+Updates the status (lives left and levels completed) of the game for the client. <br>
+Example: GAME_STATUS_UPDATE<&!>lives_left<&!>levels_completed <br>
+Command sent form server to client. Server sends this command to all clients to update the status of the game.
+
+### LOAD_LEVEL
+Loads a level for the clients. <br>
+Example: LOAD_LEVEL<&!>level <br>
+Command sent form server to client. Server sends this command to all clients to load a level.
 
 ## ClientProtocol
 ### COMMAND_SYMBOL
@@ -157,6 +186,22 @@ Command sent from client to server. Client requests to create lobby on server.
 Client wants to exit a lobby. If they are not in a lobby, the server will ignore their request. <br>
 Example: EXIT_LOBBY <br>
 
+### GET_FULL_SERVER_LIST
+Signal sent to server to tell server that client wants to get a list of all clients and lobbies. Used when the client has loaded their menu screen.<br>
+Example: GET_FULL_SERVER_LIST <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to get a list of all clients and lobbies.
+
+### GET_FULL_MENU_LISTS
+Signal sent to server to tell server that client wants to get a list of all clients, lobbies and games. Used
+when the client has loaded their menu screen.<br>
+Example: GET_FULL_MENU_LISTS <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to get a list of all clients, lobbies and games,
+
+### GET_FULL_LOBBY_LIST
+Signal sent to server to tell server that client wants to get a list of all clients in their lobby. Used when the client has loaded their lobby screen.<br>
+Example: GET_FULL_LOBBY_LIST <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to get a list of all clients in their lobby.
+
 ### TOGGLE_READY_STATUS
 Client wants to toggle their ready status <br>
 Example: TOGGLE_READY_STATUS<&!>clientIsReady <br> 
@@ -171,10 +216,10 @@ Command sent form client to server. Client sends this command regularly to serve
 Signal sent to server upon receiving a PING from the server <br>
 Example: PONG <br>
 
-### REQUEST_JUMP
+### SPACE_BAR_PRESSED
 Signal sent to server to tell server that client wants to jump <br>
-Example: REQUEST_JUMP <br>
-Command sent form client to server. Client sends this command to server to tell server that client wants to jump,
+Example: SPACE_BAR_PRESSED <br>
+Command sent form client to server. Client sends this command to server to tell server that client has pressed space bar
 server then checks whether the client is allowed to jump and either makes all clients jump or does nothing.
 
 ### REQUEST_PAUSE
@@ -183,14 +228,32 @@ Example: REQUEST_PAUSE <br>
 Command sent form client to server. Client sends this command to server to tell server that client wants to pause the game,
 server then pauses the game and sends TOGGLE_PAUSE to all clients.
 
-### START_GAME_LOOP
-Signal sent to server to tell server that client wants to start the game <br>
-Example: START_GAME_LOOP <br>
-Command sent form client to server. Client sends this command to server to tell server that client wants to start the game,
-server then starts the game and sends START_GAME to all clients.
+### READY_UP
+Signal sent to server to tell server that the client has the game opened and is ready to start <br>
+Example: READY_UP <br>
+Command sent form client to server. Client sends this command to server to tell server that client is ready to start,
 
-### GET_FULL_MENU_LISTS
-Signal sent to server to tell server that client wants to get a list of all clients, lobbies and games. Used
-when the client has loaded their menu screen.<br>
-Example: GET_FULL_MENU_LISTS <br>
-Command sent form client to server. Client sends this command to server to tell server that client wants to get a list of all clients, lobbies and games,
+### REQUEST_CRITICAL_BLOCKS
+Signal sent to server when client has loaded the level successfully. Client requests the critical blocks of the level.
+Example: REQUEST_CRITICAL_BLOCKS <br>
+Command sent form client to server. Client sends this command to server to tell server that the client has loaded the level successfully and requests the critical blocks of the level.
+
+### REQUEST_END_GAME
+Signal sent to server to tell server that the client has pressed the quit game button and requests that the game ends <br>
+Example: REQUEST_END_GAME <br>
+Command sent form client to server. Client sends this command to server to tell server that the client has pressed the quit game button and requests that the game ends,
+
+### SKIP_LEVEL
+Signal sent to server to tell server that client wants to skip the current level <br>
+Example: SKIP_LEVEL <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to skip the current level,
+
+### SET_IMMORTAL
+Signal sent to server to tell server that client wants to be immortal <br>
+Example: SET_IMMORTAL <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to be immortal,
+
+### SET_MORTAL
+Signal sent to server to tell server that client wants to be mortal <br>
+Example: SET_MORTAL <br>
+Command sent form client to server. Client sends this command to server to tell server that client wants to be mortal,

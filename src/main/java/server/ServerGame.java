@@ -282,6 +282,7 @@ public class ServerGame implements Runnable {
           .append(ServerProtocol.SUBSUBSEPARATOR)
           .append(block.getColour().toString());
     }
+    System.out.println(command.toString());
 
     for (ClientHandler client : clients) {
       client.sendCriticalBlocks(command.toString());
