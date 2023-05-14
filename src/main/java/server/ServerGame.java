@@ -19,7 +19,7 @@ public class ServerGame implements Runnable {
 
   // Used to store the grid of blocks, null if no block is present
   private Level level;
-  private final int[] difficultyProbabilities = {50, 35, 15};
+  private final int[] difficultyProbabilities = {60, 30, 10};
 
   /** The colours which can be given to players */
   public static ArrayList<Color> blockColours =
