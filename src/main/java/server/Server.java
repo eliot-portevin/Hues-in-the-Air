@@ -430,7 +430,9 @@ public class Server implements Runnable {
     util.SortHighscores.sort(array);
 
     this.highscores.clear();
-    this.highscores.addAll(Arrays.asList(array).subList(0, 10));
+    if (array.length > 0) {
+      this.highscores.addAll(Arrays.asList(array).subList(0, Math.min(array.length, 10)));
+    }
   }
 
   /**
