@@ -85,6 +85,7 @@ public class Client extends Application {
 
   // Sound
   private MediaPlayer clickPlayer;
+  private MediaPlayer menuMusicPlayer;
 
   /** The logger for the client */
   public Logger LOGGER;
@@ -115,6 +116,9 @@ public class Client extends Application {
     Media clickSound =
         new Media(Objects.requireNonNull(getClass().getResource("/sounds/click.wav")).toString());
     this.clickPlayer = new MediaPlayer(clickSound);
+    Media menuMusic =
+        new Media(Objects.requireNonNull(getClass().getResource("/sounds/menu_music.mp3")).toString());
+    this.menuMusicPlayer = new MediaPlayer(menuMusic);
 
     // Get server info from command line arguments
     String[] args = getParameters().getRaw().toArray(new String[3]);
@@ -246,8 +250,16 @@ public class Client extends Application {
     // Request the lobby list, the client list and the game list
     this.requestMenuLists();
 
+    // Play menu music
+    this.menuMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+    this.menuMusicPlayer.play();
+    if (!this.lobbyScreen) {
+      this.menuMusicPlayer.seek(this.menuMusicPlayer.getStartTime());
+    }
+
     this.loginScreen = false;
     this.menuScreen = true;
+    this.lobbyScreen = false;
     this.connectedToServer = true;
     LOGGER.info("Menu screen loaded.");
   }
@@ -785,7 +797,7 @@ public class Client extends Application {
    * @param volume The volume of the music
    */
   public void setMusicVolume(double volume) {
-    // no music yet
+    this.menuMusicPlayer.setVolume(volume);
   }
 
   /**
