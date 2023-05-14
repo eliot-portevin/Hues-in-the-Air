@@ -11,6 +11,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Scale;
 
 /** The game class which the client uses to handle the game logic. */
 public class ClientGame {
@@ -20,6 +21,7 @@ public class ClientGame {
   private final Pane appRoot;
   private Pane gameRoot;
   private Vector2D playerScreenPosition;
+  private double screenScale = 1;
 
   /** Whether a jump request has been sent to the server or not. */
   public boolean jumpRequestSent = false;
@@ -28,7 +30,6 @@ public class ClientGame {
 
   /** The level that is currently being played. */
   public Level level;
-
   private ClientCube player;
 
   /**
@@ -66,7 +67,6 @@ public class ClientGame {
   /**
    * Called every frame. If the key ESCAPE is pressed, the game is paused. Otherwise, the game logic
    * is handled.
-   *
    */
   private void analyseKeys() {
     // Possibility to add a pause method
@@ -86,7 +86,12 @@ public class ClientGame {
    * @param velocityY - the y component of the cube's velocity
    * @param accelerationAngle - the angle of the acceleration
    */
-  protected void updatePosition(String positionX, String positionY, String velocityX, String velocityY, String accelerationAngle) {
+  protected void updatePosition(
+      String positionX,
+      String positionY,
+      String velocityX,
+      String velocityY,
+      String accelerationAngle) {
     player.setPositionTo(Double.parseDouble(positionX), Double.parseDouble(positionY));
     player.setVelocityTo(Double.parseDouble(velocityX), Double.parseDouble(velocityY));
     player.onlySetAccelerationAngle(Integer.parseInt(accelerationAngle));
@@ -112,11 +117,15 @@ public class ClientGame {
     this.appRoot
         .widthProperty()
         .addListener(
-            (obs, old, newValues) -> playerScreenPosition.setX(newValues.doubleValue() / 2));
+            (obs, old, newValues) -> {
+              this.setGameRootScale();
+            });
     this.appRoot
         .heightProperty()
         .addListener(
-            (obs, old, newValues) -> playerScreenPosition.setY(newValues.doubleValue() / 2));
+            (obs, old, newValues) -> {
+              this.setGameRootScale();
+            });
 
     Rectangle bg =
         new Rectangle(
@@ -125,9 +134,11 @@ public class ClientGame {
     appRoot.getChildren().addAll(bg, gameRoot); // Adds the background and gameRoot to the appRoot
   }
 
-  /** The client has received the level path from the server and can now load the level.
+  /**
+   * The client has received the level path from the server and can now load the level.
+   *
    * @param levelPath the path to the level to load from the resources folder
-   * */
+   */
   public void loadLevel(String levelPath) {
     this.gameRoot.getChildren().clear();
 
@@ -144,6 +155,9 @@ public class ClientGame {
         new Vector2D(
             level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
     load_player(playerSpawn);
+
+    // Scale level size to fit the screen
+    this.setGameRootScale();
   }
 
   /** Loads the player */
@@ -191,30 +205,29 @@ public class ClientGame {
     this.gameRoot.getChildren().add(coin);
   }
 
-  /**
-   * Launches the application.
-   */
+  /** Launches the application. */
   public void run() {
     this.initialiseContent();
 
     // Called every frame
     // Time since last frame in seconds
-    AnimationTimer timer = new AnimationTimer() {
-      long previousTime = System.nanoTime();
-      final int FPS = 120;
-      double dt;
+    AnimationTimer timer =
+        new AnimationTimer() {
+          long previousTime = System.nanoTime();
+          final int FPS = 120;
+          double dt;
 
-      @Override
-      public void handle(long now) { // Called every frame
-        dt = (now - previousTime) * 1e-9; // Time since last frame in seconds
+          @Override
+          public void handle(long now) { // Called every frame
+            dt = (now - previousTime) * 1e-9; // Time since last frame in seconds
 
-        if (dt > (double) 1 / FPS) {
-          previousTime = now;
+            if (dt > (double) 1 / FPS) {
+              previousTime = now;
 
-          update(dt);
-        }
-      }
-    };
+              update(dt);
+            }
+          }
+        };
 
     timer.start();
   }
@@ -232,25 +245,46 @@ public class ClientGame {
 
   /** The player has moved. Get the position at which the level should be drawn. */
   private void updateCameraPosition() {
-    Vector2D offset =
-        new Vector2D(player.rectangle.getTranslateX(), player.rectangle.getTranslateY());
-    offset.multiplyInPlace(-1);
+    Vector2D offset = new Vector2D(player.rectangle.getTranslateX(), player.rectangle.getTranslateY());
+    offset.multiplyInPlace(-screenScale);
     offset.addInPlace(playerScreenPosition);
+
     gameRoot.setLayoutX(offset.getX());
     gameRoot.setLayoutY(offset.getY());
   }
 
   /**
-   * The cube has successfully jumped. The client has now just been informed of the coordinates of the point
-   * around which the cube should rotate.
+   * The cube has successfully jumped. The client has now just been informed of the coordinates of
+   * the point around which the cube should rotate.
    *
    * @param rotationPointX the x coordinate of the rotation point
    * @param rotationPointY the y coordinate of the rotation point
    */
   public void updateJump(String rotationPointX, String rotationPointY) {
-    player.rotationPoint = new Vector2D(Double.parseDouble(rotationPointX), Double.parseDouble(rotationPointY));
+    player.rotationPoint =
+        new Vector2D(Double.parseDouble(rotationPointX), Double.parseDouble(rotationPointY));
     player.jumping = true;
     player.rotating = true;
     player.canRotate = true;
+  }
+
+  /** Sets the game root size such that a fixed number of blocks are seen on the screen. */
+  private void setGameRootScale() {
+    screenScale = 1;
+
+    if (this.level != null) {
+      screenScale = (appRoot.getWidth()
+          / GameConstants.BLOCKS_SEEN_HORIZONTAL.getValue()
+          * level.getBlockWidth())
+          / this.level.getPixelWidth();
+    }
+
+    Scale scale = new Scale(screenScale, screenScale, 0, 0);
+    this.gameRoot.getTransforms().setAll(scale);
+
+    this.playerScreenPosition =
+        new Vector2D(
+            this.appRoot.getWidth() / 2,
+            this.appRoot.getHeight() / 2); // Sets the player's position
   }
 }

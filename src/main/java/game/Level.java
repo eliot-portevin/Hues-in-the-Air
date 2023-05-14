@@ -176,4 +176,36 @@ public class Level {
   public ArrayList<Block> getCriticalBlocks() {
     return criticalBlocks;
   }
+
+  /**
+   * Returns the width in pixels of the level.
+   * @return the width in pixels of the level
+   */
+  public double getPixelWidth() {
+    return grid[0].length * blockWidth;
+  }
+
+  /**
+   * Returns the amount of blocks in one line of the level.
+   * @return the amount of blocks in one line of the level
+   */
+  public int getBlockWidth() {
+    return grid[0].length;
+  }
+
+  /**
+   * Returns the amount of blocks in one column of the level.
+   * @return the amount of blocks in one column of the level
+   */
+  public int getBlockHeight() {
+    return grid.length;
+  }
+
+  /**
+   * Returns the height in pixels of the level.
+   * @return the height in pixels of the level
+   */
+  public double getPixelHeight() {
+    return grid.length * blockWidth;
+  }
 }

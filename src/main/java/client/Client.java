@@ -923,6 +923,7 @@ public class Client extends Application {
       this.gameMusicPlayer.setCycleCount(1);
       this.gameMusicPlayer.play();
       this.gameMusicPlayer.seek(this.gameMusicPlayer.getStartTime());
+      this.gameMusicPlayer.setVolume(menuMusicPlayer.getVolume());
 
       // Change the music when the song is finished
       this.gameMusicPlayer.setOnEndOfMedia(this::playGameMusic);

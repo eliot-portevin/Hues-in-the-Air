@@ -25,7 +25,9 @@ public enum GameConstants {
   /** The cube's acceleration in px/s^2. */
   CUBE_ACCELERATION(BLOCK_SIZE.value * BLOCKS_PER_SECOND.value * 4),
   /** The default direction in which the gravity acts. */
-  DEFAULT_ACCELERATION_ANGLE(0);
+  DEFAULT_ACCELERATION_ANGLE(0),
+  /** The number of blocks which are displayed on the screen horizontally. */
+  BLOCKS_SEEN_HORIZONTAL(40);
 
   /** The value of the constant. */
   private final int value;
