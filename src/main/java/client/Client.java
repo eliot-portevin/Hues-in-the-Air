@@ -20,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -147,14 +148,6 @@ public class Client extends Application {
     this.stage.setMinWidth(960);
     this.stage.setMinHeight(540);
 
-    try {
-      this.loadLoginScreen(args);
-    } catch (IOException e) {
-      LOGGER.error("Could not load login screen. Closing the program.");
-      e.printStackTrace();
-      System.exit(1);
-    }
-
     // Set stage properties
     this.stage.setOnCloseRequest(
         e -> {
@@ -163,9 +156,10 @@ public class Client extends Application {
           this.handleEscape();
         });
 
-    // this.stage.setFullScreen(true);
     this.stage.setResizable(true);
     this.stage.show();
+
+    this.loadSplashScreen(args);
   }
 
   /**
@@ -220,6 +214,50 @@ public class Client extends Application {
       LOGGER.info("User has confirmed exit.");
       this.exit();
     }
+  }
+
+  /**
+   * Plays the intro video before launching the login screen.
+   */
+  private void loadSplashScreen(String[] args) {
+    this.LOGGER.info("Loading splash screen.");
+
+    // Load intro video
+    MediaPlayer splashPlayer =
+        new MediaPlayer(
+            new Media(
+                Objects.requireNonNull(getClass().getResource("/images/intro.mp4")).toString()));
+    MediaView mediaView = new MediaView(splashPlayer);
+
+    // Create a new pane and set it as the root
+    GridPane pane = new GridPane();
+    pane.getChildren().add(mediaView);
+    this.stage.getScene().setRoot(pane);
+    this.stage.setFullScreen(true);
+    this.stage.getScene().setFill(Color.BLACK);
+
+    // Set media view properties
+    mediaView.setPreserveRatio(true);
+    mediaView.setFitWidth(this.stage.getWidth());
+    if (mediaView.getFitHeight() > this.stage.getHeight()) {
+      mediaView.setFitHeight(this.stage.getHeight());
+    }
+
+    splashPlayer.play();
+
+    LOGGER.info("Splash screen playing.");
+
+    // Launch the login screen after the video has finished playing
+    splashPlayer.setOnEndOfMedia(
+        () -> {
+          try {
+            this.loadLoginScreen(args);
+          } catch (IOException e) {
+            LOGGER.error("Could not load login screen. Closing the program.");
+            e.printStackTrace();
+            System.exit(1);
+          }
+        });
   }
 
   /**
@@ -637,7 +675,7 @@ public class Client extends Application {
   }
 
   /**
-   * The client has receieved a list of all games that are currently running or have been completed.
+   * The client has received a list of all games that are currently running or have been completed.
    * These are passed on to the games tab controller in the menu.
    *
    * @param gameList The list of games in the format from the server command
