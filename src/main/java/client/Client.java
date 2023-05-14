@@ -931,8 +931,8 @@ public class Client extends Application {
   }
 
   /**
-   * Stops the game music. If the menu music isn't playing already, plays it from the start. Used when
-   * loading the menu- and lobby screens.
+   * Stops the game music. If the menu music isn't playing already, plays it from the start. Used
+   * when loading the menu- and lobby screens.
    */
   private void playMenuMusic() {
     if (this.gameMusicPlayer != null) this.gameMusicPlayer.stop();
@@ -943,6 +943,39 @@ public class Client extends Application {
       this.menuMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
       this.menuMusicPlayer.play();
       this.menuMusicPlayer.seek(this.menuMusicPlayer.getStartTime());
+    }
+  }
+
+  /**
+   * The client has inputted "!skip" in the chat whilst in game. Sends a skip command to the server,
+   * requesting that the level be skipped.
+   */
+  public void skip() {
+    if (gameScreen) {
+      String command = ClientProtocol.SKIP_LEVEL.toString();
+      this.outputSocket.sendToServer(command);
+    }
+  }
+
+  /**
+   * The client has inputted "!immortal" in the chat whilst in game. Sends an immortal command to
+   * the server, requesting that the client be made immortal.
+   */
+  public void setImmortal() {
+    if (gameScreen) {
+      String command = ClientProtocol.SET_IMMORTAL.toString();
+      this.outputSocket.sendToServer(command);
+    }
+  }
+
+  /**
+   * The client has inputted "!mortal" in the chat whilst in game. Sends a mortal command to the
+   * server, requesting that the client be made mortal (again).
+   */
+  public void setMortal() {
+    if (gameScreen) {
+      String command = ClientProtocol.SET_MORTAL.toString();
+      this.outputSocket.sendToServer(command);
     }
   }
 }

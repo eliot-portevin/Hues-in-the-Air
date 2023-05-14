@@ -50,8 +50,10 @@ public class ServerGame implements Runnable {
   public static ServerGame instance;
 
   /** The boolean used for the game loop */
-  protected Boolean running = true;
-  private Boolean coinCollision = false;
+  protected boolean running = true;
+  private boolean hasCheated = false;
+  private boolean immortal = false;
+  private int previousLives = 3;
 
   /**
    * Creates a new game
@@ -169,9 +171,6 @@ public class ServerGame implements Runnable {
         new Vector2D(
             level.playerSpawnIdx[0] * level.blockWidth, level.playerSpawnIdx[1] * level.blockWidth);
     load_player(playerSpawn);
-
-    // Allow coin collision
-    this.coinCollision = false;
   }
 
   /** Loads the player.
@@ -252,10 +251,13 @@ public class ServerGame implements Runnable {
   public void die() {
     this.player.resetMovement();
     this.cubeMoving = false;
-    this.lives--;
 
-    if (this.lives <= 0) {
-      this.endGame();
+    if (!immortal) {
+      this.lives--;
+
+      if (this.lives <= 0) {
+        this.endGame();
+      }
     }
 
     this.gameStatusUpdate();
@@ -380,8 +382,8 @@ public class ServerGame implements Runnable {
       /////////////////////////////////////////////////
     }
     // Use this to test a specific level
-    return "/levels/hard/level_04.csv";
-    //return path;
+    //return "/levels/hard/level_02.csv";
+    return path;
   }
 
   /**
@@ -395,8 +397,13 @@ public class ServerGame implements Runnable {
       default -> this.lives += GameConstants.LIFE_GAIN_EASY.getValue();
     }
 
-    if (this.lives > GameConstants.MAX_LIVES.getValue()) {
-      this.lives = GameConstants.MAX_LIVES.getValue();
+    if (!immortal) {
+      if (this.lives > GameConstants.MAX_LIVES.getValue()) {
+        this.lives = GameConstants.MAX_LIVES.getValue();
+      }
+    }
+    else {
+      this.lives = Integer.MAX_VALUE;
     }
 
     try {
@@ -404,9 +411,11 @@ public class ServerGame implements Runnable {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
-    this.levelsCompleted++;
-    Server.getInstance().updateGameLevelsCompleted(this);
+
+    if (!hasCheated) {
+      this.levelsCompleted++;
+      Server.getInstance().updateGameLevelsCompleted(this);
+    }
     this.gameStatusUpdate();
   }
 
@@ -417,5 +426,34 @@ public class ServerGame implements Runnable {
    */
   public int getLevelsCompleted() {
     return this.levelsCompleted;
+  }
+
+  /**
+   * The players in the game have cheated and want to skip the current level.
+   */
+  public void skipLevel() {
+    this.nextLevel();
+    hasCheated = true;
+  }
+
+  /**
+   * The players in the game have cheated and want to become immortal.
+   */
+  public void setImmortal() {
+    hasCheated = true;
+    immortal = true;
+
+    previousLives = lives;
+    lives = Integer.MAX_VALUE;
+    this.gameStatusUpdate();
+  }
+
+  /**
+   * The players in the game have cheated and want to become mortal again.
+   */
+  public void setMortal() {
+    immortal = false;
+    lives = previousLives;
+    this.gameStatusUpdate();
   }
 }

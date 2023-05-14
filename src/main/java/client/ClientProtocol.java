@@ -57,8 +57,12 @@ public enum ClientProtocol {
   REQUEST_CRITICAL_BLOCKS(0),
   /** Client has pressed the quit game button, requests that the game be ended. */
   REQUEST_END_GAME(0),
-  /** Client wants to start the game */
-  START_GAME_LOOP(0);
+  /** The clients in game want to skip the level and get to the next level. */
+  SKIP_LEVEL(0),
+  /** The clients in game want to become immortal. */
+  SET_IMMORTAL(0),
+  /** The clients in game want to be mortal again. */
+  SET_MORTAL(0);
 
   private final int numArgs;
 

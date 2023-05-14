@@ -270,6 +270,9 @@ public class ClientHandler implements Runnable {
           case REQUEST_CRITICAL_BLOCKS
                   -> this.getLobby().getGame().sendCriticalBlocks();
           case REQUEST_END_GAME -> this.getLobby().getGame().endGame();
+          case SKIP_LEVEL -> this.getLobby().getGame().skipLevel();
+          case SET_IMMORTAL -> this.getLobby().getGame().setImmortal();
+          case SET_MORTAL -> this.getLobby().getGame().setMortal();
 
           default -> LOGGER.error(
               "ClientHandler " + this.username

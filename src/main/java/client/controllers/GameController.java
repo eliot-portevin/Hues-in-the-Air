@@ -1,8 +1,8 @@
 package client.controllers;
 
 import client.Client;
-import client.ClientProtocol;
 import client.ClientGame;
+import client.ClientProtocol;
 import client.util.AlertManager;
 import client.util.Chat;
 import javafx.application.Platform;
@@ -238,7 +238,9 @@ public class GameController {
    * @param levelsCompleted the number of levels completed
    */
   public void updateGameStatus(String livesRemaining, String levelsCompleted) {
-    this.livesLabel.setText("Lives: " + livesRemaining);
+    this.livesLabel.setText(
+        "Lives: "
+            + (livesRemaining.equals(String.valueOf(Integer.MAX_VALUE)) ? "∞" : livesRemaining));
     this.scoreLabel.setText("Levels completed: " + levelsCompleted);
   }
 }

@@ -62,13 +62,16 @@ public class Chat {
             String message = chatText.getText().trim();
 
             if (!message.isBlank()) {
-              if (message.startsWith("@")) {
-                Client.getInstance().sendPrivateMessage(message);
-              } else {
-                if (chatType.equals("lobby")) {
-                  Client.getInstance().sendLobbyMessage(message);
-                } else if (chatType.equals("server")) {
-                  Client.getInstance().sendPublicMessage(message);
+
+              if (!checkForCheatCode(message)) {
+                if (message.startsWith("@")) {
+                  Client.getInstance().sendPrivateMessage(message);
+                } else {
+                  if (chatType.equals("lobby")) {
+                    Client.getInstance().sendLobbyMessage(message);
+                  } else if (chatType.equals("server")) {
+                    Client.getInstance().sendPublicMessage(message);
+                  }
                 }
               }
             }
@@ -159,5 +162,32 @@ public class Chat {
           this.chatText.requestFocus();
           this.chatText.end();
         });
+  }
+
+  /**
+   * Checks whether a message is a cheat code. If it is, it will be handled accordingly. Otherwise, returns
+   * false and the message is sent normally to the server.
+   * @param message The message to be checked
+   * @return Whether the message is a cheat code
+   */
+  private boolean checkForCheatCode(String message) {
+    if (message.startsWith("!")) {
+      switch (message.substring(1)) {
+        case "skip" -> {
+          Client.getInstance().skip();
+          return true;
+        }
+        case "immortal" -> {
+          Client.getInstance().setImmortal();
+          return true;
+        }
+        case "mortal" -> {
+          Client.getInstance().setMortal();
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
