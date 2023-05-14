@@ -91,18 +91,7 @@ public class MenuGameController {
    * @param games The games to display
    */
   public void setGameList(String[] games) {
-    Arrays.sort(
-        games,
-        (str1, str2) -> {
-          try {
-            int int1 = Integer.parseInt(str1.split(" ")[1]);
-            int int2 = Integer.parseInt(str2.split(" ")[1]);
-
-            return Integer.compare(int2, int1);
-          } catch (Exception e) {
-            return 0;
-          }
-        });
+    util.SortHighscores.sort(games);
 
     this.gameList.getItems().clear();
     this.gameStatusList.getItems().clear();

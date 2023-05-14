@@ -17,7 +17,7 @@ Command sent form server to client. Here the separator is used to separate the a
 returns "<&.>" <br>
 The separator of the subarguments <br>
 Example: UPDATE_LOBBY_LIST<&!>client1 #ff33ff<&.>client2 #blabla<&.>client3 #robert <br>
-Subsepparator is used when sending lists of something. Elements of these lists are assembled as shown above
+Subseparator is used when sending lists of something. Elements of these lists are assembled as shown above
 
 
 ### SUBSUBSEPARATOR <br>
@@ -110,9 +110,9 @@ Example: TOGGLE_PAUSE <br>
 Command sent form server to client. Server has received a pause request from client and sends this command to all clients to pause the game.
 
 ### GAME_ENDED
-Signal sent to clients upon receiving a end game request.
+Signal sent to clients upon receiving an end game request.
 Example: GAME_ENDED <br>
-Command sent form server to client. Server has received a end game request from client and sends this command to all clients to end the game and return to their lobbys.
+Command sent form server to client. Server has received an end game request from client and sends this command to all clients to end the game and return to their lobbys.
 
 ### SEND_CRITICAL_BLOCKS
 Sends the critical blocks and their colour to the client. <br>
