@@ -597,7 +597,7 @@ public class Client extends Application {
     try {
       this.stage.close();
       Platform.exit();
-    } catch (IllegalStateException e) {
+    } catch (Exception e) {
       LOGGER.error("Stage is already closed");
     }
 

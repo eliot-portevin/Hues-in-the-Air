@@ -5,6 +5,7 @@ import client.ClientGame;
 import client.ClientProtocol;
 import client.util.AlertManager;
 import client.util.Chat;
+import com.studiohartman.jamepad.ControllerIndex;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -16,6 +17,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextFlow;
 import server.ServerProtocol;
+import com.studiohartman.jamepad.ControllerManager;
+import com.studiohartman.jamepad.ControllerState;
 
 /** The controller for the game window. */
 public class GameController {
@@ -48,6 +51,7 @@ public class GameController {
   public ClientGame game;
 
   private Client client;
+
   /** Initializes the controller class. */
   public void initialize() {
 

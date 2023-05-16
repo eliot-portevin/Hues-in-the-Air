@@ -1,5 +1,8 @@
 package client;
 
+import com.studiohartman.jamepad.ControllerIndex;
+import com.studiohartman.jamepad.ControllerManager;
+import com.studiohartman.jamepad.ControllerState;
 import game.*;
 import java.io.IOException;
 import java.net.URL;
@@ -32,6 +35,10 @@ public class ClientGame {
   public Level level;
   private ClientCube player;
 
+  private ControllerManager controllers;
+  private ControllerIndex currentController;
+  private ControllerState currState;
+
   /**
    * Creates a new game.
    *
@@ -50,6 +57,13 @@ public class ClientGame {
    */
   public void update(double dt) {
     // Possibility to add a pause method
+    currState = controllers.getState(0);
+
+    if (currState.isConnected) {
+      if (currState.aJustPressed || currState.bJustPressed || currState.xJustPressed || currState.yJustPressed) {
+        client.sendGameCommand(ClientProtocol.SPACE_BAR_PRESSED.toString());
+      }
+    }
     this.gameUpdate(dt);
   }
 
@@ -208,6 +222,8 @@ public class ClientGame {
   /** Launches the application. */
   public void run() {
     this.initialiseContent();
+    controllers =  new ControllerManager();
+    controllers.initSDLGamepad();
 
     // Called every frame
     // Time since last frame in seconds
