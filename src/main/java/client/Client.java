@@ -147,6 +147,12 @@ public class Client extends Application {
     this.stage.setScene(scene);
     this.stage.setMinWidth(960);
     this.stage.setMinHeight(540);
+    this.stage
+        .getIcons()
+        .add(
+            new Image(
+                Objects.requireNonNull(
+                    getClass().getClassLoader().getResourceAsStream("images/logo.png"))));
 
     // Set stage properties
     this.stage.setOnCloseRequest(
@@ -199,7 +205,11 @@ public class Client extends Application {
     dialogPane.getStylesheets().add("/layout/Dialog.css");
 
     // Add logo
-    ImageView logo = new ImageView(new Image("images/logo.jpg"));
+    ImageView logo =
+        new ImageView(
+            new Image(
+                Objects.requireNonNull(
+                    getClass().getClassLoader().getResourceAsStream("images/logo.png"))));
     logo.setFitHeight(50);
     logo.setFitWidth(50);
     alert.setGraphic(logo);
@@ -216,9 +226,7 @@ public class Client extends Application {
     }
   }
 
-  /**
-   * Plays the intro video before launching the login screen.
-   */
+  /** Plays the intro video before launching the login screen. */
   private void loadSplashScreen(String[] args) {
     this.LOGGER.info("Loading splash screen.");
 
