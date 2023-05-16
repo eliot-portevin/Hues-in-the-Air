@@ -282,7 +282,6 @@ public class ServerGame implements Runnable {
           .append(ServerProtocol.SUBSUBSEPARATOR)
           .append(block.getColour().toString());
     }
-    System.out.println(command.toString());
 
     for (ClientHandler client : clients) {
       client.sendCriticalBlocks(command.toString());
@@ -383,7 +382,7 @@ public class ServerGame implements Runnable {
       /////////////////////////////////////////////////
     }
     // Use this to test a specific level
-    //return "/levels/hard/level_02.csv";
+    //return "/levels/easy/level_10.csv";
     return path;
   }
 
