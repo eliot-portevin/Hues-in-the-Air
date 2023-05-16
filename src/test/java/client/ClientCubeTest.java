@@ -7,15 +7,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import server.ClientHandler;
-import server.Lobby;
-import server.ServerGame;
-
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
  * JUnit tests for the ClientCube class. Tests all the methods inherited from the Cube class which are relevant
@@ -105,7 +98,6 @@ class ClientCubeTest {
      */
     @Test
     void testSetAccelerationAngleNot180() {
-        Vector2D initVelocity = new Vector2D(tester.getVelocity().getX(), tester.getVelocity().getY());
         Vector2D initAcceleration = new Vector2D(tester.getAcceleration().getX(), tester.getAcceleration().getY());
         tester.setAccelerationAngle(90);
         assertAll(
@@ -260,9 +252,6 @@ class ClientCubeTest {
     @Test
     void moveWithoutCollision() {
         Block[] neighbours = new Block[9];
-        for(int i = 0; i < neighbours.length; i++) {
-            neighbours[i] = null;
-        }
         Vector2D startPosition = new Vector2D(500, 500);
         tester.setPositionTo(500, 500);
         tester.initialiseSpeed();
@@ -292,11 +281,11 @@ class ClientCubeTest {
         tester.initialiseSpeed();
         tester.getVelocity().addInPlace(tester.acceleration.multiply(dt));
         tester.move(neighbours, dt);
-        Vector2D endPosition = new Vector2D(0 - cubeSize, 0);
+        Vector2D endPosition = new Vector2D(-cubeSize, 0);
 
         assertAll(
                 // we create a Wall in front of the Block at 0,0, the Block is moving to the right and collides with the Wall.
-                // Now the X coordinate must be set to the Wall X position - Cubesize
+                // Now the X coordinate must be set to the Wall X position - Cube-size
                 () -> assertEquals(endPosition.getX(), tester.getPosition().getX(), 0.0001)
         );
     }
@@ -315,7 +304,7 @@ class ClientCubeTest {
         tester.setVelocityTo(-400,0);
         tester.getVelocity().addInPlace(tester.acceleration.multiply(dt));
         tester.move(neighbours, dt);
-        Vector2D endPosition = new Vector2D(0+blockSize, 0);
+        Vector2D endPosition = new Vector2D(blockSize, 0);
 
         assertAll(
                 // we create a wall in front of the block at 0,0, the block is moving to the left and collides with the wall.
@@ -340,11 +329,11 @@ class ClientCubeTest {
         tester.setVelocityTo(0,400);
         tester.getVelocity().addInPlace(tester.acceleration.multiply(dt));
         tester.move(neighbours, dt);
-        Vector2D endPosition = new Vector2D(0, 0-cubeSize);
+        Vector2D endPosition = new Vector2D(0, -cubeSize);
 
         assertAll(
                 // we create a Wall under the Block at 0,0, the Block is moving down and collides with the Wall.
-                // Now the Y coordinate must be set to the Wall X position - Cubesize
+                // Now the Y coordinate must be set to the Wall X position - Cube-size
                 () -> assertEquals(endPosition.getY(), tester.getPosition().getY(), 0.0001)
         );
     }
@@ -363,7 +352,7 @@ class ClientCubeTest {
         tester.setVelocityTo(0,-400);
         tester.getVelocity().addInPlace(tester.acceleration.multiply(dt));
         tester.move(neighbours, dt);
-        Vector2D endPosition = new Vector2D(0, 0+blockSize);
+        Vector2D endPosition = new Vector2D(0, blockSize);
 
         assertAll(
                 // we create a wall above the block at 0,0, the block is moving to up and collides with the wall.
