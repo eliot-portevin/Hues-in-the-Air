@@ -425,14 +425,6 @@ public class Server implements Runnable {
         this.highscores.add(line.replace("true", "false"));
       }
     }
-
-    String[] array = this.highscores.toArray(new String[0]);
-    util.SortHighscores.sort(array);
-
-    this.highscores.clear();
-    if (array.length > 0) {
-      this.highscores.addAll(Arrays.asList(array).subList(0, Math.min(array.length, 10)));
-    }
   }
 
   /**
