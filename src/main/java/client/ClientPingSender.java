@@ -20,25 +20,25 @@ public class ClientPingSender implements Runnable {
    * logs out.
    */
   public void run() {
+    long currentTime = System.currentTimeMillis();
+
     while (this.running) {
-      try {
-        Thread.sleep(300);
+      if (System.currentTimeMillis() - currentTime > 300) {
+        currentTime = System.currentTimeMillis();
+
         if (client.serverHasPonged) {
           client.serverHasPonged = false;
           client.ping();
         } else {
           if (client.noAnswerCounter > 3) {
             System.out.println(
-                "[CLIENT_PING_SENDER] Server didn't respond to 3 pings. Logging out.");
+                    "[CLIENT_PING_SENDER] Server didn't respond to 3 pings. Logging out.");
             this.client.exit();
           } else {
             client.noAnswerCounter++;
             client.serverHasPonged = true;
           }
         }
-      } catch (InterruptedException e) {
-        System.out.println("CLient ping sender couldn't sleep.");
-        throw new RuntimeException(e);
       }
     }
   }

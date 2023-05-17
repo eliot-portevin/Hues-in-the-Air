@@ -1,6 +1,5 @@
 package client;
 
-import com.studiohartman.jamepad.ControllerIndex;
 import com.studiohartman.jamepad.ControllerManager;
 import com.studiohartman.jamepad.ControllerState;
 import game.*;
@@ -36,8 +35,6 @@ public class ClientGame {
   private ClientCube player;
 
   private ControllerManager controllers;
-  private ControllerIndex currentController;
-  private ControllerState currState;
 
   /**
    * Creates a new game.
@@ -57,7 +54,7 @@ public class ClientGame {
    */
   public void update(double dt) {
     // Possibility to add a pause method
-    currState = controllers.getState(0);
+    ControllerState currState = controllers.getState(0);
 
     if (currState.isConnected) {
       if (currState.aJustPressed || currState.bJustPressed || currState.xJustPressed || currState.yJustPressed) {
@@ -84,7 +81,7 @@ public class ClientGame {
    */
   private void analyseKeys() {
     // Possibility to add a pause method
-    if (isPressed(KeyCode.SPACE)) {
+    if (spaceBarPressed()) {
       if (!jumpRequestSent) {
         client.sendGameCommand(ClientProtocol.SPACE_BAR_PRESSED.toString());
         jumpRequestSent = true;
@@ -112,12 +109,12 @@ public class ClientGame {
   }
 
   /** Returns whether a key has been pressed by the user or not. */
-  private boolean isPressed(KeyCode keyCode) {
-    return keys.getOrDefault(keyCode, false);
+  private boolean spaceBarPressed() {
+    return keys.getOrDefault(KeyCode.SPACE, false);
   }
 
   /**
-   * Initializes the content of the game Loads the level data and creates the platforms Creates the
+   * Initialises the content of the game, Loads the level data and creates the platforms Creates the
    * player Creates the stars Will create the coin to finish the game.
    */
   public void initialiseContent() {
@@ -131,15 +128,11 @@ public class ClientGame {
     this.appRoot
         .widthProperty()
         .addListener(
-            (obs, old, newValues) -> {
-              this.setGameRootScale();
-            });
+            (obs, old, newValues) -> this.setGameRootScale());
     this.appRoot
         .heightProperty()
         .addListener(
-            (obs, old, newValues) -> {
-              this.setGameRootScale();
-            });
+            (obs, old, newValues) -> this.setGameRootScale());
 
     Rectangle bg =
         new Rectangle(
@@ -195,7 +188,7 @@ public class ClientGame {
         .addListener(
             (obs,
                 old,
-                newValue) -> { // Listens for changes in the player's Y position and moves the
+                newValue) -> { // Listens for changes in the player's y-position and moves the
               // camera
               updateCameraPosition();
             });

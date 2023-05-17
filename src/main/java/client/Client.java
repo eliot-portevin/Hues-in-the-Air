@@ -35,7 +35,7 @@ import server.ServerProtocol;
  */
 public class Client extends Application {
 
-  // Status of client
+  // Status of the client
   boolean connectedToServer = false;
   boolean serverHasPonged = true;
   int noAnswerCounter = 0;
@@ -115,7 +115,7 @@ public class Client extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
-    // Set instance, required for other classes to access the client (for example the controllers)
+    // Set instance, required for other classes to access the client (for example, the controllers)
     instance = this;
     LOGGER = LogManager.getLogger(Client.class);
 
@@ -373,9 +373,9 @@ public class Client extends Application {
   }
 
   /**
-   * Connects to the server. Called from the login controller when the user has click the connect
-   * button. The method creates the sockets and threads for the input and output streams before
-   * starting the said threads.
+   * Connects to the server. Called from the login controller when the user has clicked the
+   * "connect" button. The method creates the sockets and threads for the input and output streams
+   * before starting the said threads.
    *
    * @param username the username of the user
    * @param serverIP the IP address of the server
@@ -584,7 +584,7 @@ public class Client extends Application {
     LOGGER.info("Closing the program.");
     if (this.connectedToServer) {
       try {
-        // Communicate with server that client is logging out
+        // Communicate with the server that client is logging out
         String command = ClientProtocol.EXIT.toString();
         this.outputSocket.sendToServer(command);
       } catch (NullPointerException e) {
@@ -684,7 +684,7 @@ public class Client extends Application {
 
   /**
    * The client has received a list of all games that are currently running or have been completed.
-   * These are passed on to the games tab controller in the menu.
+   * These are passed on to the game tab controller in the menu.
    *
    * @param gameList The list of games in the format from the server command
    */
@@ -868,7 +868,7 @@ public class Client extends Application {
   }
 
   /**
-   * Sets the username with the String gotten
+   * Sets the username with the String received
    *
    * @param username The username to be set
    */
@@ -915,7 +915,7 @@ public class Client extends Application {
   }
 
   /**
-   * Informs the client that their colour (in lobby) has been set. Called from LobbyController.
+   * Informs the client that their colour (in a lobby) has been set. Called from LobbyController.
    *
    * @param colour The colour that the client has been set to
    */
@@ -933,8 +933,8 @@ public class Client extends Application {
   }
 
   /**
-   * Returns a music from the list of game music files which is different from the previous one. If
-   * the method fails to find a different music after 20 tries, it returns null.
+   * Returns a music file from the list of game music files, which is different from the previous
+   * one. If the method fails to find different music after 20 tries, it returns null.
    *
    * @return A random music
    */
@@ -978,7 +978,7 @@ public class Client extends Application {
 
   /**
    * Stops the game music. If the menu music isn't playing already, plays it from the start. Used
-   * when loading the menu- and lobby screens.
+   * when loading the menu and lobby screens.
    */
   private void playMenuMusic() {
     if (this.gameMusicPlayer != null) this.gameMusicPlayer.stop();
@@ -993,8 +993,8 @@ public class Client extends Application {
   }
 
   /**
-   * The client has inputted "!skip" in the chat whilst in game. Sends a skip command to the server,
-   * requesting that the level be skipped.
+   * The client has inputted "!skip" in the chat whilst in the game. Sends a skip command to the
+   * server, requesting that the level be skipped.
    */
   public void skip() {
     if (gameScreen) {
@@ -1004,8 +1004,8 @@ public class Client extends Application {
   }
 
   /**
-   * The client has inputted "!immortal" in the chat whilst in game. Sends an immortal command to
-   * the server, requesting that the client be made immortal.
+   * The client has inputted "!immortal" in the chat whilst in the game. Sends an immortal command
+   * to the server, requesting that the client be made immortal.
    */
   public void setImmortal() {
     if (gameScreen) {
@@ -1015,7 +1015,7 @@ public class Client extends Application {
   }
 
   /**
-   * The client has inputted "!mortal" in the chat whilst in game. Sends a mortal command to the
+   * The client has inputted "!mortal" in the chat whilst in the game. Sends a mortal command to the
    * server, requesting that the client be made mortal (again).
    */
   public void setMortal() {
