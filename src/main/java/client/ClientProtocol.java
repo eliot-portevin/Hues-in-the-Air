@@ -49,8 +49,6 @@ public enum ClientProtocol {
   CLIENT_PONG(0),
   /** Client wants to jump */
   SPACE_BAR_PRESSED(0),
-  /** Client wants to pause the game */
-  REQUEST_PAUSE(0),
   /** Client game is opened and is ready to start */
   READY_UP(0),
   /** Client has loaded the level successfully, wants to request the critical blocks */
