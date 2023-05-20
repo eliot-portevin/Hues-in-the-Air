@@ -382,7 +382,7 @@ public class ServerGame implements Runnable {
       /////////////////////////////////////////////////
     }
     // Use this to test a specific level
-    //return "/levels/hard/JEJN.csv";
+    //return "/levels/easy/level_13.csv";
     return path;
   }
 

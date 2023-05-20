@@ -1,9 +1,29 @@
 package server;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.LinkedList;
+import java.util.AbstractMap;
+
+
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.URISyntaxException;
+
+import java.io.IOException;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -333,7 +353,7 @@ public class Server implements Runnable {
   }
 
   /**
-   * Called from {@link ServerGame} when a game has ended. Sets the game to finished and sends a
+   * Called from {@link ServerGame} when a game has ended. Sets the game to "finished" and sends a
    * message to all clients in the server containing the list of all games. The info stored in the
    * map is: game instance, levels completed, whether the game is running or not.
    *
@@ -394,10 +414,10 @@ public class Server implements Runnable {
 
   /**
    * Updates the file containing the highscores when a game has been ended. The list of games is
-   * then updated so the clients can see the actual highscore state.
+   * then updated, so the clients can see the actual highscore state.
    */
   private void updateHighscoreFile() throws IOException {
-    // Create empty highscore file if it doesn't exist
+    // Create an empty highscore file if it doesn't exist
     File file = new File("highscores.csv");
     boolean notExistent = file.createNewFile();
 
@@ -412,7 +432,7 @@ public class Server implements Runnable {
 
   /** Loads the highscores from the file upon startup. Called from the constructor. */
   private void loadHighscores() throws IOException, URISyntaxException {
-    // Create empty highscore file if it doesn't exist
+    // Create an empty highscore file if it doesn't exist
     File file = new File("highscores.csv");
     boolean notExistent = file.createNewFile();
 

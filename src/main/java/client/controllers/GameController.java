@@ -5,7 +5,6 @@ import client.ClientGame;
 import client.ClientProtocol;
 import client.util.AlertManager;
 import client.util.Chat;
-//import com.studiohartman.jamepad.ControllerIndex;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -21,8 +20,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextFlow;
 import server.ServerProtocol;
-// import com.studiohartman.jamepad.ControllerManager;
-// import com.studiohartman.jamepad.ControllerState;
 
 /** The controller for the game window. */
 public class GameController {
@@ -30,9 +27,9 @@ public class GameController {
   @FXML private GridPane backgroundPane;
   /** The Pane of the game. */
   @FXML private Pane gamePane;
-  /** The pane of the chat of the lobby. */
+  /** The chat pane for the lobby. */
   @FXML private ScrollPane lobbyChatPane;
-  /** The pane of the chat of the server. */
+  /** The chat pane for the server. */
   @FXML private ScrollPane serverChatPane;
   /** The ToggleButton for the lobby. */
   @FXML private ToggleButton lobbyTabButton;
@@ -54,6 +51,8 @@ public class GameController {
   @FXML private HBox alertPane;
   /** The Label to alert. */
   @FXML private Label alert;
+  /** The AlertManager for game pane. */
+  public AlertManager alertManager = new AlertManager(alertPane, alert);
 
   /** The Button to quit the game. */
   @FXML Button quitButton;
@@ -67,7 +66,7 @@ public class GameController {
   /** The theClient of the game. */
   private Client client;
 
-  /** Initializes the controller class. */
+  /** Initialises the controller class. */
   public void initialize() {
 
     this.initialiseKeyboard();
@@ -75,8 +74,6 @@ public class GameController {
     this.setChatTabsBehaviour();
     this.setFontBehaviour();
     this.setButtonBehaviour();
-
-    AlertManager alertManager = new AlertManager(alertPane, alert);
   }
   /** Starts the game.
    *Is required because otherwise the theClient is being set too late. */
