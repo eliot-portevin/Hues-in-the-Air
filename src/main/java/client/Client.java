@@ -63,18 +63,18 @@ public class Client extends Application {
   private ServerOut outputSocket;
 
   // Controllers
-  /** The login controller */
+  /** The login controller. */
   private LoginController loginController;
-  /** The menu controller */
+  /** The menu controller. */
   private MenuController menuController;
-  /** The lobby controller */
+  /** The lobby controller. */
   private LobbyController lobbyController;
-  /** The game controller */
+  /** The game controller. */
   public GameController gameController;
 
-  /** The username of the client */
+  /** The username of the client. */
   protected String username = null;
-  /** The colour of the client */
+  /** The colour of the client. */
   private Color colour = null;
 
   // GUI
@@ -96,26 +96,28 @@ public class Client extends Application {
   int currentMusicIdx = -1;
   boolean menuMusicPlaying = false;
 
-  /** The logger for the client */
+  /** The logger for the client. */
   public Logger LOGGER;
 
   /**
-   * The italics font used in the application. It cannot be loaded in css files, so it is loaded
-   * here
+   * The italics font used in the application.
+   * It cannot be loaded in css files, so it is loaded here.
    */
   public static final javafx.scene.text.Font bebasItalics =
       javafx.scene.text.Font.loadFont(
-          Objects.requireNonNull(Client.class.getResource("/fonts/Bebas_Neue_Italics.otf"))
+          Objects.requireNonNull(Client.class.
+                          getResource("/fonts/Bebas_Neue_Italics.otf"))
               .toExternalForm(),
           20);
 
   /**
-   * Starts the application by creating a scene and setting the stage properties. Then proceeds to
-   * set the scene as the login screen.
+   * Starts the application by creating a scene and setting
+   * the stage properties. Then proceeds to set the scene as the login screen.
    */
   @Override
   public void start(Stage primaryStage) {
-    // Set instance, required for other classes to access the client (for example, the controllers)
+    // Set instance, required for other classes
+    // to access the client (for example, the controllers)
     instance = this;
     LOGGER = LogManager.getLogger(Client.class);
 
@@ -123,11 +125,13 @@ public class Client extends Application {
 
     // Set sound
     Media clickSound =
-        new Media(Objects.requireNonNull(getClass().getResource("/sounds/click.wav")).toString());
+        new Media(Objects.requireNonNull(getClass().
+                getResource("/sounds/click.wav")).toString());
     this.clickPlayer = new MediaPlayer(clickSound);
     Media menuMusic =
         new Media(
-            Objects.requireNonNull(getClass().getResource("/sounds/menu_music.mp3")).toString());
+            Objects.requireNonNull(getClass().
+                    getResource("/sounds/menu_music.mp3")).toString());
     this.menuMusicPlayer = new MediaPlayer(menuMusic);
 
     // Get server info from command line arguments
@@ -138,7 +142,8 @@ public class Client extends Application {
     scene
         .getStylesheets()
         .add(
-            Objects.requireNonNull(getClass().getResource("/layout/FontStyle.css"))
+            Objects.requireNonNull(getClass().
+                            getResource("/layout/FontStyle.css"))
                 .toExternalForm());
 
     // Set stage scene
@@ -152,7 +157,8 @@ public class Client extends Application {
         .add(
             new Image(
                 Objects.requireNonNull(
-                    getClass().getClassLoader().getResourceAsStream("images/logo.png"))));
+                    getClass().getClassLoader().
+                            getResourceAsStream("images/logo.png"))));
 
     // Set stage properties
     this.stage.setOnCloseRequest(
@@ -169,8 +175,8 @@ public class Client extends Application {
   }
 
   /**
-   * Creates a blank scene depending on the screen resolution. The scene has a width of 16:9 and is
-   * scaled to fit the screen.
+   * Creates a blank scene depending on the screen resolution.
+   * The scene has a width of 16:9 and is scaled to fit the screen.
    *
    * @return scene
    */
@@ -193,8 +199,8 @@ public class Client extends Application {
   }
 
   /**
-   * The user has pressed the escape key or clicked the close button. A dialog is shown to confirm
-   * the user's intention to exit the game.
+   * The user has pressed the escape key or clicked the close button.
+   * A dialog is shown to confirm the user's intention to exit the game.
    */
   private void handleEscape() {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -209,7 +215,8 @@ public class Client extends Application {
         new ImageView(
             new Image(
                 Objects.requireNonNull(
-                    getClass().getClassLoader().getResourceAsStream("images/logo.png"))));
+                    getClass().getClassLoader().
+                            getResourceAsStream("images/logo.png"))));
     logo.setFitHeight(50);
     logo.setFitWidth(50);
     alert.setGraphic(logo);
@@ -234,7 +241,8 @@ public class Client extends Application {
     MediaPlayer splashPlayer =
         new MediaPlayer(
             new Media(
-                Objects.requireNonNull(getClass().getResource("/images/intro.mp4")).toString()));
+                Objects.requireNonNull(getClass().
+                        getResource("/images/intro.mp4")).toString()));
     MediaView mediaView = new MediaView(splashPlayer);
 
     // Create a new pane and set it as the root
@@ -269,13 +277,16 @@ public class Client extends Application {
   }
 
   /**
-   * Loads the login screen from fxml file. Called upon start of the application.
+   * Loads the login screen from fxml file.
+   * Called upon start of the application.
    *
-   * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
+   * @throws IOException if the fxml file could not be loaded
+   * (method FXMLLoader.load()).
    */
   private void loadLoginScreen(String[] args) throws IOException {
     this.LOGGER.info("Loading login screen.");
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/login/LoginPage.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().
+            getResource("/layout/login/LoginPage.fxml"));
     this.root = loader.load();
     this.stage.getScene().setRoot(this.root);
 
@@ -289,13 +300,16 @@ public class Client extends Application {
   }
 
   /**
-   * Loads the menu screen from fxml file. Called when the user has successfully logged in.
+   * Loads the menu screen from fxml file.
+   * Called when the user has successfully logged in.
    *
-   * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load()).
+   * @throws IOException if the fxml file could not be loaded
+   * (method FXMLLoader.load()).
    */
   private void loadMenuScreen() throws IOException {
     this.LOGGER.info("Loading menu screen.");
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/menu/MenuPage.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().
+            getResource("/layout/menu/MenuPage.fxml"));
     this.root = loader.load();
     this.stage.getScene().setRoot(this.root);
 
@@ -316,13 +330,15 @@ public class Client extends Application {
   }
 
   /**
-   * Loads the lobbyScreen from fxml file
+   * Loads the lobbyScreen from fxml file.
    *
-   * @throws IOException if the fxml file could not be loaded (method FXMLLoader.load())
+   * @throws IOException if the fxml file could not be loaded
+   * (method FXMLLoader.load())
    */
   void loadLobbyScreen() throws IOException {
     this.LOGGER.info("Loading lobby screen.");
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/lobby/Lobby.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().
+            getResource("/layout/lobby/Lobby.fxml"));
     this.root = loader.load();
     this.stage.getScene().setRoot(this.root);
 
@@ -349,7 +365,8 @@ public class Client extends Application {
    */
   public void loadGameScreen() throws IOException {
     this.LOGGER.info("Loading game screen.");
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/game/Game.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().
+            getResource("/layout/game/Game.fxml"));
     this.root = loader.load();
     this.stage.getScene().setRoot(this.root);
 
@@ -373,9 +390,9 @@ public class Client extends Application {
   }
 
   /**
-   * Connects to the server. Called from the login controller when the user has clicked the
-   * "connect" button. The method creates the sockets and threads for the input and output streams
-   * before starting the said threads.
+   * Connects to the server. Called from the login controller when the user
+   * has clicked the "connect" button. The method creates the sockets
+   * and threads for the input and output streams before starting the said threads.
    *
    * @param username the username of the user
    * @param serverIP the IP address of the server
@@ -579,7 +596,8 @@ public class Client extends Application {
     }
   }
 
-  /** Notifies server that the client is logging out, closes the socket and stops the threads */
+  /** Notifies server that the client is logging out,
+   *  closes the socket and stops the threads. */
   protected void exit() {
     LOGGER.info("Closing the program.");
     if (this.connectedToServer) {
@@ -683,7 +701,8 @@ public class Client extends Application {
   }
 
   /**
-   * The client has received a list of all games that are currently running or have been completed.
+   * The client has received a list of all games that are currently running
+   * or have been completed.
    * These are passed on to the game tab controller in the menu.
    *
    * @param gameList The list of games in the format from the server command
@@ -695,7 +714,9 @@ public class Client extends Application {
     }
   }
 
-  /** The client has entered the menu screen and wants to update all the lists available to them. */
+  /**
+   * The client has entered the menu screen and wants to update all the lists available to them.
+   **/
   protected void requestMenuLists() {
     String command = ClientProtocol.GET_FULL_MENU_LISTS.toString();
     this.outputSocket.sendToServer(command);
@@ -720,7 +741,7 @@ public class Client extends Application {
   }
 
   /**
-   * Inform the server when the toggle.isReady is true
+   * Inform the server when the toggle.isReady is true.
    *
    * @param isReady whether the client is ready or not
    */
@@ -732,7 +753,7 @@ public class Client extends Application {
   }
 
   /**
-   * This method set the toggle to ready when it's called
+   * This method set the toggle to ready when it's called.
    *
    * @param isReady whether the client is ready or not
    */
@@ -783,7 +804,7 @@ public class Client extends Application {
   }
 
   /**
-   * Updates the clientList in the server
+   * Updates the clientList in the server.
    *
    * @param command The command received from the server containing the list of clients
    */
@@ -795,8 +816,9 @@ public class Client extends Application {
   }
 
   /**
-   * Returns an instance of the client. Called from controllers to access various methods or
-   * variables of the client.
+   * Returns an instance of the client.
+   * Called from controllers to access various methods
+   * or variables of the client.
    *
    * @return The instance of the client
    */
@@ -805,8 +827,8 @@ public class Client extends Application {
   }
 
   /**
-   * The client has received confirmation from the server that they have entered a lobby. Proceeds
-   * to load the lobby screen.
+   * The client has received confirmation from the server that they have entered a lobby.
+   * Proceeds to load the lobby screen.
    *
    * @param lobbyName The name of the lobby that was entered
    */
@@ -822,7 +844,8 @@ public class Client extends Application {
   }
 
   /**
-   * Called when the client has received a message from the server. Appends the message to the chat.
+   * Called when the client has received a message from the server.
+   * Appends the message to the chat.
    *
    * @param message The message that was received
    * @param sender The sender of the message
@@ -841,7 +864,7 @@ public class Client extends Application {
   }
 
   /**
-   * Sends the game commands to the server
+   * Sends the game commands to the server.
    *
    * @param command The command to be sent to the server
    */
@@ -850,7 +873,7 @@ public class Client extends Application {
   }
 
   /**
-   * Sets the volume of the music according to the slider in the settings menu
+   * Sets the volume of the music according to the slider in the settings menu.
    *
    * @param volume The volume of the music
    */
